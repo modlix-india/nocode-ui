@@ -57,6 +57,8 @@ interface LazyTemplateEditorProps {
 	editorLook?: string;
 	// Records to preview with (Document look), given by the page.
 	records?: RecordSource;
+	// Another version to compare with (Document look), given by the page.
+	compare?: { template?: any; label?: string; onOpen?: () => void };
 }
 
 type RightPanel = 'variables' | 'sample' | 'settings' | undefined;
@@ -85,12 +87,30 @@ export default function LazyTemplateEditor({
 	pageExtractor,
 	editorLook,
 	records,
+	compare,
 }: Readonly<LazyTemplateEditorProps>) {
 	const t = template ?? {};
 	const type: TemplateTypeKey = resolveTemplateType(t, lockedType);
 	const typeDef = TEMPLATE_TYPES[type];
 	const forPdf = type === 'pdf';
-	const docLook = editorLook === 'DOCUMENT' && (type === 'pdf' || type === 'email');
+	// AUTO: a new template (empty, or made in the Document look) opens as a page; one written in code
+	// opens in the classic editor, with "Open as page" to switch it.
+	const [lookPick, setLookPick] = useState<'DOCUMENT' | 'CLASSIC' | undefined>(undefined);
+	const lastTemplateKey = useRef<string | undefined>(undefined);
+	const templateKey = `${t.id ?? ''}|${t.name ?? ''}`;
+	if (lastTemplateKey.current !== templateKey) {
+		lastTemplateKey.current = templateKey;
+		if (lookPick !== undefined) setLookPick(undefined);
+	}
+	const docCapable = type === 'pdf' || type === 'email';
+	const autoDoc =
+		!!t.design?.document ||
+		t.design?.editorLook === 'DOCUMENT' ||
+		!Object.values(t.templateParts ?? {}).some((p: any) => `${p?.body ?? ''}`.trim() !== '');
+	const docLook =
+		docCapable &&
+		(editorLook === 'DOCUMENT' ||
+			(editorLook === 'AUTO' && (lookPick ? lookPick === 'DOCUMENT' : autoDoc)));
 
 	const [activeLang, setActiveLang] = useState<string>(t.defaultLanguage || 'en');
 	const [activePart, setActivePart] = useState<string>(typeDef.previewPart);
@@ -393,6 +413,9 @@ export default function LazyTemplateEditor({
 				morePanel={morePanel}
 				moreOpen={rightPanel}
 				onMore={setRightPanel}
+				aiEndpoint={aiEndpoint}
+				compare={compare}
+				onClassic={editorLook === 'AUTO' ? () => setLookPick('CLASSIC') : undefined}
 			/>
 		);
 	}
@@ -421,6 +444,15 @@ export default function LazyTemplateEditor({
 							))}
 						</select>
 					</label>
+					{editorLook === 'AUTO' && docCapable && (
+						<button
+							className="_teTab _teOpenAsPage"
+							title="Edit this template on its page: blocks, fields in words, show only if"
+							onClick={() => setLookPick('DOCUMENT')}
+						>
+							<i className="fa fa-regular fa-file-lines" /> Open as page
+						</button>
+					)}
 				</div>
 				<div className="_teToolbarRight">
 					<button
