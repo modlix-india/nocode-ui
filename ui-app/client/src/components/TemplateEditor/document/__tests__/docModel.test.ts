@@ -1,5 +1,7 @@
 import {
+	applicantsHtml,
 	block,
+	splitIfElse,
 	compileDocument,
 	evalShowIf,
 	formatValue,
@@ -58,7 +60,7 @@ describe('importDocument', () => {
 		expect(m.page.headerBox).toContain('width:182mm');
 		expect(m.page.header).toHaveLength(1);
 		expect(m.page.footer).toHaveLength(1);
-		expect(m.style).not.toContain('@page');
+		expect(m.style).not.toMatch(/@page\s*\{/);
 	});
 
 	it('turns known parts into blocks, an <#if> into "show only if", the rest into HTML', () => {
@@ -203,6 +205,60 @@ describe('fields in text', () => {
 	});
 });
 
+describe('applicant cards and signature boxes', () => {
+	const cols =
+		'<div class="cols"><#list bf.first as a><div class="col ap"><h4>${a.title}</h4><#if !a.isEntity><div class="photo"><#if (a.photo!\'\')?has_content><img src="${a.photo}"/><#else><span>Applicant image</span></#if></div></#if><#list a.personal as r><div class="kv"><span class="k">${r.k}</span><span class="v">${r.v}</span></div></#list></div></#list></div>';
+	const stack =
+		'<#list bf.others as a><div class="ap"><h4 style="margin:0 0 2mm">${a.title}</h4><div class="two"><#list a.personal as r><div class="kv"><span class="k">${r.k}</span><span class="v">${r.v}</span></div></#list></div><#if a.professional?size gt 0><h4 style="margin:3mm 0 1mm">Professional details</h4><div class="two"><#list a.professional as r><div class="kv"><span class="k">${r.k}</span><span class="v">${r.v}</span></div></#list></div></#if></div></#list>';
+	const sigs =
+		'<div class="sigs"><#if ((signRows)![])?size gt 0><#list signRows as s><div class="sigbox"><div class="sigarea"><#if s.signed><#if (s.image!\'\')?has_content><img class="sigimg" src="${s.image}"/><#else><div class="typed">${s.text!\'\'}</div></#if></#if></div><div class="sigcap"><b>${s.name!\'\'}</b> (${s.roleLabel!\'\'})</div><div class="sigcap">Date : <#if s.signed>${s.at!\'\'}</#if></div></div></#list><#else><div class="sigbox">one</div></#if></div>';
+	const doc = (b: string) => `<html><head><style>.x{}</style></head><body>${b}</body></html>`;
+
+	it('reads cards side by side, cards one under another, and signer boxes as their own blocks', () => {
+		const m = importDocument(doc(cols + stack + sigs), 'pdf');
+		expect(m.blocks.map(b => b.type)).toEqual(['applicants', 'applicants', 'signatures']);
+		expect(m.blocks[0].props).toMatchObject({ list: 'bf.first', layout: 'cols', photo: true, rowsField: 'personal' });
+		expect(m.blocks[1].props).toMatchObject({ layout: 'stack', secondField: 'professional', secondTitle: 'Professional details' });
+		expect(m.blocks[2].props).toMatchObject({ list: 'signRows', nameField: 'name', roleField: 'roleLabel', fallback: '<div class="sigbox">one</div>' });
+		expect(compileDocument(m).replace(/\s+/g, '')).toBe(doc(cols + stack + sigs).replace(/\s+/g, ''));
+	});
+
+	it('leaves cards it cannot write back the same as HTML', () => {
+		const odd = cols.replace('<h4>', '<h4 class="z">');
+		expect(importDocument(doc(odd), 'pdf').blocks.map(b => b.type)).toEqual(['html']);
+	});
+
+	it('writes new cards with the chosen fields', () => {
+		expect(applicantsHtml({ list: 'al.applicants', titleField: 'name', rowsField: 'rows' })).toContain(
+			'<#list al.applicants as a><div class="col ap"><h4>${a.name}</h4><#list a.rows as r>',
+		);
+	});
+});
+
+describe('templates written in code come back the same', () => {
+	it('keeps the shell, the style and the @page rule of a template it reads', () => {
+		const html =
+			'<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><style>@page{size:A4;margin:18mm}h1{x:y}</style></head><body class="b"><p>Hi ${a!\'\'}</p></body></html>';
+		expect(compileDocument(importDocument(html, 'pdf')).replace(/\s+/g, '')).toBe(html.replace(/\s+/g, ''));
+	});
+
+	it('reads a body guarded by <#if x??>...<#else>...</#if> and writes the guard back', () => {
+		const html =
+			'<html><head><style>a{}</style></head><body><#if al??><div class="sec">Unit</div><p>x</p><#else><p>No letter data.</p></#if></body></html>';
+		const m = importDocument(html, 'pdf');
+		expect(m.guard).toEqual({ cond: 'al??', fallback: '<p>No letter data.</p>' });
+		expect(m.blocks.map(b => b.type)).toEqual(['heading', 'text']);
+		expect(compileDocument(m).replace(/\s+/g, '')).toBe(html.replace(/\s+/g, ''));
+		expect(splitIfElse('<#if a><#if b>x<#else>y</#if><#else>z</#if>')).toEqual({ cond: 'a', then: '<#if b>x<#else>y</#if>', otherwise: 'z' });
+	});
+
+	it('writes a new @page once the page settings change', () => {
+		const m = importDocument('<html><head><style>@page{size:A4;margin:18mm}</style></head><body><p>x</p></body></html>', 'pdf');
+		m.page = { ...m.page, size: 'Letter' };
+		expect(compileDocument(m)).toContain('@page{size:Letter;margin:18mm 18mm 18mm 18mm;}');
+	});
+});
+
 describe('helpers', () => {
 	it('splits markup into top-level nodes with directives kept whole', () => {
 		const n = topLevelNodes('<div>a</div><#if x><p>b</p></#if><br/>tail');
@@ -215,5 +271,38 @@ describe('helpers', () => {
 			'.p',
 		);
 		expect(css).toBe('.p{color:red}\n.p .sec,.p h4{font-weight:bold}\n');
+	});
+});
+
+describe('compare with another version', () => {
+	const { diffModels } = require('../docModel');
+	const base = () => {
+		const m = importDocument('', 'pdf');
+		m.blocks = [
+			block('heading', { text: 'Booking details' }),
+			block('text', { html: '<p>One</p>' }),
+			block('text', { html: '<p>Two</p>' }),
+			block('pageBreak'),
+		];
+		return m;
+	};
+	it('finds what was added, changed and removed', () => {
+		const before = base();
+		const after = { ...before, blocks: [...before.blocks] };
+		after.blocks[1] = { ...after.blocks[1], props: { html: '<p>One, changed</p>' } };
+		after.blocks.splice(2, 1);
+		after.blocks.push(block('heading', { text: 'New section' }));
+		const d = diffModels(before, after);
+		expect(d.status[after.blocks[1].id]).toBe('changed');
+		expect(d.status[after.blocks[3].id]).toBe('added');
+		expect(d.removed.map((r: any) => r.block.props.html)).toEqual(['<p>Two</p>']);
+		expect(d.removed[0].after).toBe(after.blocks[1].id);
+		expect(d.count).toBe(3);
+	});
+	it('says nothing changed for the same page, and notices a page setting', () => {
+		const before = base();
+		expect(diffModels(before, before).count).toBe(0);
+		const after = { ...before, page: { ...before.page, size: 'Letter' as const } };
+		expect(diffModels(before, after)).toMatchObject({ page: true, count: 1 });
 	});
 });

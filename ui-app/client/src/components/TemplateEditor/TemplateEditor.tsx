@@ -39,6 +39,9 @@ function TemplateEditor(props: Readonly<ComponentProps>) {
 			previewRecordData,
 			onPreviewOpen,
 			onPreviewRecord,
+			compareTemplate,
+			compareLabel,
+			onCompareOpen,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -139,6 +142,21 @@ function TemplateEditor(props: Readonly<ComponentProps>) {
 					aiEndpoint={aiEndpoint}
 					editorLook={editorLook}
 					records={records}
+					compare={
+						compareTemplate || onCompareOpen
+							? {
+									// false from the page: there is nothing to compare with
+									template:
+										compareTemplate === false
+											? null
+											: compareTemplate && typeof compareTemplate === 'object'
+												? compareTemplate
+												: undefined,
+									label: compareLabel,
+									onOpen: onCompareOpen ? () => fire(onCompareOpen) : undefined,
+								}
+							: undefined
+					}
 					context={context}
 					pageDefinition={pageDefinition}
 					locationHistory={locationHistory}
