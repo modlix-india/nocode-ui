@@ -269,8 +269,6 @@ export default function TemplateEditorStyle({
 	${PREFIX} ._previewBody { flex: 1; min-height: 0; overflow: auto; background: ${t('surfaceColorTwo', '#f5f5f5')}; display: flex; justify-content: center; }
 	${PREFIX} ._pdfPreview { width: 100%; height: 100%; border: none; }
 	${PREFIX} ._htmlPreviewWrap { display: flex; flex-direction: column; width: 100%; }
-	${PREFIX} ._previewSubject { padding: 8px 12px; background: ${card}; border-bottom: 1px solid ${border}; font-size: 13px; }
-	${PREFIX} ._previewSubject span { color: ${t('fontColorThree', '#999')}; margin-right: 6px; }
 	/* An email renders on a white client window whatever the editor's theme; on the theme's
 	   card a dark theme hid every part the email leaves transparent. */
 	${PREFIX} ._htmlPreview { border: none; background: #fff; flex: 1; width: 100%; height: 100%; }
@@ -499,16 +497,174 @@ export default function TemplateEditorStyle({
 	/* Part toolbar actions */
 	${PREFIX} ._partToolbarActions { display: flex; align-items: center; gap: 8px; }
 
-	/* Softer preview divider + editable subject line */
+	/* Softer preview divider; the subject is edited above the body and shown filled in the preview */
 	${PREFIX} ._previewToolbar { border-bottom: 1px solid ${line}; }
-	${PREFIX} ._subjectLine {
-		display: flex; align-items: center; gap: 10px; padding: 9px 14px;
-		border-bottom: 1px solid ${line}; background: ${card};
+	${PREFIX} ._previewSubject { display: flex; align-items: baseline; gap: 10px; padding: 9px 14px; border-bottom: 1px solid ${line}; }
+	${PREFIX} ._previewSubject span { font-size: 11px; text-transform: uppercase; color: ${faint}; letter-spacing: 0.04em; margin: 0; }
+	${PREFIX} ._previewSubject strong { font-size: 14px; font-weight: 600; color: ${ink}; }
+	${PREFIX} ._subjectField {
+		display: flex; align-items: center; gap: 10px; padding: 6px 10px; margin: 0 8px 6px;
+		border: 1px solid ${border}; border-radius: 6px; background: ${card};
 	}
-	${PREFIX} ._subjectLine span { font-size: 11px; text-transform: uppercase; color: ${faint}; letter-spacing: 0.04em; }
-	${PREFIX} ._subjectLine input {
-		flex: 1; border: none; outline: none; font-size: 14px; font-weight: 600; color: ${ink}; background: transparent;
+	${PREFIX} ._subjectField span { font-size: 11px; text-transform: uppercase; color: ${faint}; letter-spacing: 0.04em; }
+	${PREFIX} ._subjectField input {
+		flex: 1; border: none; outline: none; font-size: 13px; font-family: monospace; color: ${ink}; background: transparent;
 	}
+
+	/* Fields list (Variables panel): name in words, what it holds, the token */
+	${PREFIX} ._fieldList { overflow: auto; }
+	${PREFIX} ._fieldGroup { display: flex; flex-direction: column; gap: 2px; }
+	${PREFIX} ._fieldGroupTitle { font-size: 12px; font-weight: 600; color: ${ink}; margin: 6px 0 2px; }
+	${PREFIX} ._fieldGroupHint { font-size: 11px; color: ${muted}; margin-bottom: 2px; }
+	${PREFIX} ._fieldItem {
+		display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%;
+		text-align: left; padding: 6px 8px; border: none; border-radius: 4px; background: transparent; cursor: pointer;
+	}
+	${PREFIX} ._fieldItem:hover { background: ${wash}; }
+	${PREFIX} ._fieldItemName { font-size: 13px; color: ${ink}; }
+	${PREFIX} ._fieldItemHint { font-size: 11px; color: ${muted}; line-height: 1.4; }
+	${PREFIX} ._fieldItemToken { font-family: monospace; font-size: 11px; color: ${faint}; }
+	${PREFIX} ._varLabel { font-size: 12px; color: ${ink}; }
+
+	/* ---- Document look (editorLook DOCUMENT) ---- */
+	${PREFIX} ._docLook { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+	${PREFIX} ._docTopBar {
+		display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 8px 12px;
+		border-bottom: 1px solid ${line}; background: ${panel};
+	}
+	${PREFIX} ._docTopBar ._teSelect { flex-direction: row; align-items: center; gap: 6px; }
+	${PREFIX} ._docTopBar ._teSelect select { padding: 5px 8px; border: 1px solid ${border}; border-radius: 6px; }
+	${PREFIX} ._docViews { margin-left: auto; }
+	${PREFIX} ._docViews i { margin-right: 4px; }
+	${PREFIX} ._docMore { display: flex; gap: 2px; }
+	${PREFIX} ._docPicker { position: relative; }
+	${PREFIX} ._docPickerBtn {
+		display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid ${border};
+		border-radius: 6px; background: ${card}; cursor: pointer; font-size: 13px;
+	}
+	${PREFIX} ._docPickerBtn b { font-weight: 600; }
+	${PREFIX} ._docPickerMenu {
+		position: absolute; top: 110%; left: 0; z-index: 30; width: 320px; padding: 8px; display: flex;
+		flex-direction: column; gap: 6px; background: ${card}; border: 1px solid ${border}; border-radius: 8px;
+		box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+	}
+	${PREFIX} ._docPickerList { max-height: 260px; overflow: auto; display: flex; flex-direction: column; }
+	${PREFIX} ._docPickerItem {
+		display: flex; flex-direction: column; align-items: flex-start; text-align: left; padding: 7px 8px;
+		border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 13px;
+	}
+	${PREFIX} ._docPickerItem small { color: ${muted}; font-size: 11px; }
+	${PREFIX} ._docPickerItem:hover, ${PREFIX} ._docPickerItem._on { background: ${wash}; }
+	${PREFIX} ._docCheck {
+		padding: 8px 14px; font-size: 13px; background: ${t('warningWashColor', '#fff7e6')};
+		color: ${t('warningTextColor', '#8a5300')}; border-bottom: 1px solid ${line};
+	}
+	${PREFIX} ._docMain { display: flex; flex: 1; min-height: 0; position: relative; }
+	${PREFIX} ._doc { display: flex; flex: 1; min-height: 0; min-width: 0; }
+	${PREFIX} ._docRail {
+		width: 250px; flex: 0 0 250px; border-right: 1px solid ${line}; padding: 10px; display: flex;
+		flex-direction: column; gap: 10px; overflow: auto; background: ${card};
+	}
+	${PREFIX} ._docRailTabs { align-self: stretch; }
+	${PREFIX} ._docRailTabs button { flex: 1; }
+	${PREFIX} ._docAdd { display: flex; flex-direction: column; gap: 4px; }
+	${PREFIX} ._docAddItem {
+		display: flex; gap: 10px; align-items: flex-start; text-align: left; padding: 8px; border: 1px solid transparent;
+		border-radius: 6px; background: transparent; cursor: pointer;
+	}
+	${PREFIX} ._docAddItem:hover { border-color: ${line}; background: ${wash}; }
+	${PREFIX} ._docAddItem i { width: 18px; margin-top: 2px; color: ${muted}; }
+	${PREFIX} ._docAddItem span { display: flex; flex-direction: column; gap: 1px; }
+	${PREFIX} ._docAddItem b { font-size: 13px; font-weight: 600; }
+	${PREFIX} ._docAddItem small { font-size: 11px; color: ${muted}; line-height: 1.35; }
+	${PREFIX} ._docOutline { display: flex; flex-direction: column; gap: 1px; }
+	${PREFIX} ._docOutlineItem {
+		display: flex; justify-content: space-between; gap: 6px; text-align: left; padding: 6px 8px 6px 18px; border: none;
+		background: transparent; border-radius: 4px; cursor: pointer; font-size: 12px; color: ${muted};
+	}
+	${PREFIX} ._docOutlineItem._head { padding-left: 8px; color: ${ink}; font-weight: 600; }
+	${PREFIX} ._docOutlineItem:hover, ${PREFIX} ._docOutlineItem._on { background: ${wash}; color: ${ink}; }
+	${PREFIX} ._docStage {
+		flex: 1; min-width: 0; overflow: auto; padding: 16px 24px 48px; background: ${t('surfaceColorTwo', '#eceef1')};
+		display: flex; flex-direction: column; align-items: center;
+	}
+	${PREFIX} ._docStageBar { align-self: stretch; display: flex; justify-content: flex-end; margin-bottom: 10px; }
+	${PREFIX} ._docToggle { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: ${muted}; cursor: pointer; }
+	${PREFIX} ._docPage {
+		background: #fff; color: #111; box-shadow: 0 2px 12px rgba(0,0,0,0.12); box-sizing: border-box;
+		position: relative; flex: 0 0 auto;
+	}
+	${PREFIX} ._docPage._email { padding: 24px; }
+	${PREFIX} ._docSubject {
+		display: flex; gap: 10px; align-items: center; background: #fff; color: #111; padding: 10px 14px;
+		margin-bottom: 8px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); box-sizing: border-box;
+	}
+	${PREFIX} ._docSubject > span { font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: .04em; }
+	${PREFIX} ._docSubject ._chipText { flex: 1; font-weight: 600; }
+	${PREFIX} ._docBand { position: relative; border-bottom: 1px dashed #c9cdd4; padding: 6mm 0 3mm; }
+	${PREFIX} ._docFooter { border-bottom: none; border-top: 1px dashed #c9cdd4; padding: 3mm 0; display: flex; align-items: center; justify-content: space-between; }
+	${PREFIX} ._docBandLabel {
+		position: absolute; right: 0; top: 2px; font-size: 10px; color: #9aa1ab; letter-spacing: .03em;
+		font-family: Helvetica, Arial, sans-serif;
+	}
+	${PREFIX} ._docBandAdd { border: 1px dashed #c9cdd4; background: transparent; color: #7b828c; padding: 4px 10px; border-radius: 4px; cursor: pointer; }
+	${PREFIX} ._docPageNo { font-size: 8.5pt; }
+	${PREFIX} ._docBody { padding: 2mm 0 8mm; min-height: 120mm; }
+	${PREFIX} ._docEmpty { color: #9aa1ab; padding: 20mm 0; text-align: center; font-family: Helvetica, Arial, sans-serif; }
+	${PREFIX} ._docBlock { position: relative; border-radius: 2px; outline: 1px solid transparent; outline-offset: 2px; }
+	${PREFIX} ._docBlock:hover { outline-color: #d5dae1; }
+	${PREFIX} ._docBlock._sel { outline: 2px solid ${selection}; }
+	${PREFIX} ._docBlock._err { outline: 2px solid ${danger}; }
+	${PREFIX} ._docBlock._hiddenNow { opacity: .38; }
+	${PREFIX} ._docTags { display: flex; gap: 6px; margin: 2px 0 1px; font-family: Helvetica, Arial, sans-serif; }
+	${PREFIX} ._docTag {
+		font-size: 10px; padding: 1px 6px; border-radius: 10px; background: #f0f1f3; color: #5b626b;
+		letter-spacing: 0; text-transform: none; font-weight: normal;
+	}
+	${PREFIX} ._docTag._if { background: #eef3ff; color: #2f4fb5; }
+	${PREFIX} ._docBlockBar {
+		position: absolute; right: -2px; top: -30px; display: flex; gap: 2px; background: ${card};
+		border: 1px solid ${border}; border-radius: 6px; padding: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.12); z-index: 5;
+	}
+	${PREFIX} ._docBlockBar button { border: none; background: transparent; padding: 4px 7px; cursor: pointer; color: ${muted}; border-radius: 4px; }
+	${PREFIX} ._docBlockBar button:hover { background: ${wash}; color: ${ink}; }
+	${PREFIX} ._docNote { font-family: Helvetica, Arial, sans-serif; font-size: 10px; color: #8a919b; margin: 1mm 0 0; }
+	${PREFIX} ._docPlaceholder { border: 1px dashed #c9cdd4; color: #8a919b; padding: 6mm; text-align: center; font-family: Helvetica, Arial, sans-serif; }
+	${PREFIX} ._docBreak {
+		border-top: 2px dashed #c9cdd4; margin: 4mm 0; padding-top: 1mm; font-size: 10px; color: #8a919b;
+		text-align: center; font-family: Helvetica, Arial, sans-serif;
+	}
+	${PREFIX} ._docSpacer { background: repeating-linear-gradient(45deg, transparent, transparent 4px, #f3f4f6 4px, #f3f4f6 8px); }
+	${PREFIX} ._docHtml { border-left: 3px solid #e3e6ea; padding-left: 2mm; }
+	${PREFIX} ._docHtml img[data-field-image] { display: none; }
+	${PREFIX} ._chipText { outline: none; min-height: 1.2em; }
+	${PREFIX} ._chipText:empty::before { content: attr(data-placeholder); color: #a3a9b1; }
+	${PREFIX} ._chip {
+		display: inline-block; padding: 0 5px; margin: 0 1px; border-radius: 4px; background: #e8eefc; color: #2342a0;
+		font-size: .92em; line-height: 1.45; white-space: nowrap; cursor: pointer; font-weight: 600;
+		text-transform: none; letter-spacing: 0; border: 1px solid #c9d6f6;
+	}
+	${PREFIX} ._chip._chipValue { background: #eef7f0; color: #17602c; border-color: #cbe7d3; font-weight: inherit; }
+	${PREFIX} ._chip._chipEmpty { background: #fff4e5; color: #8a5300; border-color: #f3d9b1; }
+	${PREFIX} ._docInspector {
+		width: 300px; flex: 0 0 300px; border-left: 1px solid ${line}; padding: 12px; display: flex; flex-direction: column;
+		gap: 12px; overflow: auto; background: ${card};
+	}
+	${PREFIX} ._docInspectorHead { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 14px; }
+	${PREFIX} ._docSettings { display: flex; flex-direction: column; gap: 10px; }
+	${PREFIX} ._fieldLabel { font-size: 12px; color: ${t('fontColorTwo', '#666')}; }
+	${PREFIX} ._docShowIf { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid ${line}; }
+	${PREFIX} ._docShowIf ._docToggle { color: ${ink}; font-weight: 600; font-size: 13px; }
+	${PREFIX} ._docHtmlEdit { min-height: 220px; font-family: monospace; font-size: 12px; }
+	${PREFIX} ._chipEditor {
+		position: absolute; top: 60px; left: 50%; transform: translateX(-50%); z-index: 40; width: 300px; padding: 12px;
+		display: flex; flex-direction: column; gap: 10px; background: ${card}; border: 1px solid ${border}; border-radius: 8px;
+		box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+	}
+	${PREFIX} ._docPrimary { align-self: flex-end; padding: 6px 14px; border: none; border-radius: 6px; background: ${ink}; color: ${card}; cursor: pointer; }
+	${PREFIX} ._docPreview, ${PREFIX} ._docCode { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+	${PREFIX} ._docCode ._partEditor { flex: 1; }
+	${PREFIX} ._docMorePanel { position: absolute; right: 0; top: 0; bottom: 0; z-index: 20; box-shadow: -6px 0 20px rgba(0,0,0,0.1); }
 
 	/* Embedded schema builder (Custom variables) */
 	${PREFIX} ._schemaBuilderBox { overflow: auto; }

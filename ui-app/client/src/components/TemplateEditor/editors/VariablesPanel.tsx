@@ -8,12 +8,13 @@ import {
 } from '../util/eventsApi';
 import { PreviewHeaders } from '../util/previewApi';
 import { emptyObjectSchema } from '../util/schemaSample';
+import { collectVariables, VariableEntry } from '../util/variableUtils';
 
 const LazyEditor = React.lazy(() =>
 	import('@monaco-editor/react').then(module => ({ default: module.default })),
 );
 
-type Mode = 'event' | 'custom' | 'json';
+type Mode = 'fields' | 'event' | 'custom' | 'json';
 
 const FIELD_TYPES = ['STRING', 'INTEGER', 'DOUBLE', 'BOOLEAN', 'OBJECT', 'ARRAY'];
 
@@ -22,6 +23,8 @@ interface VariablesPanelProps {
 	onChange: (v: any) => void; // manual edits (schema only)
 	onPickSchema: (schema: any) => void; // event selection: fill schema + default sample
 	headers: PreviewHeaders;
+	// Puts a field's token where the cursor is (Code mode). Without it a click copies the token.
+	onInsert?: (token: string) => void;
 }
 
 function typeOf(fieldSchema: any): string {
@@ -44,8 +47,12 @@ export default function VariablesPanel({
 	onChange,
 	onPickSchema,
 	headers,
+	onInsert,
 }: Readonly<VariablesPanelProps>) {
-	const [mode, setMode] = useState<Mode>('event');
+	const hasFields = Object.keys(value?.properties ?? {}).length > 0;
+	// With fields defined, the panel opens on the list of fields (what each one holds); without,
+	// on choosing where they come from.
+	const [mode, setMode] = useState<Mode>(hasFields ? 'fields' : 'event');
 	const [appEvents, setAppEvents] = useState<EventOption[]>([]);
 
 	useEffect(() => {
@@ -71,11 +78,20 @@ export default function VariablesPanel({
 	return (
 		<div className="_panel">
 			<p className="_panelHint">
-				The data shape this template renders against. Pick the event it responds to, build
-				the fields, or paste a schema. Fields become insertable {'${variables}'}.
+				{mode === 'fields'
+					? 'The fields this template can show. Click one to put it where the cursor is.'
+					: 'The data shape this template renders against. Pick the event it responds to, build the fields, or paste a schema. Fields become insertable ${variables}.'}
 			</p>
 
 			<div className="_segmented">
+				{hasFields && (
+					<button
+						className={mode === 'fields' ? '_on' : ''}
+						onClick={() => setMode('fields')}
+					>
+						Fields
+					</button>
+				)}
 				<button className={mode === 'event' ? '_on' : ''} onClick={() => setMode('event')}>
 					Event
 				</button>
@@ -115,9 +131,115 @@ export default function VariablesPanel({
 				</div>
 			)}
 
+			{mode === 'fields' && <FieldList schema={value} onInsert={onInsert} />}
+
 			{mode === 'custom' && <CustomFields value={value} onChange={onChange} />}
 
 			{mode === 'json' && <JsonSchemaEditor value={value} onChange={onChange} />}
+		</div>
+	);
+}
+
+// Title of a group: the top-level object's own title, else its key in words.
+function groupTitle(group: string, all: VariableEntry[]): string {
+	if (!group) return 'General';
+	const head = all.find(v => v.path === group);
+	if (head?.label) return head.label;
+	return group.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, c => c.toUpperCase());
+}
+
+// Every field of the schema with its name in words and what it holds, grouped by the object it
+// sits in. A click inserts its token (or copies it when nothing can take an insert).
+export function FieldList({
+	schema,
+	entries,
+	onInsert,
+	hint,
+	hideTokens,
+}: Readonly<{
+	schema: any;
+	entries?: VariableEntry[];
+	onInsert?: (token: string) => void;
+	hint?: string;
+	// Plain words only (Document look): the ${...} under each field is left out.
+	hideTokens?: boolean;
+}>) {
+	const [query, setQuery] = useState('');
+	const [copied, setCopied] = useState<string | undefined>();
+	const all = entries ?? collectVariables(schema);
+	const q = query.trim().toLowerCase();
+	const leaves = all.filter(
+		v =>
+			!v.container &&
+			(!q ||
+				v.path.toLowerCase().includes(q) ||
+				(v.label ?? '').toLowerCase().includes(q) ||
+				(v.description ?? '').toLowerCase().includes(q)),
+	);
+	const groups: string[] = [];
+	leaves.forEach(v => {
+		if (!groups.includes(v.group)) groups.push(v.group);
+	});
+
+	const pick = (token: string) => {
+		if (onInsert) {
+			onInsert(token);
+			return;
+		}
+		void navigator.clipboard?.writeText?.(token)?.catch(() => undefined);
+		setCopied(token);
+	};
+
+	return (
+		<div className="_modeBody _fieldList">
+			{hint && <p className="_panelHint">{hint}</p>}
+			<input
+				className="_fld"
+				placeholder="Find a field"
+				value={query}
+				onChange={e => setQuery(e.target.value)}
+			/>
+			{leaves.length === 0 && <div className="_muted">No field matches.</div>}
+			{groups.map(g => {
+				const head = all.find(v => v.path === g);
+				return (
+					<div key={g || '_'} className="_fieldGroup">
+						<div className="_fieldGroupTitle">
+							{groupTitle(g, all)}
+							{head?.type && /ARRAY/i.test(head.type) && (
+								<span className="_muted"> (one row each)</span>
+							)}
+						</div>
+						{head?.description && (
+							<div className="_fieldGroupHint">{head.description}</div>
+						)}
+						{leaves
+							.filter(v => v.group === g)
+							.map(v => (
+								<button
+									type="button"
+									key={v.path}
+									className="_fieldItem"
+									title={onInsert ? 'Put it where the cursor is' : 'Copy'}
+									onClick={() => pick(v.token)}
+								>
+									<span className="_fieldItemName">
+										{v.label ?? v.path.split('.').pop()}
+										{copied === v.token && (
+											<span className="_muted"> copied</span>
+										)}
+									</span>
+									{v.description && (
+										<span className="_fieldItemHint">{v.description}</span>
+									)}
+									{!hideTokens && (
+										<code className="_fieldItemToken">{v.token}</code>
+									)}
+								</button>
+							))}
+					</div>
+				);
+			})}
 		</div>
 	);
 }

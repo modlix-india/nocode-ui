@@ -13,9 +13,9 @@ interface PreviewPaneProps {
 	device: PreviewDevice;
 	onDevice: (d: PreviewDevice) => void;
 	onRefresh: () => void;
-	// When present, an editable subject line is shown above the preview (raw template value).
+	// When present (the type has a subject), the preview shows the subject line as the inbox will:
+	// filled with the sample data. It is edited in the editor column, not here.
 	subjectValue?: string;
-	onSubjectChange?: (v: string) => void;
 	// The subject as the server rendered it with the sample data (merge fields filled).
 	renderedSubject?: string;
 }
@@ -31,16 +31,12 @@ export default function PreviewPane({
 	onDevice,
 	onRefresh,
 	subjectValue,
-	onSubjectChange,
 	renderedSubject,
 }: Readonly<PreviewPaneProps>) {
-	// The subject input holds the raw template (it is where the subject is edited), so the filled
-	// subject is shown under it, as the body is, whenever the two differ.
-	const showRenderedSubject =
-		!!onSubjectChange &&
-		typeof renderedSubject === 'string' &&
-		renderedSubject.trim() !== '' &&
-		renderedSubject !== (subjectValue ?? '');
+	// Until the first render comes back, a subject without merge fields is already what shows.
+	let shownSubject = renderedSubject;
+	if (typeof shownSubject !== 'string')
+		shownSubject = (subjectValue ?? '').includes('${') ? '' : (subjectValue ?? '');
 	return (
 		<div className="_previewPane">
 			<div className="_previewToolbar">
@@ -76,25 +72,14 @@ export default function PreviewPane({
 				{loading && <span className="_previewLoading">Rendering…</span>}
 			</div>
 
-			{onSubjectChange && (
-				<div className="_subjectLine">
-					<span>Subject</span>
-					<input
-						value={subjectValue ?? ''}
-						placeholder="Subject line… ${variables} allowed"
-						onChange={e => onSubjectChange(e.target.value)}
-					/>
-				</div>
-			)}
-
-			{showRenderedSubject && (
+			{subjectValue !== undefined && (
 				<div className="_previewSubject">
-					<span>Shows as</span>
-					{renderedSubject}
+					<span>Subject</span>
+					<strong>{shownSubject.trim() !== '' ? shownSubject : '(no subject)'}</strong>
 				</div>
 			)}
 
-			{error &&<div className="_previewError">{error}</div>}
+			{error && <div className="_previewError">{error}</div>}
 
 			<div className="_previewBody">
 				{format === 'pdf' &&
