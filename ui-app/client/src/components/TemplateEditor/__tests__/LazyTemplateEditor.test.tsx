@@ -12,6 +12,7 @@ import React, { act } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
 // A tiny stand-in for the Monaco editor: a textarea that reflects `value` and reports edits.
+// Inserts at the cursor are recorded in (globalThis).__monacoEdits.
 jest.mock('@monaco-editor/react', () => {
 	const R = require('react');
 	return {
@@ -21,7 +22,9 @@ jest.mock('@monaco-editor/react', () => {
 				onMount?.({
 					getAction: () => ({ run: () => undefined }),
 					getSelection: () => ({}),
-					executeEdits: () => undefined,
+					executeEdits: (_: string, edits: any[]) => {
+						((globalThis as any).__monacoEdits ??= []).push(...edits.map(e => e.text));
+					},
 					focus: () => undefined,
 				});
 			}, []);
@@ -37,6 +40,13 @@ jest.mock('@monaco-editor/react', () => {
 jest.mock('../util/previewApi', () => ({
 	fetchHtmlPreview: jest.fn().mockResolvedValue({ body: '<h1>rendered</h1>', subject: 'Reset' }),
 	fetchPdfPreview: jest.fn().mockResolvedValue('blob:pdf'),
+}));
+
+jest.mock('../util/eventsApi', () => ({
+	fetchEventDefinitions: jest.fn().mockResolvedValue([]),
+	fetchEventSchema: jest.fn(),
+	PLATFORM_EVENT_CATALOG: [],
+	platformEventSchema: () => undefined,
 }));
 
 jest.mock('../../../context/StoreContext', () => ({
@@ -70,13 +80,42 @@ const baseProps = {
 };
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
+// jsdom has no object URLs; the PDF preview revokes the one it made.
+(URL as any).revokeObjectURL ??= () => undefined;
 
-function render(container: HTMLElement, template: any, onChange = baseProps.onChange): Root {
+function render(
+	container: HTMLElement,
+	template: any,
+	onChange = baseProps.onChange,
+	extra: any = {},
+): Root {
 	const root = createRoot(container);
 	act(() => {
-		root.render(<LazyTemplateEditor {...baseProps} onChange={onChange} template={template} />);
+		root.render(
+			<LazyTemplateEditor
+				{...baseProps}
+				{...extra}
+				onChange={onChange}
+				template={template}
+			/>,
+		);
 	});
 	return root;
+}
+
+async function settlePreview() {
+	await flush();
+	await act(async () => {
+		jest.advanceTimersByTime(900);
+	});
+	await flush();
+}
+
+function click(el: Element | null) {
+	expect(el).not.toBeNull();
+	act(() => {
+		(el as HTMLElement).dispatchEvent(new MouseEvent('click', { bubbles: true }));
+	});
 }
 
 async function flush() {
@@ -155,44 +194,245 @@ describe('LazyTemplateEditor wiring', () => {
 		expect(next.templateParts.en.body).toContain('<p>edited</p>');
 	});
 
-	it('shows the subject filled with the sample data under the raw subject (CXZ-1414)', async () => {
+	it('shows the filled subject in the preview and edits the raw one above the body', async () => {
 		jest.useFakeTimers();
 		try {
 			const { fetchHtmlPreview } = require('../util/previewApi');
 			fetchHtmlPreview.mockResolvedValueOnce({ body: '<p>x</p>', subject: 'Receipt R-0001' });
 			const tpl = emailTemplate();
 			tpl.templateParts.en.subject = "Receipt ${payment.receiptNumber!''}";
-			root = render(container, tpl);
-			await flush();
-			await act(async () => {
-				jest.advanceTimersByTime(900);
-			});
-			await flush();
+			const onChange = jest.fn();
+			root = render(container, tpl, onChange);
+			await settlePreview();
 
-			const input = container.querySelector('._subjectLine input') as HTMLInputElement;
+			const input = container.querySelector('._subjectField input') as HTMLInputElement;
 			expect(input.value).toBe("Receipt ${payment.receiptNumber!''}");
 			const shown = container.querySelector('._previewSubject');
-			expect(shown).not.toBeNull();
 			expect(shown!.textContent).toContain('Receipt R-0001');
+			// The preview never shows the raw merge field.
+			expect(shown!.textContent).not.toContain('${');
+			// There is no editable subject inside the preview any more.
+			expect(container.querySelector('._previewPane input')).toBeNull();
+
+			const setter = Object.getOwnPropertyDescriptor(
+				window.HTMLInputElement.prototype,
+				'value',
+			)!.set!;
+			act(() => {
+				setter.call(input, 'Thanks ${name}');
+				input.dispatchEvent(new Event('input', { bubbles: true }));
+			});
+			expect(onChange.mock.calls.at(-1)![0].templateParts.en.subject).toBe('Thanks ${name}');
 		} finally {
 			jest.useRealTimers();
 		}
 	});
 
-	it('does not repeat the subject when it has no merge fields', async () => {
+	it('shows a subject without fields as it is before the preview comes back', async () => {
+		root = render(container, emailTemplate());
+		await flush();
+		expect(container.querySelector('._previewSubject')!.textContent).toContain(
+			'Reset your password',
+		);
+	});
+
+	it('opens a PDF as a PDF where the page locks the type, whatever the template says', async () => {
 		jest.useFakeTimers();
 		try {
-			const { fetchHtmlPreview } = require('../util/previewApi');
-			fetchHtmlPreview.mockResolvedValueOnce({ body: '<p>x</p>', subject: 'Reset your password' });
-			root = render(container, emailTemplate());
-			await flush();
-			await act(async () => {
-				jest.advanceTimersByTime(900);
-			});
-			await flush();
+			const { fetchPdfPreview, fetchHtmlPreview } = require('../util/previewApi');
+			fetchPdfPreview.mockClear();
+			fetchHtmlPreview.mockClear();
+			const tpl = {
+				templateType: 'email',
+				defaultLanguage: 'en',
+				templateParts: {
+					en: { subject: 'x', body: '<html><body>${case.caseNumber}</body></html>' },
+				},
+				variableSchema: {
+					type: 'OBJECT',
+					properties: {
+						case: { type: 'OBJECT', properties: { caseNumber: { type: 'STRING' } } },
+					},
+				},
+			};
+			root = render(container, tpl, undefined, { lockedType: 'pdf' });
+			await settlePreview();
+
+			expect(container.querySelector('._teTypeChip')!.textContent).toContain('PDF');
+			expect(container.querySelector('._teTypeChip i')!.className).toContain('fa-file-pdf');
+			// No email-only controls: device sizes or a subject.
+			expect(container.querySelector('._deviceSizes')).toBeNull();
+			expect(container.querySelector('._subjectField')).toBeNull();
 			expect(container.querySelector('._previewSubject')).toBeNull();
+			// The real PDF preview, with sample data made from the Variables (none was saved).
+			expect(fetchHtmlPreview).not.toHaveBeenCalled();
+			expect(fetchPdfPreview).toHaveBeenCalled();
+			const data = fetchPdfPreview.mock.calls.at(-1)[1];
+			expect(data.case.caseNumber).toBeTruthy();
+			expect(container.querySelector('iframe._pdfPreview')!.getAttribute('src')).toBe(
+				'blob:pdf',
+			);
 		} finally {
 			jest.useRealTimers();
 		}
+	});
+
+	it('lists the fields with their meanings and puts a picked one where the cursor is', async () => {
+		(globalThis as any).__monacoEdits = [];
+		const tpl: any = emailTemplate();
+		tpl.variableSchema = {
+			type: 'OBJECT',
+			properties: {
+				payment: {
+					type: 'OBJECT',
+					title: 'This payment',
+					properties: {
+						amount: {
+							type: 'NUMBER',
+							title: 'Amount paid',
+							description: 'The amount received.',
+						},
+					},
+				},
+			},
+		};
+		root = render(container, tpl);
+		await flush();
+
+		const tab = Array.from(container.querySelectorAll('._teTab')).find(
+			b => b.textContent === 'Variables',
+		)!;
+		click(tab);
+		await flush();
+
+		const list = container.querySelector('._fieldList');
+		expect(list).not.toBeNull();
+		expect(list!.textContent).toContain('This payment');
+		expect(list!.textContent).toContain('Amount paid');
+		expect(list!.textContent).toContain('The amount received.');
+
+		click(container.querySelector('._fieldItem'));
+		expect((globalThis as any).__monacoEdits).toEqual(['${payment.amount}']);
+	});
+
+	describe('Document look (editorLook DOCUMENT)', () => {
+		const pdfTemplate = () => ({
+			name: 'cxBookingForm',
+			templateType: 'pdf',
+			defaultLanguage: 'en',
+			templateParts: {
+				en: {
+					body:
+						'<html><head><style>@page{size:A4;margin:20mm}</style></head><body>' +
+						'<div class="sec">Booking details</div>' +
+						'<div class="two"><#list bf.details as r><div class="kv"><span class="k">${r.k}</span><span class="v">${r.v}</span></div></#list></div>' +
+						"<p>For ${case.customerName!'-'}</p></body></html>",
+				},
+			},
+			sampleData: {
+				case: { customerName: 'Asha Rao' },
+				bf: { details: [{ k: 'Unit no', v: '101' }] },
+			},
+			variableSchema: {
+				type: 'OBJECT',
+				properties: {
+					case: {
+						type: 'OBJECT',
+						title: 'The case',
+						properties: { customerName: { type: 'STRING', title: 'Customer name' } },
+					},
+				},
+			},
+		});
+
+		it('is off by default: the classic editor opens', async () => {
+			root = render(container, pdfTemplate(), undefined, { lockedType: 'pdf' });
+			await flush();
+			expect(container.querySelector('._docLook')).toBeNull();
+			expect(container.querySelector('[data-testid="monaco"]')).not.toBeNull();
+		});
+
+		it('opens a PDF as its page: blocks, list rows filled from the data, fields as named chips', async () => {
+			root = render(container, pdfTemplate(), undefined, {
+				lockedType: 'pdf',
+				editorLook: 'DOCUMENT',
+			});
+			await flush();
+			expect(container.querySelector('._docLook')).not.toBeNull();
+			const page = container.querySelector('._docPage')!;
+			expect(page.querySelector('._t_heading')!.textContent).toContain('Booking details');
+			expect(page.querySelector('._t_fields')!.textContent).toContain('Unit no');
+			expect(page.querySelector('._t_fields')!.textContent).toContain('101');
+			const chip = page.querySelector('._t_text span[data-token]')!;
+			expect(chip.textContent).toBe('Asha Rao');
+			expect(chip.getAttribute('title')).toContain('Customer name');
+			// No code on screen unless Code is opened.
+			expect(container.querySelector('[data-testid="monaco"]')).toBeNull();
+		});
+
+		it('saves a page edit as the HTML it compiles to, and keeps the page next to it', async () => {
+			const onChange = jest.fn();
+			root = render(container, pdfTemplate(), onChange, {
+				lockedType: 'pdf',
+				editorLook: 'DOCUMENT',
+			});
+			await flush();
+			click(container.querySelector('._docRailTabs button'));
+			const add = Array.from(container.querySelectorAll('._docAddItem')).find(b =>
+				b.textContent?.startsWith('Page break'),
+			)!;
+			click(add);
+			const next = onChange.mock.calls.at(-1)![0];
+			expect(next.templateParts.en.body).toContain('page-break-after:always');
+			expect(next.templateParts.en.body).toContain('<#list bf.details as r>');
+			expect(next.design.document.en.blocks.map((b: any) => b.type)).toEqual([
+				'heading',
+				'fields',
+				'text',
+				'pageBreak',
+			]);
+		});
+
+		it('previews with a picked record: the page asks for it and shows its data', async () => {
+			const onPick = jest.fn();
+			const onOpen = jest.fn();
+			const records = { records: [{ id: 'c1', label: 'CX-1008, Ravi' }], onPick, onOpen };
+			root = render(container, pdfTemplate(), undefined, {
+				lockedType: 'pdf',
+				editorLook: 'DOCUMENT',
+				records,
+			});
+			await flush();
+			click(container.querySelector('._docPickerBtn'));
+			expect(onOpen).toHaveBeenCalled();
+			click(container.querySelector('._docPickerList ._docPickerItem'));
+			expect(onPick).toHaveBeenCalledWith('c1');
+
+			await act(async () => {
+				root!.render(
+					<LazyTemplateEditor
+						{...baseProps}
+						lockedType="pdf"
+						editorLook="DOCUMENT"
+						template={pdfTemplate()}
+						records={{
+							...records,
+							recordId: 'c1',
+							recordData: {
+								case: { customerName: 'Ravi Kumar' },
+								bf: { details: [] },
+							},
+						}}
+					/>,
+				);
+			});
+			await flush();
+			expect(container.querySelector('._docPickerBtn')!.textContent).toContain(
+				'CX-1008, Ravi',
+			);
+			expect(container.querySelector('._t_text span[data-token]')!.textContent).toBe(
+				'Ravi Kumar',
+			);
+		});
 	});
 });

@@ -1,3 +1,5 @@
+import { sampleFromSchema } from './schemaSample';
+
 // Template type + part model for the Template Editor.
 //
 // A backend Template stores content as templateParts[language][partName] = string, rendered with
@@ -99,11 +101,46 @@ export function isTemplateTypeKey(v: any): v is TemplateTypeKey {
 	return typeof v === 'string' && !!TEMPLATE_TYPES[v as TemplateTypeKey];
 }
 
-// Resolve the active type: the template's own field wins, else the (optional) locked/default type.
-export function resolveTemplateType(template: any, fallback?: string): TemplateTypeKey {
+// Font Awesome icon per type, for the type chip.
+export const TEMPLATE_TYPE_ICONS: Record<TemplateTypeKey, string> = {
+	email: 'fa-envelope',
+	pdf: 'fa-file-pdf',
+	inapp: 'fa-bell',
+	push: 'fa-mobile-screen',
+	whatsapp: 'fa-comment',
+	sms: 'fa-comment-sms',
+};
+
+// A template saved without a type whose body carries a CSS @page rule is a printed document: only
+// the PDF renderer reads @page, an email client ignores it.
+export function inferTemplateType(template: any): TemplateTypeKey | undefined {
+	const parts = template?.templateParts;
+	if (!parts || typeof parts !== 'object') return undefined;
+	for (const lang of Object.keys(parts)) {
+		const body = parts[lang]?.body;
+		if (typeof body === 'string' && /@page\b/i.test(body)) return 'pdf';
+	}
+	return undefined;
+}
+
+// Resolve the active type. A locked type (the component's templateType property) wins: the page
+// that locks the editor knows what the template is for, even when an older copy of the template
+// carries another type. Then the template's own field, then a type inferred from the content,
+// then email.
+export function resolveTemplateType(template: any, locked?: string): TemplateTypeKey {
+	if (isTemplateTypeKey(locked)) return locked;
 	if (isTemplateTypeKey(template?.templateType)) return template.templateType;
-	if (isTemplateTypeKey(fallback)) return fallback;
-	return DEFAULT_TEMPLATE_TYPE;
+	return inferTemplateType(template) ?? DEFAULT_TEMPLATE_TYPE;
+}
+
+// The data the preview renders with: the template's sample data, else a sample made from its
+// Variables, so a template without sample data still previews with something in every field.
+export function previewDataOf(template: any): any {
+	const sd = template?.sampleData;
+	if (sd && typeof sd === 'object' && Object.keys(sd).length > 0) return sd;
+	const vs = template?.variableSchema;
+	if (vs?.properties && Object.keys(vs.properties).length > 0) return sampleFromSchema(vs);
+	return sd;
 }
 
 export function getPartValue(template: any, lang: string, part: string): string {

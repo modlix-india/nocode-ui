@@ -11,6 +11,7 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
+import { runEvent } from '../util/runEvent';
 import TemplateEditorStyle from './TemplateEditorStyle';
 import { styleProperties, styleDefaults } from './TemplateEditorStyleProperties';
 import { propertiesDefinition, stylePropertiesDefinition } from './templateEditorProperties';
@@ -22,22 +23,32 @@ const LazyTemplateEditor = React.lazy(
 function TemplateEditor(props: Readonly<ComponentProps>) {
 	const {
 		definition,
-		definition: { bindingPath },
+		definition: { bindingPath, bindingPath2 },
 		pageDefinition,
 		locationHistory,
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
-	const { properties: { templateType, aiEndpoint } = {}, stylePropertiesWithPseudoStates } =
-		useDefinition(
-			definition,
-			propertiesDefinition,
-			stylePropertiesDefinition,
-			locationHistory,
-			pageExtractor,
-			urlExtractor,
-		);
+	const {
+		properties: {
+			templateType,
+			aiEndpoint,
+			editorLook,
+			previewRecords,
+			previewRecordData,
+			onPreviewOpen,
+			onPreviewRecord,
+		} = {},
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+		urlExtractor,
+	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -66,6 +77,49 @@ function TemplateEditor(props: Readonly<ComponentProps>) {
 		);
 	}, [bindingPathPath]);
 
+	// Document look: the record the preview uses (second binding path), and the page's events that
+	// load the list of records and the picked record's data.
+	const recordPath = bindingPath2
+		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
+		: undefined;
+	const [recordId, setRecordId] = useState<string | undefined>(undefined);
+	React.useEffect(() => {
+		if (!recordPath) return;
+		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
+			(_, value) => setRecordId(isNullValue(value) || value === '' ? undefined : `${value}`),
+			recordPath,
+		);
+	}, [recordPath]);
+	const fire = (eventKey?: string) => {
+		const ev = eventKey ? pageDefinition.eventFunctions?.[eventKey] : undefined;
+		if (!ev) return;
+		(async () =>
+			await runEvent(ev, eventKey!, context.pageName, locationHistory, pageDefinition))();
+	};
+	const records = {
+		records: Array.isArray(previewRecords) ? previewRecords : undefined,
+		recordId,
+		recordData: recordId ? previewRecordData : undefined,
+		onPick: onPreviewRecord
+			? (id: string | undefined) => {
+					setRecordId(id);
+					if (recordPath) setData(recordPath, id ?? '', context.pageName);
+					if (id) fire(onPreviewRecord);
+				}
+			: undefined,
+		onOpen: onPreviewOpen ? () => fire(onPreviewOpen) : undefined,
+	};
+
+	// Another template opened with a record picked: load that record's data for it.
+	const templateName = template?.name;
+	const lastName = React.useRef(templateName);
+	React.useEffect(() => {
+		if (lastName.current === templateName) return;
+		lastName.current = templateName;
+		if (recordId && templateName) fire(onPreviewRecord);
+	}, [templateName]); // eslint-disable-line react-hooks/exhaustive-deps
+
 	const onChange = useCallback(
 		(next: any) => {
 			if (!bindingPathPath) return;
@@ -83,6 +137,8 @@ function TemplateEditor(props: Readonly<ComponentProps>) {
 					onChange={onChange}
 					lockedType={templateType}
 					aiEndpoint={aiEndpoint}
+					editorLook={editorLook}
+					records={records}
 					context={context}
 					pageDefinition={pageDefinition}
 					locationHistory={locationHistory}
@@ -105,6 +161,7 @@ const component: Component = {
 	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Template' },
+		bindingPath2: { name: 'Preview record id (Document look)' },
 	},
 	defaultTemplate: {
 		key: '',
