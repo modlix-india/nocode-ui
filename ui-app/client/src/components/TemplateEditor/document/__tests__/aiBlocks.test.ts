@@ -36,7 +36,10 @@ const schema = {
 						type: 'OBJECT',
 						properties: {
 							title: { type: 'STRING' },
-							personal: { type: 'ARRAY', items: { type: 'OBJECT', properties: { k: { type: 'STRING' } } } },
+							personal: {
+								type: 'ARRAY',
+								items: { type: 'OBJECT', properties: { k: { type: 'STRING' } } },
+							},
 						},
 					},
 				},
@@ -78,8 +81,12 @@ it('turns the answer into blocks, keeping only fields the template has', () => {
 	expect(blocks.map(b => b.type)).toEqual(['heading', 'table', 'text', 'applicants']);
 	const table = compileBlock(blocks[1], 'pdf');
 	expect(table).toContain('<#if (al.parking.rows)?has_content>');
-	expect(table).toContain("<#list al.parking.rows as row><tr><td>${row.name!'-'}</td><td>${row.slots!'-'}</td></tr></#list>");
+	expect(table).toContain(
+		"<#list al.parking.rows as row><tr><td>${row.name!'-'}</td><td>${row.slots!'-'}</td></tr></#list>",
+	);
 	expect(table).not.toContain('tower');
 	expect(blocks[2].props.html).toBe("<p>For ${case.customerName!'-'}, passport </p>");
-	expect(compileBlock(blocks[3], 'pdf')).toContain('<#list bf.others as a><div class="col ap"><h4>${a.title}</h4>');
+	expect(compileBlock(blocks[3], 'pdf')).toContain(
+		'<#list bf.others as a><div class="col ap"><h4>${a.title}</h4>',
+	);
 });

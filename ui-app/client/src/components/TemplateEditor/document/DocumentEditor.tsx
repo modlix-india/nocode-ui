@@ -287,9 +287,14 @@ export function inboxSnippet(model: DocModel, data: any): string {
 	);
 	const src = first ? (first.props.html ?? first.props.text ?? '') : '';
 	const filled = segments(src)
-		.map(sg => (sg.field ? formatValue(valueAt(data, sg.field.path), sg.field) : (sg.text ?? '')))
+		.map(sg =>
+			sg.field ? formatValue(valueAt(data, sg.field.path), sg.field) : (sg.text ?? ''),
+		)
 		.join('');
-	const plain = filled.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+	const plain = filled
+		.replace(/<[^>]*>/g, ' ')
+		.replace(/\s+/g, ' ')
+		.trim();
 	return plain.length > 90 ? plain.slice(0, 90) + '…' : plain;
 }
 
@@ -434,7 +439,11 @@ export default function DocumentEditor({
 				let i = model.blocks.findIndex(b => b.id === selected);
 				if (i >= 0 && ['heading', 'title'].includes(model.blocks[i].type)) {
 					let k = i + 1;
-					while (k < model.blocks.length && !['heading', 'title'].includes(model.blocks[k].type)) k++;
+					while (
+						k < model.blocks.length &&
+						!['heading', 'title'].includes(model.blocks[k].type)
+					)
+						k++;
 					i = k - 1;
 				}
 				const next = [...model.blocks];
@@ -450,10 +459,16 @@ export default function DocumentEditor({
 			}
 			setAiNote(
 				res?.message ||
-					(added.length ? `Added ${added.length} block${added.length > 1 ? 's' : ''}.` : 'Nothing added.'),
+					(added.length
+						? `Added ${added.length} block${added.length > 1 ? 's' : ''}.`
+						: 'Nothing added.'),
 			);
 		} catch (e: any) {
-			setAiNote(e?.response?.data?.detail ?? e?.response?.data?.message ?? 'The AI could not answer. Try again.');
+			setAiNote(
+				e?.response?.data?.detail ??
+					e?.response?.data?.message ??
+					'The AI could not answer. Try again.',
+			);
 		} finally {
 			setAiBusy(false);
 		}
@@ -462,7 +477,9 @@ export default function DocumentEditor({
 	const suggestField = ai
 		? async (label: string): Promise<string | undefined> => {
 				const res = await ai({ mode: 'field', label, fields: fieldsForAi });
-				return res?.path ? `${res.path}`.replace(/\[\]/g, '[0]').replace(/\[0\]$/, '') : undefined;
+				return res?.path
+					? `${res.path}`.replace(/\[\]/g, '[0]').replace(/\[0\]$/, '')
+					: undefined;
 			}
 		: undefined;
 
@@ -766,26 +783,51 @@ export default function DocumentEditor({
 										<div className="sigarea">
 											{x?.[f('signedField', 'signed')] &&
 												(x?.[f('imageField', 'image')] ? (
-													<img className="sigimg" src={x[f('imageField', 'image')]} alt="" />
+													<img
+														className="sigimg"
+														src={x[f('imageField', 'image')]}
+														alt=""
+													/>
 												) : (
 													<div className="typed">{`${x?.[f('textField', 'text')] ?? ''}`}</div>
 												))}
 										</div>
 										<div className="sigcap">
-											<b>{x ? `${x[f('nameField', 'name')] ?? ''}` : labelOfIn(p.alias, p.list)(`${p.alias || 's'}.${f('nameField', 'name')}`)}</b>
+											<b>
+												{x
+													? `${x[f('nameField', 'name')] ?? ''}`
+													: labelOfIn(
+															p.alias,
+															p.list,
+														)(
+															`${p.alias || 's'}.${f('nameField', 'name')}`,
+														)}
+											</b>
 											{p.roleField !== '' && (
-												<> ({x ? `${x[f('roleField', 'roleLabel')] ?? ''}` : 'Role'})</>
+												<>
+													{' '}
+													(
+													{x
+														? `${x[f('roleField', 'roleLabel')] ?? ''}`
+														: 'Role'}
+													)
+												</>
 											)}
 										</div>
 										<div className="sigcap">
-											Date : {x?.[f('signedField', 'signed')] ? `${x[f('atField', 'at')] ?? ''}` : ''}
+											Date :{' '}
+											{x?.[f('signedField', 'signed')]
+												? `${x[f('atField', 'at')] ?? ''}`
+												: ''}
 										</div>
 									</div>
 								))}
 							</div>
 							<div className="_docNote">
 								One box for each of {labelOf(p.list)}
-								{p.fallback !== undefined ? '; one box for the applicant when there is none' : ''}
+								{p.fallback !== undefined
+									? '; one box for the applicant when there is none'
+									: ''}
 							</div>
 						</>
 					);
@@ -827,7 +869,13 @@ export default function DocumentEditor({
 				const card = (it: any, i: number) => (
 					<div className={stack ? 'ap' : 'col ap'} key={i}>
 						<h4 style={stack ? { margin: '0 0 2mm' } : undefined}>
-							{it ? `${it[p.titleField || 'title'] ?? ''}` : <span className="_chip">{lab(`${p.alias || 'a'}.${p.titleField || 'title'}`)}</span>}
+							{it ? (
+								`${it[p.titleField || 'title'] ?? ''}`
+							) : (
+								<span className="_chip">
+									{lab(`${p.alias || 'a'}.${p.titleField || 'title'}`)}
+								</span>
+							)}
 						</h4>
 						{!stack && p.photo && !(it && it[p.entityField || 'isEntity']) && (
 							<div className="photo">
@@ -841,12 +889,16 @@ export default function DocumentEditor({
 						<div className={stack ? 'two' : undefined}>
 							{kv(it ? (it[p.rowsField || 'personal'] ?? []) : sampleRows)}
 						</div>
-						{stack && p.secondField && (it ? (it[p.secondField] ?? []).length > 0 : true) && (
-							<>
-								<h4 style={{ margin: '3mm 0 1mm' }}>{p.secondTitle ?? ''}</h4>
-								<div className="two">{kv(it ? it[p.secondField] : sampleRows)}</div>
-							</>
-						)}
+						{stack &&
+							p.secondField &&
+							(it ? (it[p.secondField] ?? []).length > 0 : true) && (
+								<>
+									<h4 style={{ margin: '3mm 0 1mm' }}>{p.secondTitle ?? ''}</h4>
+									<div className="two">
+										{kv(it ? it[p.secondField] : sampleRows)}
+									</div>
+								</>
+							)}
 					</div>
 				);
 				const cards = (people.length ? people : [undefined, undefined]).map(card);
@@ -984,8 +1036,8 @@ export default function DocumentEditor({
 
 	const removedCard = (blk: DocBlock) => (
 		<div key={`rm_${blk.id}`} className="_docRemoved">
-			<span className="_docTag _d_removed">Removed</span> {ADD.find(a => a.type === blk.type)?.label ?? blk.type}:{' '}
-			{blockTitle(blk, labelOf)}
+			<span className="_docTag _d_removed">Removed</span>{' '}
+			{ADD.find(a => a.type === blk.type)?.label ?? blk.type}: {blockTitle(blk, labelOf)}
 		</div>
 	);
 
@@ -1098,8 +1150,12 @@ export default function DocumentEditor({
 					{rail === 'ai' && ai && (
 						<div className="_docAi">
 							<p className="_panelHint">
-								Say what to add. The AI uses only the fields this template has; what it adds
-								goes {selected ? 'after the selected block (after a heading: after its section)' : 'at the end'}.
+								Say what to add. The AI uses only the fields this template has; what
+								it adds goes{' '}
+								{selected
+									? 'after the selected block (after a heading: after its section)'
+									: 'at the end'}
+								.
 							</p>
 							<textarea
 								className="_fld _docAiPrompt"
@@ -1110,7 +1166,11 @@ export default function DocumentEditor({
 									if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) runAi();
 								}}
 							/>
-							<button className="_docPrimary" disabled={aiBusy || !aiPrompt.trim()} onClick={runAi}>
+							<button
+								className="_docPrimary"
+								disabled={aiBusy || !aiPrompt.trim()}
+								onClick={runAi}
+							>
 								{aiBusy ? 'Working…' : 'Add to the page'}
 							</button>
 							{aiNote && <div className="_docAiNote">{aiNote}</div>}
@@ -1128,7 +1188,11 @@ export default function DocumentEditor({
 							)}
 							<div className="_docAiExamples">
 								{AI_EXAMPLES[kind].map(x => (
-									<button key={x} className="_docAiExample" onClick={() => setAiPrompt(x)}>
+									<button
+										key={x}
+										className="_docAiExample"
+										onClick={() => setAiPrompt(x)}
+									>
 										{x}
 									</button>
 								))}
@@ -1199,7 +1263,14 @@ export default function DocumentEditor({
 								<b>{inboxFrom || 'Sender'}</b>
 								<span className="_docInboxSubject">
 									{segments(subject ?? '')
-										.map(sg => (sg.field ? formatValue(valueAt(data, sg.field.path), sg.field) : (sg.text ?? '')))
+										.map(sg =>
+											sg.field
+												? formatValue(
+														valueAt(data, sg.field.path),
+														sg.field,
+													)
+												: (sg.text ?? ''),
+										)
 										.join('') || '(no subject)'}
 								</span>
 								<span className="_docInboxSnippet">
@@ -1253,13 +1324,15 @@ export default function DocumentEditor({
 							{model.blocks.map(b => (
 								<React.Fragment key={b.id}>
 									{renderBlock(b, 'body')}
-									{diff?.removed.filter(r => r.after === b.id).map(r => removedCard(r.block))}
+									{diff?.removed
+										.filter(r => r.after === b.id)
+										.map(r => removedCard(r.block))}
 								</React.Fragment>
 							))}
 							{diff?.page && (
 								<div className="_docRemoved">
-									<span className="_docTag _d_changed">Changed</span> The page itself: paper, margins,
-									header or footer.
+									<span className="_docTag _d_changed">Changed</span> The page
+									itself: paper, margins, header or footer.
 								</div>
 							)}
 						</div>
@@ -1598,12 +1671,20 @@ function BlockSettings({
 		case 'applicants': {
 			const arraysIn = (list: string) =>
 				arrays
-					.filter(x => x.path.startsWith(`${list}[0].`) && !x.path.slice(list.length + 4).includes('.'))
+					.filter(
+						x =>
+							x.path.startsWith(`${list}[0].`) &&
+							!x.path.slice(list.length + 4).includes('.'),
+					)
 					.map(x => ({ ...x, path: x.path.slice(`${list}[0].`.length) }));
 			const leafIn = p.list ? itemFields(p.list) : [];
 			const rowLists = p.list ? arraysIn(p.list) : [];
 			const pick = (k: string, opts: VariableEntry[], none?: string) => (
-				<select className="_fld" value={p[k] ?? ''} onChange={e => setProps({ [k]: e.target.value || undefined })}>
+				<select
+					className="_fld"
+					value={p[k] ?? ''}
+					onChange={e => setProps({ [k]: e.target.value || undefined })}
+				>
 					<option value="">{none ?? 'Pick a field'}</option>
 					{opts.map(f => (
 						<option key={f.path} value={f.path}>
@@ -1616,11 +1697,21 @@ function BlockSettings({
 				<div className="_docSettings">
 					<label className="_field">
 						<span>One card for each of</span>
-						<FieldSelect value={p.list} options={arrays} labelOf={labelOf} onChange={v => setProps({ list: v })} placeholder="Pick a list of people" />
+						<FieldSelect
+							value={p.list}
+							options={arrays}
+							labelOf={labelOf}
+							onChange={v => setProps({ list: v })}
+							placeholder="Pick a list of people"
+						/>
 					</label>
 					<label className="_field">
 						<span>Cards</span>
-						<select className="_fld" value={p.layout ?? 'cols'} onChange={e => setProps({ layout: e.target.value })}>
+						<select
+							className="_fld"
+							value={p.layout ?? 'cols'}
+							onChange={e => setProps({ layout: e.target.value })}
+						>
 							<option value="cols">Side by side</option>
 							<option value="stack">One under another</option>
 						</select>
@@ -1635,7 +1726,11 @@ function BlockSettings({
 					</label>
 					{(p.layout ?? 'cols') === 'cols' ? (
 						<label className="_docToggle">
-							<input type="checkbox" checked={!!p.photo} onChange={e => setProps({ photo: e.target.checked })} />
+							<input
+								type="checkbox"
+								checked={!!p.photo}
+								onChange={e => setProps({ photo: e.target.checked })}
+							/>
 							<span>Photo box</span>
 						</label>
 					) : (
@@ -1647,7 +1742,11 @@ function BlockSettings({
 							{p.secondField && (
 								<label className="_field">
 									<span>Their heading</span>
-									<input className="_fld" value={p.secondTitle ?? ''} onChange={e => setProps({ secondTitle: e.target.value })} />
+									<input
+										className="_fld"
+										value={p.secondTitle ?? ''}
+										onChange={e => setProps({ secondTitle: e.target.value })}
+									/>
 								</label>
 							)}
 						</>
@@ -1693,7 +1792,11 @@ function BlockSettings({
 								<>
 									<label className="_field">
 										<span>Name under the box</span>
-										<select className="_fld" value={p.nameField ?? 'name'} onChange={e => setProps({ nameField: e.target.value })}>
+										<select
+											className="_fld"
+											value={p.nameField ?? 'name'}
+											onChange={e => setProps({ nameField: e.target.value })}
+										>
 											{itemFields(p.list).map(f => (
 												<option key={f.path} value={f.path}>
 													{f.label ?? f.path}
@@ -1703,7 +1806,11 @@ function BlockSettings({
 									</label>
 									<label className="_field">
 										<span>Role after the name</span>
-										<select className="_fld" value={p.roleField ?? 'roleLabel'} onChange={e => setProps({ roleField: e.target.value })}>
+										<select
+											className="_fld"
+											value={p.roleField ?? 'roleLabel'}
+											onChange={e => setProps({ roleField: e.target.value })}
+										>
 											<option value="">No role</option>
 											{itemFields(p.list).map(f => (
 												<option key={f.path} value={f.path}>
