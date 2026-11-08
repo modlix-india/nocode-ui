@@ -35,11 +35,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'editorLook',
 		displayName: 'Editor Look',
 		description:
-			'Classic: the editor as before. Document: PDFs and emails open as the page they make, with blocks, fields as named chips, "show only if" and a preview on a real record (Code stays one click away).',
+			'Classic: the editor as before. Document: PDFs and emails open as the page they make, with blocks, fields as named chips, "show only if", AI and a preview on a real record or a sample set (Code stays one click away). Document for new templates: new templates and those made in the Document look open as a page, templates written in code open in Classic with "Open as page".',
 		schema: SCHEMA_STRING_COMP_PROP,
 		defaultValue: 'CLASSIC',
 		enumValues: [
 			{ name: 'CLASSIC', displayName: 'Classic' },
+			{ name: 'AUTO', displayName: 'Document for new templates' },
 			{ name: 'DOCUMENT', displayName: 'Document' },
 		],
 	},
@@ -56,6 +57,27 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'Document look: the data of the picked record, in the shape the template renders with. Fill it in the On Preview Record event (the picked id is at the second binding path).',
 		schema: SCHEMA_ANY_COMP_PROP,
+	},
+	{
+		name: 'compareTemplate',
+		displayName: 'Compare Template',
+		description:
+			'Document look: another version to compare with (for a project or unit copy, the template it was copied from). Fill it in On Compare Open.',
+		schema: SCHEMA_ANY_COMP_PROP,
+	},
+	{
+		name: 'compareLabel',
+		displayName: 'Compare Label',
+		description: 'Document look: the name of that version in words, for example "Allotment letter (project default)".',
+		schema: SCHEMA_STRING_COMP_PROP,
+	},
+	{
+		name: 'onCompareOpen',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Compare Open',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Document look: runs when Compare is opened, to load Compare Template.',
+		group: ComponentPropertyGroup.EVENTS,
 	},
 	{
 		name: 'onPreviewOpen',
