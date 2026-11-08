@@ -217,10 +217,26 @@ describe('applicant cards and signature boxes', () => {
 	it('reads cards side by side, cards one under another, and signer boxes as their own blocks', () => {
 		const m = importDocument(doc(cols + stack + sigs), 'pdf');
 		expect(m.blocks.map(b => b.type)).toEqual(['applicants', 'applicants', 'signatures']);
-		expect(m.blocks[0].props).toMatchObject({ list: 'bf.first', layout: 'cols', photo: true, rowsField: 'personal' });
-		expect(m.blocks[1].props).toMatchObject({ layout: 'stack', secondField: 'professional', secondTitle: 'Professional details' });
-		expect(m.blocks[2].props).toMatchObject({ list: 'signRows', nameField: 'name', roleField: 'roleLabel', fallback: '<div class="sigbox">one</div>' });
-		expect(compileDocument(m).replace(/\s+/g, '')).toBe(doc(cols + stack + sigs).replace(/\s+/g, ''));
+		expect(m.blocks[0].props).toMatchObject({
+			list: 'bf.first',
+			layout: 'cols',
+			photo: true,
+			rowsField: 'personal',
+		});
+		expect(m.blocks[1].props).toMatchObject({
+			layout: 'stack',
+			secondField: 'professional',
+			secondTitle: 'Professional details',
+		});
+		expect(m.blocks[2].props).toMatchObject({
+			list: 'signRows',
+			nameField: 'name',
+			roleField: 'roleLabel',
+			fallback: '<div class="sigbox">one</div>',
+		});
+		expect(compileDocument(m).replace(/\s+/g, '')).toBe(
+			doc(cols + stack + sigs).replace(/\s+/g, ''),
+		);
 	});
 
 	it('leaves cards it cannot write back the same as HTML', () => {
@@ -229,7 +245,9 @@ describe('applicant cards and signature boxes', () => {
 	});
 
 	it('writes new cards with the chosen fields', () => {
-		expect(applicantsHtml({ list: 'al.applicants', titleField: 'name', rowsField: 'rows' })).toContain(
+		expect(
+			applicantsHtml({ list: 'al.applicants', titleField: 'name', rowsField: 'rows' }),
+		).toContain(
 			'<#list al.applicants as a><div class="col ap"><h4>${a.name}</h4><#list a.rows as r>',
 		);
 	});
@@ -239,7 +257,9 @@ describe('templates written in code come back the same', () => {
 	it('keeps the shell, the style and the @page rule of a template it reads', () => {
 		const html =
 			'<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><style>@page{size:A4;margin:18mm}h1{x:y}</style></head><body class="b"><p>Hi ${a!\'\'}</p></body></html>';
-		expect(compileDocument(importDocument(html, 'pdf')).replace(/\s+/g, '')).toBe(html.replace(/\s+/g, ''));
+		expect(compileDocument(importDocument(html, 'pdf')).replace(/\s+/g, '')).toBe(
+			html.replace(/\s+/g, ''),
+		);
 	});
 
 	it('reads a body guarded by <#if x??>...<#else>...</#if> and writes the guard back', () => {
@@ -249,11 +269,18 @@ describe('templates written in code come back the same', () => {
 		expect(m.guard).toEqual({ cond: 'al??', fallback: '<p>No letter data.</p>' });
 		expect(m.blocks.map(b => b.type)).toEqual(['heading', 'text']);
 		expect(compileDocument(m).replace(/\s+/g, '')).toBe(html.replace(/\s+/g, ''));
-		expect(splitIfElse('<#if a><#if b>x<#else>y</#if><#else>z</#if>')).toEqual({ cond: 'a', then: '<#if b>x<#else>y</#if>', otherwise: 'z' });
+		expect(splitIfElse('<#if a><#if b>x<#else>y</#if><#else>z</#if>')).toEqual({
+			cond: 'a',
+			then: '<#if b>x<#else>y</#if>',
+			otherwise: 'z',
+		});
 	});
 
 	it('writes a new @page once the page settings change', () => {
-		const m = importDocument('<html><head><style>@page{size:A4;margin:18mm}</style></head><body><p>x</p></body></html>', 'pdf');
+		const m = importDocument(
+			'<html><head><style>@page{size:A4;margin:18mm}</style></head><body><p>x</p></body></html>',
+			'pdf',
+		);
 		m.page = { ...m.page, size: 'Letter' };
 		expect(compileDocument(m)).toContain('@page{size:Letter;margin:18mm 18mm 18mm 18mm;}');
 	});
