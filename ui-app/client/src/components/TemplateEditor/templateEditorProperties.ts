@@ -68,7 +68,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'compareLabel',
 		displayName: 'Compare Label',
-		description: 'Document look: the name of that version in words, for example "Allotment letter (project default)".',
+		description:
+			'Document look: the name of that version in words, for example "Allotment letter (project default)".',
 		schema: SCHEMA_STRING_COMP_PROP,
 	},
 	{

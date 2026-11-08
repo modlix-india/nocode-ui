@@ -574,7 +574,7 @@ function nodeToBlocks(node: string, kind: 'pdf' | 'email'): DocBlock[] {
 		const items = Array.from(n.matchAll(/<li>([\s\S]*?)<\/li>/g)).map(x => x[1]);
 		return [block('terms', { items })];
 	}
-	if (/^<p\b[^>]*>/.test(n) && !/<(div|table|ol|ul|#list)\b/.test(n))
+	if (/^<p\b[^>]*>/.test(n) && !/<(div|table|ol|ul)\b/.test(n) && !/<\/?#/.test(n))
 		return [block('text', { html: n })];
 	if (/^<div style="page-break-after:always"><\/div>$/.test(n)) return [block('pageBreak')];
 	return [block('html', { html: n })];
@@ -604,7 +604,8 @@ export function importDocument(html: string, kind: 'pdf' | 'email'): DocModel {
 	m.style = css;
 	const bodyAt = /<body[^>]*>([\s\S]*)<\/body>/i.exec(html);
 	if (bodyAt) {
-		let shell = html.slice(0, bodyAt.index) + html.slice(bodyAt.index).replace(bodyAt[1], BODY_MARK);
+		let shell =
+			html.slice(0, bodyAt.index) + html.slice(bodyAt.index).replace(bodyAt[1], BODY_MARK);
 		if (styleMatch) shell = shell.replace(styleMatch[0], STYLE_MARK);
 		m.shell = shell;
 	}
@@ -615,7 +616,8 @@ export function importDocument(html: string, kind: 'pdf' | 'email'): DocModel {
 		const wrap = /^\s*<div class="wrap">([\s\S]*)<\/div>\s*$/.exec(body);
 		if (wrap) {
 			body = wrap[1];
-			if (m.shell) m.shell = m.shell.replace(BODY_MARK, `<div class="wrap">\n${BODY_MARK}\n</div>`);
+			if (m.shell)
+				m.shell = m.shell.replace(BODY_MARK, `<div class="wrap">\n${BODY_MARK}\n</div>`);
 		}
 	}
 	let nodes = topLevelNodes(body);
@@ -820,8 +822,14 @@ export function scopeCss(css: string, scope: string): string {
 // Applicant cards and signature boxes are read by their fields, then written back and compared: only
 // markup that comes back exactly the same becomes a block, anything else stays HTML.
 function importApplicants(n: string): DocBlock | undefined {
-	const cols = /^<div class="cols"><#list ([\w.]+) as (\w+)><div class="col ap"><h4>\$\{\2\.(\w+)\}<\/h4>/.exec(n);
-	const stack = /^<#list ([\w.]+) as (\w+)><div class="ap"><h4 style="margin:0 0 2mm">\$\{\2\.(\w+)\}<\/h4>/.exec(n);
+	const cols =
+		/^<div class="cols"><#list ([\w.]+) as (\w+)><div class="col ap"><h4>\$\{\2\.(\w+)\}<\/h4>/.exec(
+			n,
+		);
+	const stack =
+		/^<#list ([\w.]+) as (\w+)><div class="ap"><h4 style="margin:0 0 2mm">\$\{\2\.(\w+)\}<\/h4>/.exec(
+			n,
+		);
 	const m = cols ?? stack;
 	if (!m) return undefined;
 	const [, list, a, title] = m;
@@ -833,7 +841,14 @@ function importApplicants(n: string): DocBlock | undefined {
 		const ph = new RegExp(
 			`<#if !${a}\\.(\\w+)><div class="photo"(?: style="([^"]*)")?><#if \\(${a}\\.(\\w+)!''\\)\\?has_content>[\\s\\S]*?<span>([^<]*)<\\/span>`,
 		).exec(n);
-		if (ph) Object.assign(p, { photo: true, entityField: ph[1], photoStyle: ph[2], photoField: ph[3], photoLabel: ph[4] });
+		if (ph)
+			Object.assign(p, {
+				photo: true,
+				entityField: ph[1],
+				photoStyle: ph[2],
+				photoField: ph[3],
+				photoLabel: ph[4],
+			});
 	} else {
 		p.layout = 'stack';
 		const sec = new RegExp(
@@ -846,7 +861,9 @@ function importApplicants(n: string): DocBlock | undefined {
 
 function importSignatures(n: string): DocBlock | undefined {
 	const m =
-		/^<div class="sigs">(?:<#if \(\(([\w.]+)\)!\[\]\)\?size gt 0>)?<#list ([\w.]+) as (\w+)>/.exec(n);
+		/^<div class="sigs">(?:<#if \(\(([\w.]+)\)!\[\]\)\?size gt 0>)?<#list ([\w.]+) as (\w+)>/.exec(
+			n,
+		);
 	if (!m || (m[1] && m[1] !== m[2])) return undefined;
 	const [, , list, a] = m;
 	const g = (re: string) => new RegExp(re).exec(n)?.[1];
@@ -871,7 +888,9 @@ function importSignatures(n: string): DocBlock | undefined {
 }
 
 // <#if cond>A<#else>B</#if> with the #else at the top level of that #if.
-export function splitIfElse(node: string): { cond: string; then: string; otherwise: string } | undefined {
+export function splitIfElse(
+	node: string,
+): { cond: string; then: string; otherwise: string } | undefined {
 	const n = node.trim();
 	const head = /^<#if\s+([\s\S]*?)>/.exec(n);
 	if (!head || !n.endsWith('</#if>')) return undefined;
@@ -885,7 +904,11 @@ export function splitIfElse(node: string): { cond: string; then: string; otherwi
 		if (name === 'else' || name === 'elseif') {
 			if (depth === 0) {
 				if (name === 'elseif') return undefined;
-				return { cond: head[1], then: inner.slice(0, m.index), otherwise: inner.slice(re.lastIndex) };
+				return {
+					cond: head[1],
+					then: inner.slice(0, m.index),
+					otherwise: inner.slice(re.lastIndex),
+				};
 			}
 			continue;
 		}
@@ -949,9 +972,28 @@ export function diffModels(before: DocModel, after: DocModel): DocDiff {
 	}
 	flush(lastNew);
 	const page =
-		JSON.stringify({ ...before.page, header: undefined, footer: undefined, raw: undefined, rawKey: undefined }) !==
-			JSON.stringify({ ...after.page, header: undefined, footer: undefined, raw: undefined, rawKey: undefined }) ||
-		before.page.header.map(x => compileBlock(x, 'pdf')).join() !== after.page.header.map(x => compileBlock(x, 'pdf')).join() ||
-		before.page.footer.map(x => compileBlock(x, 'pdf')).join() !== after.page.footer.map(x => compileBlock(x, 'pdf')).join();
-	return { status, removed, page, count: Object.keys(status).length + removed.length + (page ? 1 : 0) };
+		JSON.stringify({
+			...before.page,
+			header: undefined,
+			footer: undefined,
+			raw: undefined,
+			rawKey: undefined,
+		}) !==
+			JSON.stringify({
+				...after.page,
+				header: undefined,
+				footer: undefined,
+				raw: undefined,
+				rawKey: undefined,
+			}) ||
+		before.page.header.map(x => compileBlock(x, 'pdf')).join() !==
+			after.page.header.map(x => compileBlock(x, 'pdf')).join() ||
+		before.page.footer.map(x => compileBlock(x, 'pdf')).join() !==
+			after.page.footer.map(x => compileBlock(x, 'pdf')).join();
+	return {
+		status,
+		removed,
+		page,
+		count: Object.keys(status).length + removed.length + (page ? 1 : 0),
+	};
 }
