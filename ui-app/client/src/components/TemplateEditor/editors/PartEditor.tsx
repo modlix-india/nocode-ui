@@ -14,6 +14,9 @@ interface PartEditorProps {
 	value: string;
 	onChange: (v: string) => void;
 	variables: VariableEntry[];
+	// Set to this editor's insert-at-cursor, so a field picked elsewhere (the Fields list) lands
+	// where the cursor is.
+	insertRef?: React.MutableRefObject<((token: string) => void) | undefined>;
 }
 
 // Editor for a single template part. HTML parts use Monaco; text parts use a textarea.
@@ -23,6 +26,7 @@ export default function PartEditor({
 	value,
 	onChange,
 	variables,
+	insertRef,
 }: Readonly<PartEditorProps>) {
 	const monacoRef = useRef<any>(null);
 	const textRef = useRef<HTMLTextAreaElement | null>(null);
@@ -64,6 +68,14 @@ export default function PartEditor({
 		setShowVars(false);
 	};
 
+	if (insertRef) insertRef.current = insertToken;
+	useEffect(
+		() => () => {
+			if (insertRef) insertRef.current = undefined;
+		},
+		[], // eslint-disable-line react-hooks/exhaustive-deps
+	);
+
 	const format = () => monacoRef.current?.getAction?.('editor.action.formatDocument')?.run?.();
 
 	return (
@@ -98,17 +110,25 @@ export default function PartEditor({
 										{' ${name}'} directly.
 									</div>
 								)}
-								{variables.map(v => (
-									<button
-										key={v.path}
-										type="button"
-										className="_varItem"
-										onClick={() => insertToken(v.token)}
-									>
-										<span className="_varPath">{v.token}</span>
-										{v.type && <span className="_varType">{v.type}</span>}
-									</button>
-								))}
+								{variables
+									.filter(v => !v.container)
+									.map(v => (
+										<button
+											key={v.path}
+											type="button"
+											className="_varItem"
+											title={v.description}
+											onClick={() => insertToken(v.token)}
+										>
+											{v.label ? (
+												<span className="_varLabel">{v.label}</span>
+											) : null}
+											<span className="_varPath">{v.token}</span>
+											{!v.label && v.type && (
+												<span className="_varType">{v.type}</span>
+											)}
+										</button>
+									))}
 							</div>
 						)}
 					</div>

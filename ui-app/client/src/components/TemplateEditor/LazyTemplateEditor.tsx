@@ -33,12 +33,15 @@ import {
 import { sampleFromSchema } from './util/schemaSample';
 import {
 	getPartValue,
+	previewDataOf,
 	resolveTemplateType,
 	setPartValue,
+	TEMPLATE_TYPE_ICONS,
 	TEMPLATE_TYPES,
 	TemplateTypeKey,
 } from './util/templateTypes';
 import { collectVariables } from './util/variableUtils';
+import DocumentShell, { RecordSource } from './document/DocumentShell';
 
 interface LazyTemplateEditorProps {
 	template: any;
@@ -49,6 +52,11 @@ interface LazyTemplateEditorProps {
 	pageDefinition: PageDefinition;
 	locationHistory: Array<LocationHistory>;
 	pageExtractor: PageStoreExtractor;
+	// DOCUMENT: PDFs and emails open as the page they make (blocks, fields as chips, show only if,
+	// preview on a real record). CLASSIC (default): the editor as it was.
+	editorLook?: string;
+	// Records to preview with (Document look), given by the page.
+	records?: RecordSource;
 }
 
 type RightPanel = 'variables' | 'sample' | 'settings' | undefined;
@@ -75,11 +83,14 @@ export default function LazyTemplateEditor({
 	aiEndpoint,
 	locationHistory,
 	pageExtractor,
+	editorLook,
+	records,
 }: Readonly<LazyTemplateEditorProps>) {
 	const t = template ?? {};
 	const type: TemplateTypeKey = resolveTemplateType(t, lockedType);
 	const typeDef = TEMPLATE_TYPES[type];
 	const forPdf = type === 'pdf';
+	const docLook = editorLook === 'DOCUMENT' && (type === 'pdf' || type === 'email');
 
 	const [activeLang, setActiveLang] = useState<string>(t.defaultLanguage || 'en');
 	const [activePart, setActivePart] = useState<string>(typeDef.previewPart);
@@ -98,6 +109,8 @@ export default function LazyTemplateEditor({
 	const langPickedRef = useRef(false);
 	const modeTargetRef = useRef(''); // the target (type|lang|part) we last auto-decided a mode for
 	const userModeRef = useRef(false); // did the user manually toggle Visual/Code for that target
+	// The code editor's insert-at-cursor, so the Variables panel's Fields list can insert there.
+	const insertRef = useRef<((token: string) => void) | undefined>(undefined);
 
 	const activePartDef = typeDef.parts.find(p => p.key === activePart) ?? typeDef.parts[0];
 	const designBlocks: Block[] = t.design?.[activeLang]?.[activePart] ?? [];
@@ -167,7 +180,7 @@ export default function LazyTemplateEditor({
 
 	const pdfUrlRef = useRef<string | undefined>(undefined);
 	const doPreview = useCallback(async () => {
-		if (!template) return;
+		if (!template || docLook) return;
 		setPreview(p => ({ ...p, loading: true, error: undefined }));
 		try {
 			if (typeDef.previewFormat === 'pdf') {
@@ -182,7 +195,7 @@ export default function LazyTemplateEditor({
 					setPreview({ loading: false });
 					return;
 				}
-				const url = await fetchPdfPreview(template, template.sampleData, headers);
+				const url = await fetchPdfPreview(template, previewDataOf(template), headers);
 				if (pdfUrlRef.current) URL.revokeObjectURL(pdfUrlRef.current);
 				pdfUrlRef.current = url;
 				setPreview({ pdfUrl: url, loading: false });
@@ -190,7 +203,7 @@ export default function LazyTemplateEditor({
 				const parts = await fetchHtmlPreview(
 					template,
 					activeLang,
-					template.sampleData,
+					previewDataOf(template),
 					headers,
 				);
 				setPreview({
@@ -202,7 +215,7 @@ export default function LazyTemplateEditor({
 		} catch (e) {
 			setPreview(p => ({ ...p, loading: false, error: extractError(e) }));
 		}
-	}, [template, activeLang, typeDef, headers]);
+	}, [template, activeLang, typeDef, headers, docLook]);
 
 	// Auto-refresh preview (debounced) as the template is edited.
 	useEffect(() => {
@@ -331,17 +344,66 @@ export default function LazyTemplateEditor({
 	};
 
 	const selectedBlock = designBlocks.find(b => b.id === selectedBlockId);
+	// The code (or plain text) editor is on screen, so a picked field can go where its cursor is.
+	const showsPartEditor =
+		!(mode === 'ai' && aiEndpoint) && !(activePartDef.editor === 'html' && mode === 'visual');
 	const inVisualHtml = mode === 'visual' && activePartDef.editor === 'html';
 	const showBlockProps = inVisualHtml && !!selectedBlock;
 	// In Visual mode with nothing selected (and no tab open), the right panel shows body/layout.
 	const showRootSettings = inVisualHtml && !selectedBlock && !rightPanel;
+
+	if (docLook) {
+		const morePanel =
+			rightPanel === 'variables' ? (
+				<VariablesPanel
+					value={t.variableSchema}
+					onChange={v => onChange({ ...t, variableSchema: v })}
+					onPickSchema={schema =>
+						onChange({
+							...t,
+							variableSchema: schema,
+							sampleData: sampleFromSchema(schema),
+						})
+					}
+					headers={headers}
+				/>
+			) : rightPanel === 'sample' ? (
+				<SampleDataPanel
+					value={t.sampleData}
+					onChange={v => onChange({ ...t, sampleData: v })}
+					variableSchema={t.variableSchema}
+					headers={headers}
+				/>
+			) : rightPanel === 'settings' ? (
+				<SettingsPanel template={t} type={type} onChange={onChange} />
+			) : null;
+		return (
+			<DocumentShell
+				template={template}
+				onChange={onChange}
+				type={type}
+				lang={activeLang}
+				onLang={l => {
+					langPickedRef.current = true;
+					setActiveLang(l);
+				}}
+				variables={variables}
+				headers={headers}
+				records={records ?? {}}
+				morePanel={morePanel}
+				moreOpen={rightPanel}
+				onMore={setRightPanel}
+			/>
+		);
+	}
 
 	return (
 		<div className="_templateEditor">
 			<div className="_teToolbar">
 				<div className="_teToolbarLeft">
 					<div className="_teTypeChip" title="Template type is fixed at creation">
-						<i className="fa fa-solid fa-envelope" /> {typeDef.displayName}
+						<i className={`fa fa-solid ${TEMPLATE_TYPE_ICONS[type]}`} />{' '}
+						{typeDef.displayName}
 					</div>
 					<label className="_teSelect">
 						<span>Language</span>
@@ -439,6 +501,26 @@ export default function LazyTemplateEditor({
 						</div>
 					)}
 
+					{typeDef.subjectKey && mode !== 'ai' && (
+						<label className="_subjectField">
+							<span>Subject</span>
+							<input
+								value={getPartValue(template, activeLang, typeDef.subjectKey)}
+								placeholder="Subject line, fields allowed"
+								onChange={e =>
+									onChange(
+										setPartValue(
+											template,
+											activeLang,
+											typeDef.subjectKey!,
+											e.target.value,
+										),
+									)
+								}
+							/>
+						</label>
+					)}
+
 					{mode === 'ai' && aiEndpoint ? (
 						<AiPanel
 							history={aiHistory}
@@ -468,6 +550,7 @@ export default function LazyTemplateEditor({
 							value={getPartValue(template, activeLang, activePart)}
 							onChange={setPart}
 							variables={variables}
+							insertRef={insertRef}
 						/>
 					)}
 				</div>
@@ -486,19 +569,6 @@ export default function LazyTemplateEditor({
 						subjectValue={
 							typeDef.subjectKey
 								? getPartValue(template, activeLang, typeDef.subjectKey)
-								: undefined
-						}
-						onSubjectChange={
-							typeDef.subjectKey
-								? v =>
-										onChange(
-											setPartValue(
-												template,
-												activeLang,
-												typeDef.subjectKey!,
-												v,
-											),
-										)
 								: undefined
 						}
 					/>
@@ -529,6 +599,11 @@ export default function LazyTemplateEditor({
 									})
 								}
 								headers={headers}
+								onInsert={
+									showsPartEditor
+										? token => insertRef.current?.(token)
+										: undefined
+								}
 							/>
 						) : rightPanel === 'sample' ? (
 							<SampleDataPanel
