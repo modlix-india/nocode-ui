@@ -94,6 +94,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		name: 'pointMarkers',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Point markers',
+		description:
+			"Draw each place given by lat / lng (and no radius) as a marker of a fixed size on the screen, instead of a 1 km circle: a filled circle in the place colour, or a square when the place has shape SQUARE; a place's label (a count, a letter) shows inside it. Off: drawn as before.",
+		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
+	},
+	{
 		name: 'placeColor',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Place colour',
