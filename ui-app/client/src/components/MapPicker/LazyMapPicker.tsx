@@ -46,6 +46,10 @@ type Place = {
 	placeId?: string;
 	/** ADZ-1257: the kind of place (a Google Ads or Meta target type), checked when Match Place Type is on. */
 	type?: string;
+	/** CXZ-1650: with Point markers on, the marker's shape: CIRCLE (default) or SQUARE. */
+	shape?: string;
+	/** CXZ-1650: with Point markers on, a short text inside the marker (a count, a letter). */
+	label?: string | number;
 };
 type Spot = {
 	center: Point;
@@ -253,6 +257,28 @@ function placeKm(p: Place): number {
 	return /^mile/i.test(String(p.distanceUnit ?? '')) ? r * 1.609344 : r;
 }
 
+/**
+ * CXZ-1650: the icon of a place drawn as a point marker (Point markers on): a filled circle, or a square for
+ * shape SQUARE, in the place's colour with a white edge; a little larger when it carries a label.
+ */
+export function markerIcon(
+	google: any,
+	pl: Place,
+	colors: { place?: string; excluded?: string; suggested?: string },
+) {
+	const square = String(pl.shape ?? '').toUpperCase() === 'SQUARE';
+	const labelled = pl.label !== undefined && pl.label !== null && String(pl.label) !== '';
+	const look = placeLook(pl, colors);
+	return {
+		path: square ? 'M -1 -1 L 1 -1 L 1 1 L -1 1 Z' : (google?.maps?.SymbolPath?.CIRCLE ?? 0),
+		scale: (square ? 7 : 8) + (labelled ? 3 : 0),
+		fillColor: look.strokeColor,
+		fillOpacity: pl.suggested ? 0.6 : 1,
+		strokeColor: '#ffffff',
+		strokeWeight: 2,
+	};
+}
+
 // ADZ-1257: the Geocoding result types that ARE a place of each target type (Google Ads target types, Meta's
 // lower case ones normalised). A lookup that answers another kind (a state for an unknown postal code, a town
 // for a district) is not that place, so it is not drawn. Types listed in POINT_FITS get a marker, not an area.
@@ -402,6 +428,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			mapLook,
 			placeLabels,
 			matchPlaceType,
+			pointMarkers,
 			noMapText,
 			readOnly,
 			onChange,
@@ -738,6 +765,40 @@ function MapPicker(props: Readonly<ComponentProps>) {
 				const pl = list[i];
 				const look = { map, clickable, ...placeLook(pl, colors) };
 				const km = placeKm(pl);
+				// CXZ-1650: with Point markers on, a place given by lat / lng with no radius is a marker (a fixed
+				// size on the screen at every zoom), a circle or square in its colour, its label inside
+				if (pointMarkers && asPoint(pl) && !(km > 0)) {
+					const labelled =
+						pl.label !== undefined && pl.label !== null && String(pl.label) !== '';
+					const marker = new google.maps.Marker({
+						map,
+						clickable,
+						position: spot.center,
+						title: pl.name ? String(pl.name) : undefined,
+						icon: markerIcon(google, pl, colors),
+						label: labelled
+							? {
+									text: String(pl.label),
+									color: '#ffffff',
+									fontSize: '11px',
+									fontWeight: '600',
+								}
+							: undefined,
+					});
+					if (clickable) marker.addListener?.('click', () => clickPlace(pl));
+					live.current.shapes!.push(marker);
+					// a marker alone would fit the map to street level: keep a little around it in view
+					const d = 0.01;
+					const c = spot.center;
+					all.union({
+						south: c.lat - d,
+						west: c.lng - d,
+						north: c.lat + d,
+						east: c.lng + d,
+					});
+					any = true;
+					return;
+				}
 				// ADZ-1257: a place looked up by name must be the kind of place its type says
 				const fit =
 					typed && !asPoint(pl) && !(km > 0)
@@ -784,6 +845,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 		clickable,
 		matchPlaceType,
 		placeLabels,
+		pointMarkers,
 	]);
 
 	return (
