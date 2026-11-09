@@ -130,9 +130,15 @@ jest.mock('../../../util/googleMapsLoader', () => ({
 					};
 				},
 				Marker: function (opts: any) {
-					drawn.push({ kind: 'marker', opts });
-					return { addListener: () => {}, setPosition: () => {}, setMap: () => {} };
+					const d: any = { kind: 'marker', opts };
+					drawn.push(d);
+					return {
+						addListener: (n: string, fn: any) => n === 'click' && (d.click = fn),
+						setPosition: () => {},
+						setMap: () => {},
+					};
 				},
+				SymbolPath: { CIRCLE: 0 },
 				Circle: function (opts: any) {
 					const d: any = { kind: 'circle', opts };
 					drawn.push(d);
@@ -153,6 +159,7 @@ import MapPicker, {
 	GREY_STYLE,
 	labelOf,
 	lookOptions,
+	markerIcon,
 	placeFit,
 	placePaths,
 } from '../LazyMapPicker';
@@ -714,5 +721,65 @@ describe('ADZ-1435: a theme switch (new map look) keeps the places and the view'
 		await settle();
 		expect(mapOpts.center).toEqual({ lat: 20.5937, lng: 78.9629 });
 		expect(mapOpts.zoom).toBe(5);
+	});
+});
+
+describe('CXZ-1650: point markers', () => {
+	const settle = () =>
+		act(async () => {
+			await new Promise(r => setTimeout(r, 0));
+		});
+
+	test('off (the default): a lat / lng place is still a 1 km circle', async () => {
+		properties = { apiKey: 'k', places: [{ name: 'Home', lat: 12.9, lng: 77.6 }] };
+		render();
+		await settle();
+		expect(drawn.map(d => d.kind)).toEqual(['circle']);
+		expect(drawn[0].opts.radius).toBe(1000);
+	});
+
+	test('on: lat / lng places are markers (circle or square, label inside), a click writes the place', async () => {
+		jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(600);
+		jest.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(300);
+		properties = {
+			apiKey: 'k',
+			pointMarkers: true,
+			readOnly: true,
+			onPlaceClick: 'placeClicked',
+			places: [
+				{ name: 'Home', lat: 12.9, lng: 77.6, id: 'a' },
+				{ name: 'Office', lat: 12.95, lng: 77.7, shape: 'SQUARE', label: 2 },
+				{ name: 'Area', lat: 12.5, lng: 77.1, radiusKm: 3 },
+			],
+		};
+		render();
+		await settle();
+		expect(drawn.map(d => d.kind)).toEqual(['marker', 'marker', 'circle']);
+		const [home, office] = drawn;
+		expect(home.opts.position).toEqual({ lat: 12.9, lng: 77.6 });
+		expect(home.opts.icon.path).toBe(0);
+		expect(home.opts.label).toBeUndefined();
+		expect(office.opts.icon.path).toContain('M -1 -1');
+		expect(office.opts.label.text).toBe('2');
+		expect(fitted).toBe(1);
+		act(() => home.click!());
+		expect(storeValues.get('Page.clicked')).toEqual({
+			name: 'Home',
+			lat: 12.9,
+			lng: 77.6,
+			id: 'a',
+		});
+		expect(runEventMock).toHaveBeenCalledTimes(1);
+		jest.restoreAllMocks();
+	});
+
+	test('markerIcon: the place colour fills it, a label makes it larger', () => {
+		const g = { maps: { SymbolPath: { CIRCLE: 0 } } };
+		const plain = markerIcon(g, { name: 'x' }, { place: '#123456' });
+		const labelled = markerIcon(g, { name: 'x', label: 'A', shape: 'square' }, {});
+		expect(plain.fillColor).toBe('#123456');
+		expect(plain.scale).toBe(8);
+		expect(labelled.fillColor).toBe('#1a1a1a');
+		expect(labelled.scale).toBe(10);
 	});
 });
