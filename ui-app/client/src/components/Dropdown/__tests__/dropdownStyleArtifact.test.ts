@@ -30,4 +30,21 @@ describe('Dropdown theme artifact', () => {
 		expect(selected).toBeGreaterThan(-1);
 		expect(hover).toBeGreaterThan(selected);
 	});
+	it('greys a disabled option with the theme disabled colour, after selected and hover', () => {
+		const theme = new Map([
+			['dropdownColorDisabled<designType><colorScheme>', 'grey'],
+			['dropdownColorSelected<designType><colorScheme>', 'blue'],
+			['dropdownColorHover<designType><colorScheme>', 'red'],
+		]);
+		const css = processEachResolution('', props, 'ALL', theme);
+		const disabled = css.indexOf('._dropdownItem._disabled {');
+		expect(disabled).toBeGreaterThan(-1);
+		expect(css.slice(disabled, css.indexOf('}', disabled))).toContain('grey');
+		expect(disabled).toBeGreaterThan(css.indexOf('._dropdownItem._selected {'));
+		expect(disabled).toBeGreaterThan(css.indexOf('._dropdownItem._hover {'));
+		// The default is the theme's disabled text colour, as on the Calendar's disabled dates.
+		expect(props.find(p => p.n === 'dropdownColorDisabled<designType><colorScheme>')?.dv).toBe(
+			'<fontColorEight>',
+		);
+	});
 });

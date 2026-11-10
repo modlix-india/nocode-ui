@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -71,6 +71,23 @@ function Text(props: Readonly<ComponentProps>) {
 
 	const textProp = definition.properties?.text as ComponentProperty<any>;
 
+	// The echo of the text as a hover tooltip lives on the element only while the mouse
+	// is over it (see hoverTitle below). These keep it current if the text changes
+	// during that hover, e.g. a running timer.
+	const compRef = useRef<HTMLDivElement>(null);
+	const hoverTitleRef = useRef<{ hovering: boolean; value: any; hasStatic: boolean }>({
+		hovering: false,
+		value: undefined,
+		hasStatic: false,
+	});
+	useEffect(() => {
+		const el = compRef.current;
+		const { hovering, value, hasStatic } = hoverTitleRef.current;
+		// A static title belongs to React; only the hover echo is managed here.
+		if (!el || !hovering || hasStatic) return;
+		setHoverTitle(el, value);
+	});
+
 	const [changed, setChanged] = useState<number>(Date.now());
 	useEffect(() => {
 		if (
@@ -130,14 +147,15 @@ function Text(props: Readonly<ComponentProps>) {
 		translatedText = formatString(translatedText, stringFormat, numberFormattingOptions);
 	}
 
+	let truncated = false;
 	if (textLength && translatedText) {
 		let finTextLength = textLength - 3;
 		if (finTextLength < 3) finTextLength = 3;
 		const ellipsis = finTextLength === 3 ? '' : '...';
-		translatedText =
-			translatedText.length > finTextLength
-				? translatedText.substring(0, finTextLength) + ellipsis
-				: translatedText;
+		truncated = translatedText.length > finTextLength;
+		translatedText = truncated
+			? translatedText.substring(0, finTextLength) + ellipsis
+			: translatedText;
 	}
 
 	let comps: React.ReactNode[] = [];
@@ -171,22 +189,53 @@ function Text(props: Readonly<ComponentProps>) {
 		},
 		...comps,
 	);
+	// The title shows the full text on hover, so text cut short by Text Length or by an
+	// ellipsis style can still be read. A title that only repeats the text inside is
+	// also read out by screen readers, so every line was announced twice. So:
+	// - an authored tooltip, or text cut by Text Length, stays a real title: it says
+	//   something the visible text does not;
+	// - the plain echo of the text is put on the element only while the mouse is over
+	//   it, so sighted users get the same tooltip and the accessibility tree never
+	//   carries the duplicate.
+	let staticTitle: any = undefined;
+	let hoverTitle: any = undefined;
+	if (tooltip) staticTitle = getTranslations(tooltip, translations);
+	else if (!removeToolTip) {
+		if (truncated) staticTitle = originalText;
+		else hoverTitle = originalText;
+	}
+	hoverTitleRef.current.value = hoverTitle;
+	hoverTitleRef.current.hasStatic = !isEmptyTitle(staticTitle);
+
 	return (
 		<div
+			ref={compRef}
 			className={`comp compText ${textContainer} ${textColor}`}
 			style={styleProperties.comp ?? {}}
-			title={
-				tooltip
-					? getTranslations(tooltip, translations)
-					: removeToolTip
-						? undefined
-						: originalText
-			}
+			title={staticTitle}
+			onMouseEnter={e => {
+				hoverTitleRef.current.hovering = true;
+				if (!hoverTitleRef.current.hasStatic)
+					setHoverTitle(e.currentTarget, hoverTitleRef.current.value);
+			}}
+			onMouseLeave={e => {
+				hoverTitleRef.current.hovering = false;
+				if (!hoverTitleRef.current.hasStatic) e.currentTarget.removeAttribute('title');
+			}}
 		>
 			{comp}
 			<HelperComponent context={props.context} definition={definition} />
 		</div>
 	);
+}
+
+function isEmptyTitle(value: any): boolean {
+	return value === undefined || value === null || value === '';
+}
+
+function setHoverTitle(el: HTMLElement, value: any) {
+	if (isEmptyTitle(value)) el.removeAttribute('title');
+	else el.setAttribute('title', String(value));
 }
 
 const { textContainer, textColor } = findPropertyDefinitions(
