@@ -178,6 +178,10 @@ export default function DropdownStyle({
             gap: 10px;
         }
 
+        ${PREFIX} ._dropdownItem._disabled {
+            cursor: not-allowed;
+        }
+
         ${PREFIX} ._dropdownSearchBoxContainer {
             width: 100%;
             display: flex;
