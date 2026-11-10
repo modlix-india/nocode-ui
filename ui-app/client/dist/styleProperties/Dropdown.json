@@ -883,6 +883,16 @@
 		"n": "dropdownFontHover<designType><colorScheme>"
 	},
 	{
+		"cp": "color",
+		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownItem._disabled",
+		"np": true,
+		"dv": "<fontColorEight>",
+		"gn": "Color",
+		"dn": "Color Disabled",
+		"de": "Text colour of an option that cannot be picked (Disabled option key / Disabled option values). Kept after the Selected and Hover entries so a disabled row stays greyed when it is also the selection.",
+		"n": "dropdownColorDisabled<designType><colorScheme>"
+	},
+	{
 		"cp": "height",
 		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBox",
 		"np": true,

@@ -200,6 +200,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.uniqueKey,
 	COMMON_COMPONENT_PROPERTIES.labelKey,
 	{
+		name: 'disabledOptionKey',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: "Disabled key's value",
+		description:
+			"Key in each option's data (object data types) whose truthy value disables that option: it shows greyed out, the arrow keys skip it and it cannot be picked. Empty: every option can be picked (the old behaviour).",
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'disabledOptionValues',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Disabled option values',
+		description:
+			'Selection values (what the dropdown stores when an option is picked, as set by Selection value type) of the options that are disabled: shown greyed out, skipped by the arrow keys and not selectable. A list, or a single value. Works for every data type. Empty: every option can be picked (the old behaviour).',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
 		name: 'clearOnSelectingSameValue',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Clear On Selecting Same Value',
