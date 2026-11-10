@@ -61,6 +61,15 @@ type CommonInputType = {
 	/** Opt-in aria-label for the input itself, for a field whose visible label sits outside it. */
 	ariaLabel?: string;
 	/**
+	 * Opt-in ARIA for an input that is really another control, e.g. the Dropdown's
+	 * combobox. All left out by default, so a plain text box is unchanged.
+	 */
+	ariaRole?: string;
+	ariaExpanded?: boolean;
+	ariaControls?: string;
+	ariaHasPopup?: React.AriaAttributes['aria-haspopup'];
+	ariaActiveDescendant?: string;
+	/**
 	 * The key chip from useComponentShortcut. Rendered as a flex item just before the
 	 * right icons, so it stays clear of the clear, password, error and success icons
 	 * however many of them are live, and is centred by the row's own alignment.
@@ -125,6 +134,11 @@ function CommonInputText(props: CommonInputType) {
 		onEditRequest,
 		ariaKeyShortcuts,
 		ariaLabel,
+		ariaRole,
+		ariaExpanded,
+		ariaControls,
+		ariaHasPopup,
+		ariaActiveDescendant,
 		shortcutTooltip,
 		shortcutHint,
 	} = props;
@@ -217,6 +231,16 @@ function CommonInputText(props: CommonInputType) {
 
 	const internalRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
+	// Undefined values render no attribute, so callers that pass none of these get the
+	// same input as before.
+	const roleAria = {
+		role: ariaRole || undefined,
+		'aria-expanded': ariaExpanded,
+		'aria-controls': ariaControls || undefined,
+		'aria-haspopup': ariaHasPopup,
+		'aria-activedescendant': ariaActiveDescendant || undefined,
+	};
+
 	const inputControl =
 		inputType === 'Text' ? (
 			<input
@@ -250,6 +274,7 @@ function CommonInputText(props: CommonInputType) {
 				onKeyDown={keyDownEvent}
 				aria-keyshortcuts={ariaKeyShortcuts}
 				aria-label={ariaLabel || undefined}
+				{...roleAria}
 			/>
 		) : (
 			<textarea
@@ -281,6 +306,7 @@ function CommonInputText(props: CommonInputType) {
 				rows={rows}
 				aria-keyshortcuts={ariaKeyShortcuts}
 				aria-label={ariaLabel || undefined}
+				{...roleAria}
 			/>
 		);
 

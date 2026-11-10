@@ -4,6 +4,7 @@ import React, {
 	UIEvent,
 	useCallback,
 	useEffect,
+	useId,
 	useLayoutEffect,
 	useMemo,
 	useRef,
@@ -115,6 +116,9 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
 	const [hoverKey, setHoverKey] = useState<string | undefined>();
+	// Ties the input (role combobox) to its list (role listbox) for screen readers. The
+	// list is portalled to the body, so it is found by id, not by nesting.
+	const listboxId = `${useId()}_listbox`;
 	const [isChanged, setIsChanged] = useState(false);
 	const {
 		definition: { bindingPath, bindingPath2 },
@@ -720,6 +724,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	}, [panelShown, focusSearchOnOpen, isSearchable]);
 
 	let dropdownContainer = null;
+	let activeOptionId: string | undefined = undefined;
 	if (showDropdown && wrapperRect) {
 		let options = visibleOptions;
 
@@ -733,8 +738,23 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			});
 		}
 
+		const optionId = (index: number) => `${listboxId}_${index}`;
+		const hoverIndex =
+			hoverKey === undefined ? -1 : (options?.findIndex(e => e?.key === hoverKey) ?? -1);
+		if (hoverIndex !== -1) activeOptionId = optionId(hoverIndex);
+
 		const dropdownPanel = (
 			<div
+				id={listboxId}
+				role="listbox"
+				aria-multiselectable={isMultiSelect ? true : undefined}
+				aria-label={
+					accessibleName
+						? getTranslations(accessibleName, translations)
+						: label
+							? getTranslations(label, translations)
+							: undefined
+				}
 				className={`_dropdownContainer ${isAtBottom ? '_atBottom' : ''}`}
 				style={{
 					pointerEvents: 'auto',
@@ -839,6 +859,9 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 							style={computedStyles.dropdownSearchBox ?? {}}
 							value={searchText}
 							placeholder={searchLabel}
+							aria-label={searchLabel || 'Search'}
+							aria-controls={listboxId}
+							aria-activedescendant={activeOptionId}
 							onChange={handleSearch}
 							onMouseDown={e => {
 								e.stopPropagation();
@@ -861,7 +884,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 						/>
 					</div>
 				)}
-				{options?.map(each => {
+				{options?.map((each, optionIndex) => {
 					const isOptionSelected = getIsSelected(each?.key);
 					let tick = undefined;
 
@@ -898,6 +921,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 							} ${each.key === hoverKey ? '_hover' : ''} ${selectedOptionTickPlace}`} // because of default className the background-color is not changing on hover to user defined.
 							style={computedStyles.dropdownItem ?? {}}
 							key={each?.key}
+							id={optionId(optionIndex)}
 							onMouseEnter={() => setHoverKey(each?.key)}
 							onMouseDown={() => handleClick(each)}
 							tabIndex={0}
@@ -1071,6 +1095,11 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			supportingText={supportingText}
 			analyticsLabel={analyticsLabel}
 			ariaLabel={accessibleName ? getTranslations(accessibleName, translations) : undefined}
+			ariaRole="combobox"
+			ariaHasPopup="listbox"
+			ariaExpanded={panelShown}
+			ariaControls={listboxId}
+			ariaActiveDescendant={activeOptionId}
 			updDownHandler={keyHandler}
 			showEditRequest={editOn}
 			editRequestIcon={editRequestIcon}

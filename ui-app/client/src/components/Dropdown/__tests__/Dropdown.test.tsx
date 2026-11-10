@@ -907,3 +907,75 @@ describe('accessible name (opt-in)', () => {
 		expect(controlInput().getAttribute('aria-label')).toBe('Instagram account');
 	});
 });
+
+describe('announced as a dropdown (combobox + listbox)', () => {
+	beforeEach(() => {
+		properties = serverSearchedProperties({ isSearchable: false, onSearch: undefined });
+	});
+
+	function listbox(): HTMLElement {
+		const el = document.querySelector<HTMLElement>('[role=listbox]');
+		if (!el) throw new Error('no listbox rendered');
+		return el;
+	}
+
+	it('marks the input as a collapsed combobox that pops up a listbox', () => {
+		render();
+		const input = controlInput();
+		expect(input.getAttribute('role')).toBe('combobox');
+		expect(input.getAttribute('aria-haspopup')).toBe('listbox');
+		expect(input.getAttribute('aria-expanded')).toBe('false');
+		expect(input.getAttribute('aria-controls')).toBeTruthy();
+		expect(input.hasAttribute('aria-activedescendant')).toBe(false);
+	});
+
+	it('is expanded while the list is open, and the list is the one it controls', () => {
+		render();
+		openPanel();
+		const input = controlInput();
+		expect(input.getAttribute('aria-expanded')).toBe('true');
+		expect(listbox().id).toBe(input.getAttribute('aria-controls'));
+		expect(listbox().hasAttribute('aria-multiselectable')).toBe(false);
+		const options = listbox().querySelectorAll('[role=option]');
+		expect(options).toHaveLength(3);
+		options.forEach(o => expect(o.id).toBeTruthy());
+	});
+
+	it('reports the selected option with aria-selected', () => {
+		storeValues.set(SELECTION_PATH, 'FIN');
+		render();
+		openPanel();
+		const selected = Array.from(listbox().querySelectorAll('[aria-selected=true]')).map(e =>
+			e.textContent?.trim(),
+		);
+		expect(selected).toEqual(['Fincity']);
+		expect(listbox().querySelectorAll('[aria-selected=false]')).toHaveLength(2);
+	});
+
+	it('points aria-activedescendant at the option the arrow keys reach', () => {
+		render();
+		pressKey('ArrowDown');
+		pressKey('ArrowDown');
+		const input = controlInput();
+		const activeId = input.getAttribute('aria-activedescendant');
+		expect(activeId).toBeTruthy();
+		expect(document.getElementById(activeId!)?.textContent?.trim()).toBe('Fincity');
+	});
+
+	it('goes back to collapsed on Escape', () => {
+		render();
+		openPanel();
+		pressKey('Escape');
+		const input = controlInput();
+		expect(input.getAttribute('aria-expanded')).toBe('false');
+		expect(input.hasAttribute('aria-activedescendant')).toBe(false);
+		expect(document.querySelector('[role=listbox]')).toBeNull();
+	});
+
+	it('marks a multi-select list as multiselectable', () => {
+		properties = { ...properties, isMultiSelect: true };
+		render();
+		openPanel();
+		expect(listbox().getAttribute('aria-multiselectable')).toBe('true');
+	});
+});
