@@ -1,4 +1,4 @@
-import { deepEqual, isNullValue } from '@fincity/kirun-js';
+import { deepEqual, ExpressionEvaluator, isNullValue } from '@fincity/kirun-js';
 import React, {
 	ChangeEvent,
 	UIEvent,
@@ -29,7 +29,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { IconHelper } from '../util/IconHelper';
-import { getRenderData, toDataTypeShape } from '../util/getRenderData';
+import { getExtractionMap, getRenderData, toDataTypeShape } from '../util/getRenderData';
 import { getSelectedKeys } from '../util/getSelectedKeys';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 import { runEvent } from '../util/runEvent';
@@ -176,6 +176,8 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			focusSearchOnOpen,
 			openBelow,
 			listBottomGap,
+			disabledOptionKey,
+			disabledOptionValues,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -364,8 +366,44 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		return false;
 	};
 
-	const handleClick = async (each: { key: any; label: any; value: any } | undefined) => {
-		if (!each || !bindingPathPath) return;
+	// Options that cannot be picked: their row in `data` has a truthy disabledOptionKey,
+	// or their selection value is in disabledOptionValues. Both are opt-in; without them
+	// nothing is disabled. The key is read once per row of `data`.
+	const disabledByKey = useMemo(() => new Map<any, boolean>(), [data, disabledOptionKey]);
+	const disabledValues = useMemo(
+		() =>
+			isNullValue(disabledOptionValues)
+				? []
+				: Array.isArray(disabledOptionValues)
+					? disabledOptionValues
+					: [disabledOptionValues],
+		[disabledOptionValues],
+	);
+	const isOptionDisabled = (option: DropdownOption | undefined): boolean => {
+		if (!option) return false;
+		if (disabledValues.length && disabledValues.some(v => deepEqual(v, option.value)))
+			return true;
+		if (!disabledOptionKey || isNullValue(option.originalObjectKey)) return false;
+		const rowKey = option.originalObjectKey;
+		const cached = disabledByKey.get(rowKey);
+		if (cached !== undefined) return cached;
+		const row = data?.[rowKey];
+		let disabled = false;
+		if (row !== null && typeof row === 'object') {
+			try {
+				disabled = !!new ExpressionEvaluator(`Data.${disabledOptionKey}`).evaluate(
+					getExtractionMap(row),
+				);
+			} catch {
+				disabled = false;
+			}
+		}
+		disabledByKey.set(rowKey, disabled);
+		return disabled;
+	};
+
+	const handleClick = async (each: DropdownOption | undefined) => {
+		if (!each || !bindingPathPath || isOptionDisabled(each)) return;
 
 		if (isMultiSelect) {
 			let newSelectionIndex = (selected ?? []).findIndex((e: any) =>
@@ -696,12 +734,20 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				setHoverKey(undefined);
 				return;
 			}
+			const up = e.key.endsWith('Up');
 			let index = data?.findIndex(e => e?.key === hoverKey);
-			if (index === -1) index = e.key.endsWith('Up') ? data.length - 1 : 0;
-			else index = e.key.endsWith('Up') ? index - 1 : index + 1;
+			if (index === -1) index = up ? data.length - 1 : 0;
+			else index = up ? index - 1 : index + 1;
+			// Walk past disabled options, at most once round the list.
+			for (let tries = 0; tries < data.length; tries++) {
+				if (index < 0) index = data.length - 1;
+				if (index >= data.length) index = 0;
+				if (!isOptionDisabled(data[index])) break;
+				index = up ? index - 1 : index + 1;
+			}
 			if (index < 0) index = data.length - 1;
 			if (index >= data.length) index = 0;
-			setHoverKey(data[index]?.key);
+			setHoverKey(isOptionDisabled(data[index]) ? undefined : data[index]?.key);
 		} else if (e.key === 'Enter' && showDropdown && hoverKey) {
 			handleClick(dropdownData.find(e => e.key === hoverKey)).then();
 		} else if (e.key === 'Escape') {
@@ -886,6 +932,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				)}
 				{options?.map((each, optionIndex) => {
 					const isOptionSelected = getIsSelected(each?.key);
+					const isDisabled = isOptionDisabled(each);
 					let tick = undefined;
 
 					if (selectionOptionTickType === 'TICK' && isOptionSelected) {
@@ -918,15 +965,16 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 						<div
 							className={`_dropdownItem ${
 								isOptionSelected ? '_selected' : ''
-							} ${each.key === hoverKey ? '_hover' : ''} ${selectedOptionTickPlace}`} // because of default className the background-color is not changing on hover to user defined.
+							} ${each.key === hoverKey ? '_hover' : ''}${isDisabled ? ' _disabled' : ''} ${selectedOptionTickPlace}`} // because of default className the background-color is not changing on hover to user defined.
 							style={computedStyles.dropdownItem ?? {}}
 							key={each?.key}
 							id={optionId(optionIndex)}
-							onMouseEnter={() => setHoverKey(each?.key)}
+							onMouseEnter={() => setHoverKey(isDisabled ? undefined : each?.key)}
 							onMouseDown={() => handleClick(each)}
 							tabIndex={0}
 							role="option"
 							aria-selected={isOptionSelected}
+							aria-disabled={isDisabled ? true : undefined}
 						>
 							<SubHelperComponent
 								definition={props.definition}

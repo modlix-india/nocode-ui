@@ -979,3 +979,162 @@ describe('announced as a dropdown (combobox + listbox)', () => {
 		expect(listbox().getAttribute('aria-multiselectable')).toBe('true');
 	});
 });
+
+describe('disabled options (opt-in)', () => {
+	const USED = [
+		{ code: 'CLIA', name: 'CLIENT A' },
+		{ code: 'FIN', name: 'Fincity', used: true },
+		{ code: 'RAJAA', name: 'RajaAvinash' },
+	];
+
+	beforeEach(() => {
+		properties = serverSearchedProperties({
+			isSearchable: false,
+			onSearch: undefined,
+			data: USED,
+		});
+	});
+
+	function item(label: string): HTMLElement {
+		const el = Array.from(document.querySelectorAll<HTMLElement>('._dropdownItem')).find(
+			e => e.textContent?.trim() === label,
+		);
+		if (!el) throw new Error(`no option ${label}`);
+		return el;
+	}
+
+	// A real click reaches the row with the mouse inside the panel, which keeps the
+	// window mousedown handler from taking it as a click outside.
+	function mouseDown(label: string) {
+		act(() => {
+			item(label).dispatchEvent(
+				new MouseEvent('mouseover', { bubbles: true, relatedTarget: document.body }),
+			);
+		});
+		act(() => {
+			item(label).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+		});
+	}
+
+	it('disables nothing by default, even with a truthy field in the data', () => {
+		render();
+		openPanel();
+		expect(document.querySelectorAll('._dropdownItem._disabled')).toHaveLength(0);
+		expect(document.querySelectorAll('[aria-disabled]')).toHaveLength(0);
+		mouseDown('Fincity');
+		expect(storeValues.get(SELECTION_PATH)).toBe('FIN');
+	});
+
+	it('greys and marks the option whose disabledOptionKey is truthy', () => {
+		properties = { ...properties, disabledOptionKey: 'used' };
+		render();
+		openPanel();
+		expect(item('Fincity').classList.contains('_disabled')).toBe(true);
+		expect(item('Fincity').getAttribute('aria-disabled')).toBe('true');
+		expect(item('CLIENT A').classList.contains('_disabled')).toBe(false);
+		expect(item('CLIENT A').hasAttribute('aria-disabled')).toBe(false);
+	});
+
+	it('does not select a disabled option on click, but still selects the others', () => {
+		properties = { ...properties, disabledOptionKey: 'used' };
+		render();
+		openPanel();
+		mouseDown('Fincity');
+		expect(storeValues.get(SELECTION_PATH)).toBeUndefined();
+		mouseDown('RajaAvinash');
+		expect(storeValues.get(SELECTION_PATH)).toBe('RAJAA');
+	});
+
+	it('skips a disabled option with the arrow keys, both ways', () => {
+		properties = { ...properties, disabledOptionKey: 'used' };
+		render();
+		pressKey('ArrowDown');
+		expect(hoveredLabels()).toEqual(['CLIENT A']);
+		pressKey('ArrowDown');
+		expect(hoveredLabels()).toEqual(['RajaAvinash']);
+		pressKey('ArrowUp');
+		expect(hoveredLabels()).toEqual(['CLIENT A']);
+		pressKey('Enter');
+		expect(storeValues.get(SELECTION_PATH)).toBe('CLIA');
+	});
+
+	it('wraps past a disabled last option', () => {
+		properties = {
+			...properties,
+			data: [
+				{ code: 'CLIA', name: 'CLIENT A' },
+				{ code: 'FIN', name: 'Fincity', used: true },
+			],
+			disabledOptionKey: 'used',
+		};
+		render();
+		pressKey('ArrowUp');
+		expect(hoveredLabels()).toEqual(['CLIENT A']);
+	});
+
+	it('hovers nothing when every option is disabled', () => {
+		properties = { ...properties, disabledOptionValues: ['CLIA', 'FIN', 'RAJAA'] };
+		render();
+		pressKey('ArrowDown');
+		expect(hoveredLabels()).toEqual([]);
+		pressKey('Enter');
+		expect(storeValues.get(SELECTION_PATH)).toBeUndefined();
+	});
+
+	it('does not highlight a disabled option under the mouse', () => {
+		properties = { ...properties, disabledOptionKey: 'used' };
+		render();
+		openPanel();
+		act(() => {
+			item('Fincity').dispatchEvent(
+				new MouseEvent('mouseover', { bubbles: true, relatedTarget: document.body }),
+			);
+		});
+		expect(hoveredLabels()).toEqual([]);
+	});
+
+	it('disables by selection value with disabledOptionValues, a list or one value', () => {
+		properties = { ...properties, disabledOptionValues: ['FIN', 'RAJAA'] };
+		render();
+		openPanel();
+		expect(
+			Array.from(document.querySelectorAll('[aria-disabled=true]')).map(e =>
+				e.textContent?.trim(),
+			),
+		).toEqual(['Fincity', 'RajaAvinash']);
+
+		properties = { ...properties, disabledOptionValues: 'CLIA' };
+		render();
+		expect(
+			Array.from(document.querySelectorAll('[aria-disabled=true]')).map(e =>
+				e.textContent?.trim(),
+			),
+		).toEqual(['CLIENT A']);
+	});
+
+	it('works on a list of strings through disabledOptionValues', () => {
+		properties = {
+			...properties,
+			data: ['Exotel', 'TeleCMI', 'Ozonetel'],
+			datatype: 'LIST_OF_STRINGS',
+			uniqueKeyType: 'KEY',
+			selectionType: 'KEY',
+			labelKeyType: 'OBJECT',
+			disabledOptionValues: ['TeleCMI'],
+		};
+		render();
+		openPanel();
+		expect(item('TeleCMI').getAttribute('aria-disabled')).toBe('true');
+		mouseDown('TeleCMI');
+		expect(storeValues.get(SELECTION_PATH)).toBeUndefined();
+		mouseDown('Ozonetel');
+		expect(storeValues.get(SELECTION_PATH)).toBe('Ozonetel');
+	});
+
+	it('still shows the label of a selection that is disabled', () => {
+		properties = { ...properties, disabledOptionKey: 'used' };
+		storeValues.set(SELECTION_PATH, 'FIN');
+		render();
+		expect(controlInput().value).toBe('Fincity');
+	});
+});
