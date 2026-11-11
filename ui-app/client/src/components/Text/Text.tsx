@@ -49,6 +49,7 @@ function Text(props: Readonly<ComponentProps>) {
 			textSuffix,
 			textPrefix,
 			luxonFormat,
+			announce,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -213,6 +214,7 @@ function Text(props: Readonly<ComponentProps>) {
 			className={`comp compText ${textContainer} ${textColor}`}
 			style={styleProperties.comp ?? {}}
 			title={staticTitle}
+			{...announceProps(announce)}
 			onMouseEnter={e => {
 				hoverTitleRef.current.hovering = true;
 				if (!hoverTitleRef.current.hasStatic)
@@ -227,6 +229,13 @@ function Text(props: Readonly<ComponentProps>) {
 			<HelperComponent context={props.context} definition={definition} />
 		</div>
 	);
+}
+
+// Opt-in live region: POLITE is a status message, ASSERTIVE an error. Anything else adds nothing.
+export function announceProps(announce: string | undefined): Record<string, string> {
+	if (announce === 'POLITE') return { role: 'status', 'aria-live': 'polite' };
+	if (announce === 'ASSERTIVE') return { role: 'alert', 'aria-live': 'assertive' };
+	return {};
 }
 
 function isEmptyTitle(value: any): boolean {
