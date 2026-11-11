@@ -516,6 +516,8 @@ function Audio(props: Readonly<ComponentProps>) {
 				onSeek={value => {
 					skipAhead(value);
 					setProgressbarCurr(Math.floor(value));
+					// A paused player may not send timeupdate for a seek; the time text follows anyway.
+					setTimeState(prev => ({ ...prev, timeElapsed: formatTime(value) }));
 				}}
 				onHover={updateWaveformSeekToolTip}
 				style={resolvedStyles.waveform}
