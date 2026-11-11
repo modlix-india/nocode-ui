@@ -25,6 +25,8 @@ import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
+import DebugRunsPanel from './debugRuns/DebugRunsPanel';
+import { StoredRunView } from './debugRuns/debugRunsApi';
 import { propertiesDefinition, stylePropertiesDefinition } from './KIRunEditorProperties';
 import {
 	normalizeParameterTypes,
@@ -95,6 +97,7 @@ export default function LazyKIRunEditor(
 			showStores,
 			allowLightbox,
 			debugViewMode: debugViewModeProperty,
+			showDebugRuns,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -136,7 +139,12 @@ export default function LazyKIRunEditor(
 			definitions: new Map(),
 		};
 	}, [executionLogProp, boundLog]);
-	const debugViewMode = debugViewModeProp ?? !!debugViewModeProperty;
+	// Stored server runs (opt-in through Show Debug Runs, core editor only). While one is open
+	// the editor shows it in the same trace view a bound Execution Log uses.
+	const debugRunsOn = !!showDebugRuns && editorType === 'core';
+	const [debugRunsOpen, setDebugRunsOpen] = useState(false);
+	const [storedRun, setStoredRun] = useState<StoredRunView>();
+	const debugViewMode = storedRun ? true : (debugViewModeProp ?? !!debugViewModeProperty);
 
 	const isReadonly = readOnly || !bindingPathPath || debugViewMode;
 
@@ -312,9 +320,64 @@ export default function LazyKIRunEditor(
 				flexDirection: 'column',
 				height: '100%',
 				overflow: 'hidden',
+				...(debugRunsOn ? { position: 'relative' as const } : {}),
 			}}
 		>
 			<HelperComponent context={props.context} definition={definition} />
+			{debugRunsOn ? (
+				<div
+					className="_debugRunsBar"
+					style={{
+						display: 'flex',
+						gap: 8,
+						alignItems: 'center',
+						padding: '4px 8px',
+						fontSize: 12,
+						flexWrap: 'wrap',
+					}}
+				>
+					<button onClick={() => setDebugRunsOpen(!debugRunsOpen)}>Debug runs</button>
+					{storedRun ? (
+						<>
+							<span data-testid="debugRunsShowing">
+								Showing the stored run {storedRun.row.debugId}
+								{storedRun.row.errored ? ' (failed)' : ''}
+							</span>
+							{storedRun.logTruncated ? (
+								<span>
+									This run was too large to keep whole, so later steps may be
+									missing.
+								</span>
+							) : null}
+							{storedRun.truncatedSteps.length ? (
+								<span data-testid="debugRunsTruncated">
+									Values cut short (truncated) in:{' '}
+									{storedRun.truncatedSteps.join(', ')}
+								</span>
+							) : null}
+							{storedRun.hasMasked ? (
+								<span>Values shown as **** are hidden secrets.</span>
+							) : null}
+							<button onClick={() => setStoredRun(undefined)}>Back to editing</button>
+						</>
+					) : null}
+				</div>
+			) : null}
+			{debugRunsOn && debugRunsOpen && rawDef?.name ? (
+				<DebugRunsPanel
+					fn={{
+						appCode,
+						clientCode,
+						namespace: rawDef.namespace ?? undefined,
+						name: rawDef.name,
+					}}
+					onClose={() => setDebugRunsOpen(false)}
+					onPick={v => {
+						setStoredRun(v);
+						setDebugRunsOpen(false);
+					}}
+				/>
+			) : null}
 			<KIRunEditor
 				functionDefinition={rawDef}
 				onChange={handleChange}
@@ -327,7 +390,7 @@ export default function LazyKIRunEditor(
 				storePaths={storePaths}
 				hideArguments={props.hideArguments}
 				debugViewMode={debugViewMode}
-				executionLog={executionLog}
+				executionLog={storedRun?.log ?? executionLog}
 				personalization={effectivePreference}
 				onPersonalizationChange={handlePersonalizationChange}
 				defaultTheme={props.defaultTheme ?? defaultTheme}

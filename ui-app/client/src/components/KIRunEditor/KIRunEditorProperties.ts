@@ -65,6 +65,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		name: 'showDebugRuns',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Debug Runs',
+		description:
+			'For server (core) functions: show a Debug runs button that lists the stored runs of this function made with debug mode on, by day, and opens one in the trace view.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
+	{
 		name: 'defaultTheme',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Default Theme',
