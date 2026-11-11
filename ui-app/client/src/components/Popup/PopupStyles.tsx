@@ -58,6 +58,38 @@ export default function PopupStyles({
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
     }
+    /* Drawer (opt-in property): full height, flush to the edge the position names, square
+       on that edge, sliding in from it. Placed after the position rules so it wins over
+       their align-items at the same specificity; the width stays the page's modal width. */
+    ${PREFIX} ._drawer.backdrop { align-items: stretch; padding: 0; overflow: hidden; }
+    ${PREFIX} ._drawer.backdrop > .modal {
+      margin: 0;
+      height: 100%;
+      max-height: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      animation: popupDrawerUp 220ms ease-out;
+    }
+    ${PREFIX} ._drawer._right_top.backdrop > .modal,
+    ${PREFIX} ._drawer._right_center.backdrop > .modal,
+    ${PREFIX} ._drawer._right_bottom.backdrop > .modal {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      animation-name: popupDrawerFromRight;
+    }
+    ${PREFIX} ._drawer._left_top.backdrop > .modal,
+    ${PREFIX} ._drawer._left_center.backdrop > .modal,
+    ${PREFIX} ._drawer._left_bottom.backdrop > .modal {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      animation-name: popupDrawerFromLeft;
+    }
+    @keyframes popupDrawerFromRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    @keyframes popupDrawerFromLeft { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+    @keyframes popupDrawerUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) {
+      ${PREFIX} ._drawer.backdrop > .modal { animation: none; }
+    }
     ${PREFIX} .closeButtonPosition{
       margin-bottom: 10px;
       position: relative;

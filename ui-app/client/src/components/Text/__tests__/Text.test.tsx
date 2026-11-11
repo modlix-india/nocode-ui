@@ -149,3 +149,23 @@ describe('Text tooltip', () => {
 		expect(wrapper().hasAttribute('title')).toBe(false);
 	});
 });
+
+describe('Text announce', () => {
+	it('adds no role by default', () => {
+		render({ text: 'Synced' });
+		expect(wrapper().hasAttribute('role')).toBe(false);
+		expect(wrapper().hasAttribute('aria-live')).toBe(false);
+	});
+
+	it('is a polite status with POLITE', () => {
+		render({ text: 'Synced', announce: 'POLITE' });
+		expect(wrapper().getAttribute('role')).toBe('status');
+		expect(wrapper().getAttribute('aria-live')).toBe('polite');
+	});
+
+	it('is an alert with ASSERTIVE', () => {
+		render({ text: 'Sync failed', announce: 'ASSERTIVE' });
+		expect(wrapper().getAttribute('role')).toBe('alert');
+		expect(wrapper().getAttribute('aria-live')).toBe('assertive');
+	});
+});
