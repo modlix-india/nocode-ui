@@ -236,7 +236,13 @@ ${PREFIX} ._volumeControls:hover ._onHoverVolumeControl {
 	cursor:pointer;
 	}
 
+	${PREFIX} ._waveformContainer {
+		flex: 1 1 0;
+		min-width: 0;
+	}
 	${PREFIX} ._waveform {
+		min-width: 0;
+		overflow: hidden;
 		position: relative;
 		display: flex;
 		align-items: center;
