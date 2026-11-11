@@ -22,6 +22,9 @@ import { styleProperties, styleDefaults } from './popupStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { popLayer, pushLayer } from '../../shortcuts/layerStack';
 
+// The slide-out runs 200ms (PopupStyles); this only frees a drawer whose animationend is lost.
+const DRAWER_CLOSE_FALLBACK_MS = 400;
+
 function Popup(props: Readonly<ComponentProps>) {
 	const [isActive, setIsActive] = React.useState(false);
 	const {
@@ -159,6 +162,26 @@ function Popup(props: Readonly<ComponentProps>) {
 		return () => popLayer(layer);
 	}, [isActive]);
 
+	// Drawer only: on close, keep the drawer on screen while it slides back out, then let it
+	// go. The close event, focus and shortcuts above still follow isActive at once. A non
+	// drawer popup, or a viewer who asks for reduced motion, closes instantly as before.
+	const [closing, setClosing] = React.useState(false);
+	const wasActive = useRef(false);
+	React.useEffect(() => {
+		if (isActive) {
+			wasActive.current = true;
+			setClosing(false);
+			return;
+		}
+		if (!wasActive.current) return;
+		wasActive.current = false;
+		if (!drawer || globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) return;
+		setClosing(true);
+		// Fallback for when animationend never comes (a hidden tab, a style that stops it).
+		const timer = setTimeout(() => setClosing(false), DRAWER_CLOSE_FALLBACK_MS);
+		return () => clearTimeout(timer);
+	}, [isActive, drawer]);
+
 	const closeIcon = (
 		<i
 			style={resolvedStyles.closeButton ?? {}}
@@ -169,14 +192,15 @@ function Popup(props: Readonly<ComponentProps>) {
 		</i>
 	);
 
-	if (isActive || (globalThis.designMode == 'PAGE' && showInDesign === true)) {
+	const showClosing = closing && !isActive;
+	if (isActive || showClosing || (globalThis.designMode == 'PAGE' && showInDesign === true)) {
 		return (
 			<Portal>
 				<div className="comp compPopup" style={resolvedStyles.root ?? {}}>
 					<SubHelperComponent definition={props.definition} subComponentName="root" />
 					<div
-						className={`backdrop ${modalPosition}${drawer ? ' _drawer' : ''}`}
-						onClick={handleCloseOnOutsideClick}
+						className={`backdrop ${modalPosition}${drawer ? ' _drawer' : ''}${showClosing ? ' _closing' : ''}`}
+						onClick={showClosing ? undefined : handleCloseOnOutsideClick}
 						style={resolvedStyles.comp ?? {}}
 					>
 						<HelperComponent context={props.context} definition={props.definition} />
@@ -184,6 +208,13 @@ function Popup(props: Readonly<ComponentProps>) {
 							className={`modal ${popupDesign} ${background}`}
 							style={resolvedStyles?.modal || {}}
 							onClick={handleBubbling}
+							onAnimationEnd={
+								showClosing
+									? (e: React.AnimationEvent) => {
+											if (e.target === e.currentTarget) setClosing(false);
+										}
+									: undefined
+							}
 						>
 							<SubHelperComponent
 								definition={props.definition}
