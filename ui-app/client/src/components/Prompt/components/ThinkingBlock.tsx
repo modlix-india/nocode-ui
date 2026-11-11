@@ -225,7 +225,7 @@ export function ThinkingBlock({
 	if (isActive) {
 		headerLabel = `${thinkingMsg}...`;
 	} else if (toolCalls.length > 0) {
-		headerLabel = `Used ${toolCalls.length} tools`;
+		headerLabel = `Used ${toolCalls.length} ${toolCalls.length === 1 ? 'tool' : 'tools'}`;
 	} else if (reasoningContent) {
 		headerLabel = 'Reasoned through it';
 	} else {
