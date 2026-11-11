@@ -17,6 +17,7 @@ import {
 	stylePropertyComponentsFor,
 } from './ssr/stylePropertyComponents';
 import { startFrameKeyRelay } from './util/frameKeyRelay';
+import { installSessionExpiryWatch } from './util/sessionExpiry';
 
 // TEST CDN CODE
 // globalThis.cdnPrefix = 'cdn-local.modlix.com';
@@ -350,6 +351,10 @@ if (AGENT_BRIDGE) {
 
 		globalThis.appDefinitionResponse = appDefinitionResponse;
 		globalThis.pageDefinitionResponse = pageDefinitionResponse;
+
+		// Opt-in per app (properties.signInOnSessionExpiry): a call answered for a dead session
+		// takes the user back to sign in instead of failing inside the page's event (CXZ-1754).
+		installSessionExpiryWatch(appDefinitionResponse?.application);
 
 		const AUTH_TOKEN = globalThis.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
 
