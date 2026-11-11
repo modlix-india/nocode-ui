@@ -58,6 +58,7 @@ function Popup(props: Readonly<ComponentProps>) {
 			modalPosition,
 			background,
 			restoreFocus,
+			drawer,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -174,7 +175,7 @@ function Popup(props: Readonly<ComponentProps>) {
 				<div className="comp compPopup" style={resolvedStyles.root ?? {}}>
 					<SubHelperComponent definition={props.definition} subComponentName="root" />
 					<div
-						className={`backdrop ${modalPosition}`}
+						className={`backdrop ${modalPosition}${drawer ? ' _drawer' : ''}`}
 						onClick={handleCloseOnOutsideClick}
 						style={resolvedStyles.comp ?? {}}
 					>

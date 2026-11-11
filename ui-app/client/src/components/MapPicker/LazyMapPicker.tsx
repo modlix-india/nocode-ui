@@ -361,6 +361,7 @@ function shapeOf(
 	fit: 'outline' | 'area' | 'point' | null,
 	km: number,
 	layered: boolean,
+	dots = false,
 ): { shape: any; box?: any } {
 	if (layered) {
 		// the outline is the layer's; a small dot marks it and takes the click
@@ -394,6 +395,16 @@ function shapeOf(
 			radius: (km > 0 ? km : 1) * 1000,
 		});
 		return { shape, box: shape.getBounds?.() };
+	}
+	// ADZ-1655: with Area dots, an area with no outline is a small dot like an outlined place's, the map fits its bounds
+	if (dots) {
+		const shape = new google.maps.Circle({
+			...look,
+			fillOpacity: 0.6,
+			center: spot.center,
+			radius: 120,
+		});
+		return { shape, box: spot.bounds };
 	}
 	// an outlined area (fit 'area' lands here too: no radius, bounds of its own)
 	const shape = new google.maps.Rectangle({ ...look, bounds: spot.bounds });
@@ -429,6 +440,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			placeLabels,
 			matchPlaceType,
 			pointMarkers,
+			areaDots,
 			noMapText,
 			readOnly,
 			onChange,
@@ -810,7 +822,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 					moreOutlines = true;
 				}
 				const layered = fit === 'outline' || !!(pl.placeId && outlined.has(pl.placeId));
-				const { shape, box } = shapeOf(google, look, pl, spot, fit, km, layered);
+				const { shape, box } = shapeOf(google, look, pl, spot, fit, km, layered, !!areaDots);
 				if (clickable) shape.addListener?.('click', () => clickPlace(pl));
 				live.current.shapes!.push(shape);
 				if (placeLabels && !pl.suggested) {
@@ -846,6 +858,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 		matchPlaceType,
 		placeLabels,
 		pointMarkers,
+		areaDots,
 	]);
 
 	return (

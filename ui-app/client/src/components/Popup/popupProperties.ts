@@ -74,6 +74,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'drawer',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Open as a drawer',
+		description:
+			'When on, the popup is a drawer: full height, flush to the side its Modal Position names (right or left; anything else slides up from the bottom), square on that edge, and it slides in when it opens. Set its width with the modal width style. Off keeps the floating box.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'modelTitle',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Title of the modal',

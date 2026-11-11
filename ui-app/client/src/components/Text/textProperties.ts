@@ -433,6 +433,23 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 
+	{
+		// A message that appears after an action (a sync result, a save error) has to be
+		// read out by screen readers, not only shown. Off by default: plain text stays plain.
+		name: 'announce',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Announce to screen readers',
+		description:
+			'Read the text out when it appears or changes. Polite: a status message, read when the reader is idle. Assertive: an error, read at once.',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'NONE',
+		enumValues: [
+			{ name: 'NONE', displayName: 'No', description: 'Not announced.' },
+			{ name: 'POLITE', displayName: 'Polite (status)', description: 'role="status".' },
+			{ name: 'ASSERTIVE', displayName: 'Assertive (error)', description: 'role="alert".' },
+		],
+	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
