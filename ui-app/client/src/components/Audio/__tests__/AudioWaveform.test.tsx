@@ -232,6 +232,7 @@ describe('Audio _audioDesign5 waveform', () => {
 		});
 
 		expect(audio.currentTime).toBe(30);
+		expect(container.querySelector('._timeElapsed')!.textContent).toBe('00:30');
 	});
 
 	test('a drag previews and seeks where it is let go', async () => {
