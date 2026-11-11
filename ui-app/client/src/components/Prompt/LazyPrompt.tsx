@@ -199,13 +199,16 @@ function mapHistoryToMessages(history: any[], pending?: PendingChoice | null): M
 		if (h.assistant_summary) {
 			const toolCalls: ToolCall[] = [];
 			let durationMs: number | undefined;
+			let answerFrom: number | undefined;
 			if (h.tool_calls_json) {
 				try {
 					const parsed = JSON.parse(h.tool_calls_json);
 					for (const tc of parsed) {
-						// The turn's timing receipt, not a tool: kept as the turn's duration.
+						// The turn's timing receipt, not a tool: kept as the turn's duration,
+						// and where the answer begins (Collapse Work folds the text before it).
 						if (tc?.kind === 'timing') {
 							if (typeof tc.ms === 'number') durationMs = tc.ms;
+							if (typeof tc.answer_from === 'number') answerFrom = tc.answer_from;
 							continue;
 						}
 						toolCalls.push({
@@ -227,6 +230,7 @@ function mapHistoryToMessages(history: any[], pending?: PendingChoice | null): M
 				content: h.assistant_summary,
 				toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
 				...(durationMs !== undefined ? { durationMs } : {}),
+				...(answerFrom !== undefined ? { answerFrom } : {}),
 				turnNumber,
 				feedbackRating: h.feedback_rating,
 				attachments: attached.assistant,
