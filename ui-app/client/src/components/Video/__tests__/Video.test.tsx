@@ -164,3 +164,127 @@ test('with the property a public address is not fetched', async () => {
 	expect(host.querySelector('source')!.getAttribute('src')).toBe('https://cdn.example.com/a.mp4');
 	expect(host.querySelector('video')!.getAttribute('poster')).toBe('/a.jpg');
 });
+
+// ── LZT-2295: full screen with the scrim: controls come back on any activity ───────────────────────────────────
+
+describe('full screen controls', () => {
+	let fsElement: Element | null = null;
+	beforeAll(() => {
+		Object.defineProperty(document, 'fullscreenElement', {
+			configurable: true,
+			get: () => fsElement,
+		});
+	});
+	afterEach(() => {
+		fsElement = null;
+		jest.useRealTimers();
+	});
+
+	const enterFullScreen = () => {
+		fsElement = host.querySelector('.compVideo');
+		act(() => {
+			document.dispatchEvent(new Event('fullscreenchange'));
+		});
+	};
+	const leaveWindow = () =>
+		act(() => {
+			host.querySelector('.compVideo')!.dispatchEvent(
+				new MouseEvent('mouseout', { bubbles: true, relatedTarget: null }),
+			);
+		});
+	const setPlaying = (playing: boolean) => {
+		const v = host.querySelector('video') as HTMLVideoElement;
+		Object.defineProperty(v, 'paused', { configurable: true, get: () => !playing });
+		Object.defineProperty(v, 'ended', { configurable: true, get: () => false });
+	};
+	const controls = () => host.querySelector('._videoControlsContainer');
+
+	test('with the scrim a pointer leave in full screen does not hide the controls', () => {
+		properties = { ...BASE, controlsOnScrim: true };
+		renderAndHover();
+		enterFullScreen();
+		leaveWindow();
+		expect(controls()).not.toBeNull();
+	});
+
+	test('with the scrim the controls hide after idle while playing and come back on move, tap and key', () => {
+		jest.useFakeTimers();
+		properties = { ...BASE, controlsOnScrim: true };
+		renderAndHover();
+		setPlaying(true);
+		enterFullScreen();
+		expect(controls()).not.toBeNull();
+		act(() => {
+			jest.advanceTimersByTime(3100);
+		});
+		expect(controls()).toBeNull();
+
+		act(() => {
+			document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+		});
+		expect(controls()).not.toBeNull();
+
+		act(() => {
+			jest.advanceTimersByTime(3100);
+		});
+		expect(controls()).toBeNull();
+		act(() => {
+			document.body.dispatchEvent(new Event('touchstart', { bubbles: true }));
+		});
+		expect(controls()).not.toBeNull();
+
+		act(() => {
+			jest.advanceTimersByTime(3100);
+		});
+		expect(controls()).toBeNull();
+		act(() => {
+			document.body.dispatchEvent(
+				new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+			);
+		});
+		expect(controls()).not.toBeNull();
+	});
+
+	test('with the scrim the controls stay while the video is paused in full screen', () => {
+		jest.useFakeTimers();
+		properties = { ...BASE, controlsOnScrim: true };
+		renderAndHover();
+		setPlaying(false);
+		enterFullScreen();
+		act(() => {
+			jest.advanceTimersByTime(10000);
+		});
+		expect(controls()).not.toBeNull();
+	});
+
+	test('after leaving full screen the activity listeners are gone (hover behaviour again)', () => {
+		jest.useFakeTimers();
+		properties = { ...BASE, controlsOnScrim: true };
+		renderAndHover();
+		enterFullScreen();
+		fsElement = null;
+		act(() => {
+			document.dispatchEvent(new Event('fullscreenchange'));
+		});
+		leaveWindow();
+		expect(controls()).toBeNull();
+		act(() => {
+			document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+		});
+		expect(controls()).toBeNull();
+	});
+
+	test('without the scrim full screen keeps the old hover behaviour (unchanged)', () => {
+		jest.useFakeTimers();
+		properties = { ...BASE };
+		renderAndHover();
+		enterFullScreen();
+		leaveWindow();
+		expect(controls()).toBeNull();
+		act(() => {
+			document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+			jest.advanceTimersByTime(5000);
+		});
+		expect(controls()).toBeNull();
+	});
+});
