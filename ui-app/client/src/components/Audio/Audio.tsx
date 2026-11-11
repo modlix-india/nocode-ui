@@ -12,6 +12,7 @@ import { IconHelper } from '../util/IconHelper';
 import AudioStyle from './AudioStyle';
 import { styleProperties, styleDefaults, stylePropertiesForTheme } from './audioStyleProperties';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { AudioWaveform, useWaveformPeaks } from './AudioWaveform';
 
 function Audio(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context, pageDefinition } = props;
@@ -88,6 +89,15 @@ function Audio(props: Readonly<ComponentProps>) {
 	const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
 	const [manualSeek, setManualSeek] = useState<number | undefined>(undefined);
 	const playbackOptions = [0.5, 1, 1.5, 2];
+
+	// _audioDesign5 is design 1 with the seek bar drawn as a waveform. Until the peaks are there
+	// (or when they cannot be made) it shows the seek bar.
+	const isWaveform = audioDesign === '_audioDesign5';
+	const waveformPeaks = useWaveformPeaks(
+		getSrcUrl(playSrc),
+		progressbarMax,
+		isWaveform && !!showSeekBar,
+	);
 
 	const changePlaybackSpeed = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const speed = parseFloat(event.target.value);
@@ -174,6 +184,16 @@ function Audio(props: Readonly<ComponentProps>) {
 		}));
 
 		setToolTipX(clientWidth - toolTipX < 30 ? toolTipX - 32 : toolTipX);
+	};
+
+	const updateWaveformSeekToolTip = (clientX: number, rect: DOMRect) => {
+		if (!rect.width) return;
+		const toolTipX = clientX - rect.left;
+		setTimeState(prevState => ({
+			...prevState,
+			seekToolTip: formatTime(Math.round((toolTipX / rect.width) * progressbarMax)),
+		}));
+		setToolTipX(rect.width - toolTipX < 30 ? toolTipX - 32 : toolTipX);
 	};
 
 	const skipAhead = (value: number) => {
@@ -393,7 +413,7 @@ function Audio(props: Readonly<ComponentProps>) {
 
 	const timeTextAudioDesign1 = showTime && (
 		<div className="_timeText" style={resolvedStyles.timeText ?? {}}>
-			{audioDesign === '_audioDesign1' && (
+			{(audioDesign === '_audioDesign1' || isWaveform) && (
 				<>
 					<time
 						className="_timeElapsed"
@@ -409,7 +429,7 @@ function Audio(props: Readonly<ComponentProps>) {
 
 	const timeText = showTime && (
 		<div className="_timeText" style={resolvedStyles.timeText ?? {}}>
-			{audioDesign !== '_audioDesign1' && (
+			{audioDesign !== '_audioDesign1' && !isWaveform && (
 				<>
 					<time
 						className="_timeElapsed"
@@ -428,6 +448,18 @@ function Audio(props: Readonly<ComponentProps>) {
 			>
 				{`${timeState.duration.hours !== '00' ? timeState.duration.hours + ':' : ''}${timeState.duration.minutes}:${timeState.duration.seconds}`}
 			</time>
+		</div>
+	);
+
+	const seekToolTip = seekTimeTextOnHover && toogleToolTip && (
+		<div
+			style={{
+				left: `${toolTipX}px`,
+				...(resolvedStyles.seekTimeTextOnHover ?? {}),
+			}}
+			className="_seekTimeTextOnHover"
+		>
+			{`${timeState.seekToolTip.hours !== '00' ? timeState.seekToolTip.hours + ':' : ''}${timeState.seekToolTip.minutes}:${timeState.seekToolTip.seconds}`}
 		</div>
 	);
 
@@ -463,17 +495,33 @@ function Audio(props: Readonly<ComponentProps>) {
 				style={resolvedStyles.seekSlider ?? {}}
 			/>
 			<SubHelperComponent definition={props.definition} subComponentName="seekSlider" />
-			{seekTimeTextOnHover && toogleToolTip && (
-				<div
-					style={{
-						left: `${toolTipX}px`,
-						...(resolvedStyles.seekTimeTextOnHover ?? {}),
-					}}
-					className="_seekTimeTextOnHover"
-				>
-					{`${timeState.seekToolTip.hours !== '00' ? timeState.seekToolTip.hours + ':' : ''}${timeState.seekToolTip.minutes}:${timeState.seekToolTip.seconds}`}
-				</div>
-			)}
+			{seekToolTip}
+		</div>
+	);
+
+	const formatClock = (t: { hours: string; minutes: string; seconds: string }) =>
+		`${t.hours !== '00' ? t.hours + ':' : ''}${t.minutes}:${t.seconds}`;
+
+	const waveform = isWaveform && showSeekBar && waveformPeaks && (
+		<div
+			className="_progressBarContainer _waveformContainer"
+			onMouseEnter={handleMouseEnterInput}
+			onMouseLeave={handleMouseLeaveInput}
+		>
+			<AudioWaveform
+				peaks={waveformPeaks}
+				value={audio.current?.currentTime ?? progressbarCurr}
+				max={progressbarMax}
+				valueText={`${formatClock(timeState.timeElapsed)} of ${formatClock(timeState.duration)}`}
+				onSeek={value => {
+					skipAhead(value);
+					setProgressbarCurr(Math.floor(value));
+				}}
+				onHover={updateWaveformSeekToolTip}
+				style={resolvedStyles.waveform}
+			/>
+			<SubHelperComponent definition={props.definition} subComponentName="waveform" />
+			{seekToolTip}
 		</div>
 	);
 
@@ -567,7 +615,7 @@ function Audio(props: Readonly<ComponentProps>) {
 
 	return (
 		<div
-			className={`comp compAudio ${audioDesign} ${colorScheme}`}
+			className={`comp compAudio ${isWaveform ? '_audioDesign1 _audioDesign5' : audioDesign} ${colorScheme}`}
 			ref={audioContainer}
 			style={resolvedStyles.comp ?? {}}
 		>
@@ -606,7 +654,7 @@ function Audio(props: Readonly<ComponentProps>) {
 				{showRewindAndFastForward && audioDesign !== '_audioDesign2' && forwardFinalIcon}
 				{audioDesign === '_audioDesign2' ? fileName : null}
 				{timeTextAudioDesign1}
-				{audioDesign !== '_audioDesign2' ? seekBar : null}
+				{audioDesign !== '_audioDesign2' ? waveform || seekBar : null}
 				{timeText}
 				{volumeControls}
 				{playBackSpeed}
