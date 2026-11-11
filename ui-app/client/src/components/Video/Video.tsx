@@ -19,6 +19,16 @@ import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 import { useSecureSrc } from '../util/useSecureSrc';
 import { isSecuredUrl } from '../util/secureImage';
 
+const FULL_SCREEN_IDLE_MS = 3000;
+const FULL_SCREEN_ACTIVITY_EVENTS = [
+	'mousemove',
+	'pointermove',
+	'pointerdown',
+	'touchstart',
+	'wheel',
+	'keydown',
+];
+
 function Video(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context, pageDefinition } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
@@ -322,7 +332,41 @@ function Video(props: Readonly<ComponentProps>) {
 			pipRef.current.disabled = false;
 		}
 	};
+	// LZT-2295: with controlsOnScrim, full screen does not depend on the pointer entering or leaving the player (the
+	// player IS the screen, so a leave, for example to another monitor or an OS overlay, left the controls hidden with
+	// no way back). Any mouse move, tap, wheel or key press shows them; they hide after a short idle only while playing.
+	const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
+	useEffect(() => {
+		const onChange = () =>
+			setIsFullScreen(
+				!!videoContainer.current && document.fullscreenElement === videoContainer.current,
+			);
+		document.addEventListener('fullscreenchange', onChange);
+		return () => document.removeEventListener('fullscreenchange', onChange);
+	}, []);
+
+	const scrimFullScreen = !!controlsOnScrim && isFullScreen;
+	useEffect(() => {
+		if (!scrimFullScreen) return;
+		let timer: ReturnType<typeof setTimeout> | undefined;
+		const show = () => {
+			setControlsOnHover(true);
+			if (timer) clearTimeout(timer);
+			timer = setTimeout(() => {
+				const v = video.current;
+				if (v && !v.paused && !v.ended) setControlsOnHover(false);
+			}, FULL_SCREEN_IDLE_MS);
+		};
+		show();
+		FULL_SCREEN_ACTIVITY_EVENTS.forEach(e => document.addEventListener(e, show, true));
+		return () => {
+			if (timer) clearTimeout(timer);
+			FULL_SCREEN_ACTIVITY_EVENTS.forEach(e => document.removeEventListener(e, show, true));
+		};
+	}, [scrimFullScreen]);
+
 	const handleMouseLeaveVideo = (event: any) => {
+		if (scrimFullScreen) return;
 		setControlsOnHover(false);
 	};
 	const handleMouseEnterVideo = (event: any) => {
@@ -623,7 +667,10 @@ function Video(props: Readonly<ComponentProps>) {
 				onChange={volumeIconHandle}
 				onClick={handlePlayPause}
 				style={resolvedStyles.player ?? {}}
-				onPause={() => setPlayPauseEnd('play')}
+				onPause={() => {
+					setPlayPauseEnd('play');
+					if (scrimFullScreen) setControlsOnHover(true);
+				}}
 				onPlay={() => {
 					setPlayPauseEnd('pause');
 					if (!isFirstTimePlay || !autoPlay || !autoUnMuteAfterPlaying) return;
