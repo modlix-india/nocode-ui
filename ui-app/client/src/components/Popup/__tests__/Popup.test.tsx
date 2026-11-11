@@ -172,3 +172,98 @@ describe('Popup drawer (opt-in)', () => {
 		expect(backdrop.className).toBe('backdrop _right_top');
 	});
 });
+
+describe('Popup drawer closing (PLAT-1615)', () => {
+	let host: HTMLDivElement;
+	let root: Root;
+	const realMatchMedia = globalThis.matchMedia;
+
+	function reducedMotion(on: boolean) {
+		(globalThis as any).matchMedia = (q: string) => ({
+			matches: on && q.includes('prefers-reduced-motion'),
+		});
+	}
+
+	beforeEach(() => {
+		jest.useFakeTimers();
+		storeValues.clear();
+		listeners.clear();
+		document.body.innerHTML = '';
+		host = document.createElement('div');
+		document.body.append(host);
+		reducedMotion(false);
+	});
+
+	afterEach(() => {
+		act(() => root.unmount());
+		jest.useRealTimers();
+		(globalThis as any).matchMedia = realMatchMedia;
+	});
+
+	function animationEnd() {
+		const modal = host.querySelector('.modal')!;
+		act(() => {
+			modal.dispatchEvent(new Event('animationend', { bubbles: true }));
+		});
+	}
+
+	it('keeps a drawer on screen, sliding out, until its animation ends', () => {
+		properties = { designType: '_design1', modalPosition: '_right_top', drawer: true };
+		root = render(host);
+		setOpen(true);
+		setOpen(false);
+		const backdrop = host.querySelector('.backdrop')!;
+		expect(backdrop.classList.contains('_closing')).toBe(true);
+		animationEnd();
+		expect(host.querySelector('.backdrop')).toBeNull();
+	});
+
+	it('lets a drawer go after the fallback when animationend never comes', () => {
+		properties = { designType: '_design1', modalPosition: '_right_top', drawer: true };
+		root = render(host);
+		setOpen(true);
+		setOpen(false);
+		expect(host.querySelector('.backdrop')).not.toBeNull();
+		act(() => {
+			jest.advanceTimersByTime(400);
+		});
+		expect(host.querySelector('.backdrop')).toBeNull();
+	});
+
+	it('opens again cleanly when reopened while sliding out', () => {
+		properties = { designType: '_design1', modalPosition: '_right_top', drawer: true };
+		root = render(host);
+		setOpen(true);
+		setOpen(false);
+		setOpen(true);
+		const backdrop = host.querySelector('.backdrop')!;
+		expect(backdrop.classList.contains('_closing')).toBe(false);
+		act(() => {
+			jest.advanceTimersByTime(1000);
+		});
+		expect(host.querySelector('.backdrop')).not.toBeNull();
+	});
+
+	it('closes at once under reduced motion', () => {
+		reducedMotion(true);
+		properties = { designType: '_design1', modalPosition: '_right_top', drawer: true };
+		root = render(host);
+		setOpen(true);
+		setOpen(false);
+		expect(host.querySelector('.backdrop')).toBeNull();
+	});
+
+	it('closes a non drawer popup at once (old behaviour)', () => {
+		properties = { designType: '_design1', modalPosition: '_right_top' };
+		root = render(host);
+		setOpen(true);
+		setOpen(false);
+		expect(host.querySelector('.backdrop')).toBeNull();
+	});
+
+	it('does not slide anything out on the first render when closed', () => {
+		properties = { designType: '_design1', modalPosition: '_right_top', drawer: true };
+		root = render(host);
+		expect(host.querySelector('.backdrop')).toBeNull();
+	});
+});
