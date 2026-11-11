@@ -20,7 +20,13 @@ import { runEvent } from '../util/runEvent';
 import { flattenUUID } from '../util/uuid';
 import { ChatMessage } from './components/ChatMessage';
 import { splitReply, type AgentStart } from './replyParts';
-import { ThinkingBlock } from './components/ThinkingBlock';
+import { ThinkingBlock, ThinkingIndicator } from './components/ThinkingBlock';
+import {
+	DEFAULT_ERROR_TEXT,
+	DEFAULT_THINKING_TEXT,
+	answerOnlyText,
+	answerStartAfter,
+} from './answerOnly';
 import { AgentGroup } from './components/AgentGroup';
 import { ActionBlock, ConfirmationAction, markConfirmationExpired } from './components/ActionBlock';
 import { InputBar } from './components/InputBar';
@@ -81,6 +87,10 @@ interface Message {
 	 * agent can say whether it arrived in time to be read.
 	 */
 	pending?: boolean;
+	/** Answer Only: where the text written after the last tool begins (the answer). */
+	answerFrom?: number;
+	/** Answer Only: the reply failed; its friendly error text is shown instead. */
+	failed?: boolean;
 }
 
 interface ToolCall {
@@ -232,6 +242,8 @@ interface SSEEventContext {
 	setSessionId: (id: string | null) => void;
 	setUsage: React.Dispatch<React.SetStateAction<TokenUsage | null>>;
 	showToolCalls: boolean;
+	/** Answer Only: keep where the answer starts, and keep errors off the screen. */
+	answerOnly?: boolean;
 	setFeedbackTurn: (turn: { sessionId: string; turnNumber: number }) => void;
 	setCrafts: React.Dispatch<React.SetStateAction<Map<string, CraftData>>>;
 	setActiveCraftId: React.Dispatch<React.SetStateAction<string | null>>;
@@ -311,8 +323,22 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 					: '';
 			const newText = ctx.currentText + gap + incoming;
 			ctx.setText(newText);
+			// Answer Only draws just the text after the last tool. Blank text after
+			// a tool leaves the next text to start the answer.
+			const answerFrom = ctx.answerOnly
+				? answerStartAfter(ctx.currentText + gap, incoming, afterTool)
+				: undefined;
+			if (ctx.answerOnly && afterTool && answerFrom === undefined) ctx.markToolRan?.();
 			ctx.setMessages(prev =>
-				prev.map(m => (m.id === ctx.assistantMsgId ? { ...m, content: newText } : m)),
+				prev.map(m =>
+					m.id === ctx.assistantMsgId
+						? {
+								...m,
+								content: newText,
+								...(answerFrom !== undefined ? { answerFrom } : {}),
+							}
+						: m,
+				),
 			);
 			break;
 		}
@@ -704,6 +730,13 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			break;
 		}
 		case 'error': {
+			if (ctx.answerOnly) {
+				// The raw message is for developers; the chat shows its Error Text.
+				ctx.setMessages(prev =>
+					prev.map(m => (m.id === ctx.assistantMsgId ? { ...m, failed: true } : m)),
+				);
+				break;
+			}
 			const errText = ctx.currentText + `\n\n*Error: ${data.message ?? 'Unknown error'}*`;
 			ctx.setText(errText);
 			ctx.setMessages(prev =>
@@ -1025,6 +1058,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			settingsUrl = '',
 			selectedProviders = [],
 			showToolCalls = true,
+			answerOnly = false,
+			thinkingText = DEFAULT_THINKING_TEXT,
+			errorText = DEFAULT_ERROR_TEXT,
 			enablePersonalization = true,
 			sessionsPerPage = 20,
 			messagesPerPage = 20,
@@ -2408,6 +2444,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 													agentStarts: undefined,
 													suggestions: undefined,
 													data: undefined,
+													answerFrom: undefined,
+													failed: undefined,
 												}
 											: m,
 									),
@@ -2511,7 +2549,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							setMessages,
 							setSessionId,
 							setUsage,
-							showToolCalls,
+							showToolCalls: showToolCalls && !answerOnly,
+							answerOnly,
 							setFeedbackTurn: turn => setFeedbackTurn(turn),
 							setCrafts,
 							setActiveCraftId,
@@ -2555,6 +2594,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		},
 		[
 			showToolCalls,
+			answerOnly,
 			onComplete,
 			completeBindingPath,
 			rememberActiveRun,
@@ -3183,7 +3223,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				const errorMsg: Message = {
 					id: `err_${Date.now()}`,
 					role: 'assistant',
-					content: `Error: ${err.message ?? 'Connection failed'}`,
+					content: answerOnly ? '' : `Error: ${err.message ?? 'Connection failed'}`,
+					...(answerOnly ? { failed: true } : {}),
 				};
 				setMessages(prev => [...prev, errorMsg]);
 
@@ -3223,6 +3264,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			// are deliberately NOT here: they are read through refs above, which is
 			// what keeps the send current without rebuilding it on every render.
 			showToolCalls,
+			answerOnly,
 			onMessage,
 			onError,
 			onComplete,
@@ -3580,33 +3622,33 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						)}
 						<div className="_promptTopRight">
 							{savedObjects.length > 0 && (
-					<div className="_promptSavedNotice">
-						{/* The asymmetry made visible, and it is two asymmetries, not one.
+								<div className="_promptSavedNotice">
+									{/* The asymmetry made visible, and it is two asymmetries, not one.
 						    A drafted write is reviewable and waits for Publish; a live one
 						    is already in front of everyone. Collapsing them into a single
 						    "saved" line was the more alarming of the two claims applied to
 						    both. */}
-						<i className="fa fa-circle-info" aria-hidden="true" />
-						<span>
-							{savedNoticeLines(savedObjects).map((line, i) => (
-								<React.Fragment key={line}>
-									{i > 0 && <br />}
-									{line}
-								</React.Fragment>
-							))}
-						</span>
-						<button
-							type="button"
-							className="_promptSavedDismiss"
-							title="Dismiss"
-							onClick={() => setSavedObjects([])}
-						>
-							<i className="fa fa-xmark" aria-hidden="true" />
-						</button>
-					</div>
-				)}
-				{/* After the draft bar and the saved notice: the panels about what was saved come first, then the offer to look at it. */}
-				{enablePreview && previewTarget && !previewOpen && (
+									<i className="fa fa-circle-info" aria-hidden="true" />
+									<span>
+										{savedNoticeLines(savedObjects).map((line, i) => (
+											<React.Fragment key={line}>
+												{i > 0 && <br />}
+												{line}
+											</React.Fragment>
+										))}
+									</span>
+									<button
+										type="button"
+										className="_promptSavedDismiss"
+										title="Dismiss"
+										onClick={() => setSavedObjects([])}
+									>
+										<i className="fa fa-xmark" aria-hidden="true" />
+									</button>
+								</div>
+							)}
+							{/* After the draft bar and the saved notice: the panels about what was saved come first, then the offer to look at it. */}
+							{enablePreview && previewTarget && !previewOpen && (
 								<button
 									className="_promptPreviewOpenButton"
 									onClick={openPreview}
@@ -3688,8 +3730,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						{messages.map(msg => {
 							const isLatest = msg.id === messages.at(-1)?.id;
 							const isLive = isStreaming && msg.role === 'assistant' && isLatest;
+							// Answer Only: no thinking, tool or agent parts; "Thinking..."
+							// while it runs, then the answer.
+							const simple = answerOnly && msg.role === 'assistant';
+							const simpleText = simple ? answerOnlyText(msg, errorText) : '';
+							const waitingOnUser = (msg.confirmationActions ?? []).some(
+								a => a.status === 'pending',
+							);
 							const parts =
-								msg.role === 'assistant'
+								msg.role === 'assistant' && !simple
 									? splitReply(
 											{
 												thinking: msg.thinking ?? '',
@@ -3765,91 +3814,110 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 											</React.Fragment>
 										);
 									})}
-									<ChatMessage
-										role={msg.role}
-										content={answer ? answer.content : msg.content}
-										pending={msg.pending}
-										copyText={parts
-											.map(part => part.content)
-											.filter(Boolean)
-											.join('\n\n')}
-										componentKey={key ?? ''}
-										styles={styleProperties}
-										isStreaming={isLive}
-										working={working}
-										definition={props.definition}
-										copyIcon={copyIcon}
-										copySuccessIcon={copySuccessIcon}
-										enableFeedback={!!enableFeedback}
-										feedbackRating={msg.feedbackRating}
-										turnNumber={msg.turnNumber}
-										messageId={msg.id}
-										onFeedback={handleFeedback}
-										thumbsUpIcon={thumbsUpIcon}
-										thumbsDownIcon={thumbsDownIcon}
-										footer={
-											msg.suggestions && (
-												<SuggestionButtons
-													suggestions={msg.suggestions}
-													onSelect={handleSend}
-													disabled={isStreaming || !isLatest}
-												/>
-											)
-										}
-									>
-										{msg.data?.map((payload, i) => (
-											<InlineDataRenderer
-												key={`${msg.id}-data-${i}`}
-												payload={payload}
-												confirmed={msg.dataConfirmed}
-												confirmedMeta={msg.dataConfirmedMeta}
-												disabled={isStreaming || !isLatest}
-												onRespond={(sendText, displayText, meta) => {
-													setMessages(prev =>
-														prev.map(m =>
-															m.id === msg.id
-																? {
-																		...m,
-																		dataConfirmed: true,
-																		dataConfirmedMeta: meta,
-																	}
-																: m,
-														),
-													);
-													handleSend(sendText, undefined, displayText);
-												}}
-											/>
-										))}
-										{msg.craftIds?.map(craftId => {
-											const craft = crafts.get(craftId);
-											if (!craft?.inline) return null;
-											// drawn again later (same id): it shows in the latest message only
-											const holders = messages.filter(m =>
-												m.craftIds?.includes(craftId),
-											);
-											if (
-												holders.length &&
-												holders[holders.length - 1].id !== msg.id
-											)
-												return null;
-											return (
-												<div
-													key={`${msg.id}-craft-${craftId}`}
-													className="_inlineCraft"
-												>
-													<CraftRenderer
-														blocks={craft.blocks}
-														definition={props.definition}
-														styleProperties={styleProperties}
-														sessionId={sessionId}
-														agentEndpoint={agentEndpoint}
-														onSend={handleSend}
-														getAuthHeaders={getAuthHeaders}
+									{simple && isLive && !waitingOnUser && (
+										<ThinkingIndicator text={thinkingText} />
+									)}
+									{!(simple && isLive) && (
+										<ChatMessage
+											role={msg.role}
+											content={
+												simple
+													? simpleText
+													: answer
+														? answer.content
+														: msg.content
+											}
+											pending={msg.pending}
+											copyText={
+												simple
+													? simpleText
+													: parts
+															.map(part => part.content)
+															.filter(Boolean)
+															.join('\n\n')
+											}
+											componentKey={key ?? ''}
+											styles={styleProperties}
+											isStreaming={isLive}
+											working={working}
+											definition={props.definition}
+											copyIcon={copyIcon}
+											copySuccessIcon={copySuccessIcon}
+											enableFeedback={!!enableFeedback}
+											feedbackRating={msg.feedbackRating}
+											turnNumber={msg.turnNumber}
+											messageId={msg.id}
+											onFeedback={handleFeedback}
+											thumbsUpIcon={thumbsUpIcon}
+											thumbsDownIcon={thumbsDownIcon}
+											footer={
+												msg.suggestions && (
+													<SuggestionButtons
+														suggestions={msg.suggestions}
+														onSelect={handleSend}
+														disabled={isStreaming || !isLatest}
 													/>
-												</div>
-											);
-										})}
-									</ChatMessage>
+												)
+											}
+										>
+											{msg.data?.map((payload, i) => (
+												<InlineDataRenderer
+													key={`${msg.id}-data-${i}`}
+													payload={payload}
+													confirmed={msg.dataConfirmed}
+													confirmedMeta={msg.dataConfirmedMeta}
+													disabled={isStreaming || !isLatest}
+													onRespond={(sendText, displayText, meta) => {
+														setMessages(prev =>
+															prev.map(m =>
+																m.id === msg.id
+																	? {
+																			...m,
+																			dataConfirmed: true,
+																			dataConfirmedMeta: meta,
+																		}
+																	: m,
+															),
+														);
+														handleSend(
+															sendText,
+															undefined,
+															displayText,
+														);
+													}}
+												/>
+											))}
+											{msg.craftIds?.map(craftId => {
+												const craft = crafts.get(craftId);
+												if (!craft?.inline) return null;
+												// drawn again later (same id): it shows in the latest message only
+												const holders = messages.filter(m =>
+													m.craftIds?.includes(craftId),
+												);
+												if (
+													holders.length &&
+													holders[holders.length - 1].id !== msg.id
+												)
+													return null;
+												return (
+													<div
+														key={`${msg.id}-craft-${craftId}`}
+														className="_inlineCraft"
+													>
+														<CraftRenderer
+															blocks={craft.blocks}
+															definition={props.definition}
+															styleProperties={styleProperties}
+															sessionId={sessionId}
+															agentEndpoint={agentEndpoint}
+															onSend={handleSend}
+															getAuthHeaders={getAuthHeaders}
+														/>
+													</div>
+												);
+											})}
+										</ChatMessage>
+									)}
 									{msg.confirmationActions?.map(action => (
 										<ActionBlock
 											key={action.confirmationId}
@@ -3868,7 +3936,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						    current step, in its own reply, and the bubble says so. */}
 						{isStreaming &&
 							messages.at(-1)?.role === 'user' &&
-							!messages.at(-1)?.pending && (
+							!messages.at(-1)?.pending &&
+							(answerOnly ? (
+								<ThinkingIndicator text={thinkingText} />
+							) : (
 								<ThinkingBlock
 									isActive={true}
 									toolCalls={[]}
@@ -3878,7 +3949,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 									expandIcon={expandIcon}
 									collapseIcon={collapseIcon}
 								/>
-							)}
+							))}
 					</div>
 				</div>
 
@@ -3994,7 +4065,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								<i className="fa fa-gear" aria-hidden="true" />
 							</a>
 						)}
-						{usage && <UsageBar usage={usage} />}
+						{usage && !answerOnly && <UsageBar usage={usage} />}
 					</div>
 				</div>
 

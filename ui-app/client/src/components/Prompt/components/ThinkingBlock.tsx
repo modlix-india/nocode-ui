@@ -321,3 +321,22 @@ export function ThinkingBlock({
 		</div>
 	);
 }
+
+/**
+ * The one line an Answer Only chat shows while the agent works (CXZ-1781): a
+ * pulsing dot and fixed text, nothing to open, no tools or reasoning.
+ */
+export function ThinkingIndicator({ text }: Readonly<{ text?: string }>) {
+	return (
+		<div
+			className="_thinkingBlock _active _answerOnlyThinking"
+			role="status"
+			aria-live="polite"
+		>
+			<div className="_thinkingHeader _activeHeader">
+				<span className="_statusDot _running" />
+				<span className="_thinkingLabel">{text || 'Thinking...'}</span>
+			</div>
+		</div>
+	);
+}

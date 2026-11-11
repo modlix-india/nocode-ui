@@ -935,6 +935,15 @@ export default function PromptStyle({
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
 		}
 
+		/* Answer Only's "Thinking..." line: nothing to open, so no hover or pointer. */
+		${PREFIX} ._answerOnlyThinking ._thinkingHeader {
+			cursor: default;
+		}
+
+		${PREFIX} ._answerOnlyThinking ._thinkingHeader:hover {
+			background: none;
+		}
+
 		${PREFIX} ._thinkingHeader i,
 		${PREFIX} ._thinkingChevron {
 			font-size: 10px;

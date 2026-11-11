@@ -466,6 +466,35 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		// A plain question-and-answer chat for end users (CXZ-1781). Off by
+		// default: every other chat keeps its tool cards, thinking and agent cards.
+		name: 'answerOnly',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Answer Only',
+		description:
+			'Plain question-and-answer chat: no tool calls, thinking, agent cards or token usage. While the agent works only a "Thinking..." line shows, then the final answer (with its tables and cards). Approval cards still show. Errors show the Error Text instead of the details.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'thinkingText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Thinking Text',
+		description: 'With Answer Only on: the line shown while the agent works.',
+		defaultValue: 'Thinking...',
+		group: ComponentPropertyGroup.ADVANCED,
+		translatable: true,
+	},
+	{
+		name: 'errorText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Error Text',
+		description: 'With Answer Only on: the message shown when a reply fails.',
+		defaultValue: 'Sorry, something went wrong. Please try again.',
+		group: ComponentPropertyGroup.ADVANCED,
+		translatable: true,
+	},
+	{
 		name: 'enablePersonalization',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Enable Personalization',
