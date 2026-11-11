@@ -20,13 +20,14 @@ import { runEvent } from '../util/runEvent';
 import { flattenUUID } from '../util/uuid';
 import { ChatMessage } from './components/ChatMessage';
 import { splitReply, type AgentStart } from './replyParts';
-import { ThinkingBlock, ThinkingIndicator } from './components/ThinkingBlock';
+import { ThinkingBlock } from './components/ThinkingBlock';
+import { WorkSummary } from './components/WorkSummary';
 import {
 	DEFAULT_ERROR_TEXT,
 	DEFAULT_THINKING_TEXT,
-	answerOnlyText,
 	answerStartAfter,
-} from './answerOnly';
+	splitWork,
+} from './collapseWork';
 import { AgentGroup } from './components/AgentGroup';
 import { ActionBlock, ConfirmationAction, markConfirmationExpired } from './components/ActionBlock';
 import { InputBar } from './components/InputBar';
@@ -87,10 +88,14 @@ interface Message {
 	 * agent can say whether it arrived in time to be read.
 	 */
 	pending?: boolean;
-	/** Answer Only: where the text written after the last tool begins (the answer). */
+	/** Collapse Work: where the text written after the last tool begins (the answer). */
 	answerFrom?: number;
-	/** Answer Only: the reply failed; its friendly error text is shown instead. */
+	/** Collapse Work: the reply failed; its friendly error text is shown instead. */
 	failed?: boolean;
+	/** Collapse Work: the technical error, drawn inside the folded working. */
+	errorDetail?: string;
+	/** How long the turn took, from the history's timing receipt. */
+	durationMs?: number;
 }
 
 interface ToolCall {
@@ -193,10 +198,16 @@ function mapHistoryToMessages(history: any[], pending?: PendingChoice | null): M
 		}
 		if (h.assistant_summary) {
 			const toolCalls: ToolCall[] = [];
+			let durationMs: number | undefined;
 			if (h.tool_calls_json) {
 				try {
 					const parsed = JSON.parse(h.tool_calls_json);
 					for (const tc of parsed) {
+						// The turn's timing receipt, not a tool: kept as the turn's duration.
+						if (tc?.kind === 'timing') {
+							if (typeof tc.ms === 'number') durationMs = tc.ms;
+							continue;
+						}
 						toolCalls.push({
 							id: `hist_tc_${i}_${toolCalls.length}`,
 							toolName: tc.tool ?? 'unknown',
@@ -215,6 +226,7 @@ function mapHistoryToMessages(history: any[], pending?: PendingChoice | null): M
 				role: 'assistant',
 				content: h.assistant_summary,
 				toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
+				...(durationMs !== undefined ? { durationMs } : {}),
 				turnNumber,
 				feedbackRating: h.feedback_rating,
 				attachments: attached.assistant,
@@ -242,8 +254,8 @@ interface SSEEventContext {
 	setSessionId: (id: string | null) => void;
 	setUsage: React.Dispatch<React.SetStateAction<TokenUsage | null>>;
 	showToolCalls: boolean;
-	/** Answer Only: keep where the answer starts, and keep errors off the screen. */
-	answerOnly?: boolean;
+	/** Collapse Work: keep where the answer starts, and fold errors into the working. */
+	collapseWork?: boolean;
 	setFeedbackTurn: (turn: { sessionId: string; turnNumber: number }) => void;
 	setCrafts: React.Dispatch<React.SetStateAction<Map<string, CraftData>>>;
 	setActiveCraftId: React.Dispatch<React.SetStateAction<string | null>>;
@@ -323,12 +335,13 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 					: '';
 			const newText = ctx.currentText + gap + incoming;
 			ctx.setText(newText);
-			// Answer Only draws just the text after the last tool. Blank text after
-			// a tool leaves the next text to start the answer.
-			const answerFrom = ctx.answerOnly
+			// Collapse Work draws the text after the last tool as the answer and
+			// folds the rest away. Blank text after a tool leaves the next text to
+			// start the answer.
+			const answerFrom = ctx.collapseWork
 				? answerStartAfter(ctx.currentText + gap, incoming, afterTool)
 				: undefined;
-			if (ctx.answerOnly && afterTool && answerFrom === undefined) ctx.markToolRan?.();
+			if (ctx.collapseWork && afterTool && answerFrom === undefined) ctx.markToolRan?.();
 			ctx.setMessages(prev =>
 				prev.map(m =>
 					m.id === ctx.assistantMsgId
@@ -730,10 +743,15 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			break;
 		}
 		case 'error': {
-			if (ctx.answerOnly) {
-				// The raw message is for developers; the chat shows its Error Text.
+			if (ctx.collapseWork) {
+				// The chat shows its Error Text; the raw message goes in the folded working.
+				const detail = data.message ?? 'Unknown error';
 				ctx.setMessages(prev =>
-					prev.map(m => (m.id === ctx.assistantMsgId ? { ...m, failed: true } : m)),
+					prev.map(m =>
+						m.id === ctx.assistantMsgId
+							? { ...m, failed: true, errorDetail: detail }
+							: m,
+					),
 				);
 				break;
 			}
@@ -1058,7 +1076,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			settingsUrl = '',
 			selectedProviders = [],
 			showToolCalls = true,
-			answerOnly = false,
+			collapseWork = false,
 			thinkingText = DEFAULT_THINKING_TEXT,
 			errorText = DEFAULT_ERROR_TEXT,
 			enablePersonalization = true,
@@ -2446,6 +2464,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 													data: undefined,
 													answerFrom: undefined,
 													failed: undefined,
+													errorDetail: undefined,
 												}
 											: m,
 									),
@@ -2549,8 +2568,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							setMessages,
 							setSessionId,
 							setUsage,
-							showToolCalls: showToolCalls && !answerOnly,
-							answerOnly,
+							showToolCalls,
+							collapseWork,
 							setFeedbackTurn: turn => setFeedbackTurn(turn),
 							setCrafts,
 							setActiveCraftId,
@@ -2594,7 +2613,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		},
 		[
 			showToolCalls,
-			answerOnly,
+			collapseWork,
 			onComplete,
 			completeBindingPath,
 			rememberActiveRun,
@@ -3223,8 +3242,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				const errorMsg: Message = {
 					id: `err_${Date.now()}`,
 					role: 'assistant',
-					content: answerOnly ? '' : `Error: ${err.message ?? 'Connection failed'}`,
-					...(answerOnly ? { failed: true } : {}),
+					content: collapseWork ? '' : `Error: ${err.message ?? 'Connection failed'}`,
+					...(collapseWork
+						? { failed: true, errorDetail: err.message ?? 'Connection failed' }
+						: {}),
 				};
 				setMessages(prev => [...prev, errorMsg]);
 
@@ -3264,7 +3285,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			// are deliberately NOT here: they are read through refs above, which is
 			// what keeps the send current without rebuilding it on every render.
 			showToolCalls,
-			answerOnly,
+			collapseWork,
 			onMessage,
 			onError,
 			onComplete,
@@ -3730,19 +3751,19 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						{messages.map(msg => {
 							const isLatest = msg.id === messages.at(-1)?.id;
 							const isLive = isStreaming && msg.role === 'assistant' && isLatest;
-							// Answer Only: no thinking, tool or agent parts; "Thinking..."
-							// while it runs, then the answer.
-							const simple = answerOnly && msg.role === 'assistant';
-							const simpleText = simple ? answerOnlyText(msg, errorText) : '';
+							// Collapse Work: the thinking, tools, agent cards and in-between
+							// text fold into one line; only the answer shows under it.
+							const folded = collapseWork && msg.role === 'assistant';
+							const split = folded ? splitWork(msg, isLive, errorText) : undefined;
 							const waitingOnUser = (msg.confirmationActions ?? []).some(
 								a => a.status === 'pending',
 							);
 							const parts =
-								msg.role === 'assistant' && !simple
+								msg.role === 'assistant'
 									? splitReply(
 											{
 												thinking: msg.thinking ?? '',
-												content: msg.content,
+												content: split ? split.work : msg.content,
 												toolCalls: orchestratorToolCalls(msg),
 												agentSpans: msg.agentSpans ?? [],
 											},
@@ -3755,6 +3776,48 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							);
 							const working =
 								agentRunning || (msg.toolCalls ?? []).some(tc => tc.isRunning);
+							const partsView = parts.map((part, i) => {
+								const isAnswer = i === parts.length - 1;
+								return (
+									<React.Fragment key={`${msg.id}-part-${i}`}>
+										<ThinkingBlock
+											isActive={
+												// The card's pulsing dot shows a running agent.
+												isAnswer &&
+												isLive &&
+												!agentRunning &&
+												(!part.content ||
+													part.toolCalls.some(tc => tc.isRunning))
+											}
+											toolCalls={showToolCalls ? part.toolCalls : []}
+											reasoningContent={part.thinking || undefined}
+											expandIcon={expandIcon}
+											collapseIcon={collapseIcon}
+											componentKey={key ?? ''}
+											styles={styleProperties}
+										/>
+										{(folded || !isAnswer) && part.content && (
+											<ChatMessage
+												role="assistant"
+												content={part.content}
+												componentKey={key ?? ''}
+												styles={styleProperties}
+												definition={props.definition}
+												showActions={false}
+											/>
+										)}
+										{part.agentSpans.length > 0 && (
+											<AgentGroup
+												spans={part.agentSpans}
+												expandIcon={expandIcon}
+												collapseIcon={collapseIcon}
+												componentKey={key ?? ''}
+												styles={styleProperties}
+											/>
+										)}
+									</React.Fragment>
+								);
+							});
 							return (
 								<React.Fragment key={msg.id}>
 									{msg.attachments?.length ? (
@@ -3772,65 +3835,47 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 											))}
 										</div>
 									) : null}
-									{parts.map((part, i) => {
-										const isAnswer = i === parts.length - 1;
-										return (
-											<React.Fragment key={`${msg.id}-part-${i}`}>
-												<ThinkingBlock
-													isActive={
-														// The card's pulsing dot shows a running agent.
-														isAnswer &&
-														isLive &&
-														!agentRunning &&
-														(!part.content ||
-															part.toolCalls.some(tc => tc.isRunning))
-													}
-													toolCalls={showToolCalls ? part.toolCalls : []}
-													reasoningContent={part.thinking || undefined}
-													expandIcon={expandIcon}
-													collapseIcon={collapseIcon}
-													componentKey={key ?? ''}
-													styles={styleProperties}
-												/>
-												{!isAnswer && part.content && (
-													<ChatMessage
-														role="assistant"
-														content={part.content}
-														componentKey={key ?? ''}
-														styles={styleProperties}
-														definition={props.definition}
-														showActions={false}
-													/>
-												)}
-												{part.agentSpans.length > 0 && (
-													<AgentGroup
-														spans={part.agentSpans}
-														expandIcon={expandIcon}
-														collapseIcon={collapseIcon}
-														componentKey={key ?? ''}
-														styles={styleProperties}
-													/>
-												)}
-											</React.Fragment>
-										);
-									})}
-									{simple && isLive && !waitingOnUser && (
-										<ThinkingIndicator text={thinkingText} />
+									{folded ? (
+										<WorkSummary
+											live={isLive}
+											waiting={waitingOnUser}
+											thinkingText={thinkingText}
+											durationMs={msg.durationMs}
+											steps={msg.toolCalls?.length ?? 0}
+											hasDetails={
+												!!split?.work.trim() ||
+												!!msg.thinking ||
+												!!msg.toolCalls?.length ||
+												!!msg.agentSpans?.length ||
+												!!msg.errorDetail
+											}
+											expandIcon={expandIcon}
+											collapseIcon={collapseIcon}
+										>
+											{partsView}
+											{msg.errorDetail && (
+												<div className="_workError">
+													Error: {msg.errorDetail}
+												</div>
+											)}
+										</WorkSummary>
+									) : (
+										partsView
 									)}
-									{!(simple && isLive) && (
+									{!(folded && isLive) && (
 										<ChatMessage
 											role={msg.role}
 											content={
-												simple
-													? simpleText
+												split
+													? split.answer
 													: answer
 														? answer.content
 														: msg.content
 											}
 											pending={msg.pending}
 											copyText={
-												simple
-													? simpleText
+												split
+													? split.answer
 													: parts
 															.map(part => part.content)
 															.filter(Boolean)
@@ -3937,8 +3982,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						{isStreaming &&
 							messages.at(-1)?.role === 'user' &&
 							!messages.at(-1)?.pending &&
-							(answerOnly ? (
-								<ThinkingIndicator text={thinkingText} />
+							(collapseWork ? (
+								<WorkSummary
+									live
+									thinkingText={thinkingText}
+									steps={0}
+									hasDetails={false}
+								/>
 							) : (
 								<ThinkingBlock
 									isActive={true}
@@ -4065,7 +4115,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								<i className="fa fa-gear" aria-hidden="true" />
 							</a>
 						)}
-						{usage && !answerOnly && <UsageBar usage={usage} />}
+						{usage && !collapseWork && <UsageBar usage={usage} />}
 					</div>
 				</div>
 

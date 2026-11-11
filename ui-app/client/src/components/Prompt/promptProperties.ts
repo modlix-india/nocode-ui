@@ -466,13 +466,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
-		// A plain question-and-answer chat for end users (CXZ-1781). Off by
-		// default: every other chat keeps its tool cards, thinking and agent cards.
-		name: 'answerOnly',
+		// A question-and-answer chat for end users (CXZ-1781). Off by default:
+		// every other chat keeps its tool cards, thinking and agent cards open.
+		name: 'collapseWork',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Answer Only',
+		displayName: 'Collapse Work',
 		description:
-			'Plain question-and-answer chat: no tool calls, thinking, agent cards or token usage. While the agent works only a "Thinking..." line shows, then the final answer (with its tables and cards). Approval cards still show. Errors show the Error Text instead of the details.',
+			'Fold the agent\'s working into one line: "Thinking..." while it works, then "Worked for 12s · 4 steps", which opens to the reasoning, tool calls and agent cards. Only the final answer (with its tables and cards) shows under it. Approval cards always show. Errors show the Error Text, with the details inside the folded line. The token usage bar is hidden.',
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
@@ -480,7 +480,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'thinkingText',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Thinking Text',
-		description: 'With Answer Only on: the line shown while the agent works.',
+		description: 'With Collapse Work on: the line shown while the agent works.',
 		defaultValue: 'Thinking...',
 		group: ComponentPropertyGroup.ADVANCED,
 		translatable: true,
@@ -489,7 +489,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'errorText',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Error Text',
-		description: 'With Answer Only on: the message shown when a reply fails.',
+		description: 'With Collapse Work on: the message shown when a reply fails.',
 		defaultValue: 'Sorry, something went wrong. Please try again.',
 		group: ComponentPropertyGroup.ADVANCED,
 		translatable: true,

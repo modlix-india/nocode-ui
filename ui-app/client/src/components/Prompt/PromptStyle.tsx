@@ -935,13 +935,38 @@ export default function PromptStyle({
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
 		}
 
-		/* Answer Only's "Thinking..." line: nothing to open, so no hover or pointer. */
-		${PREFIX} ._answerOnlyThinking ._thinkingHeader {
+		/* Collapse Work's folded line: the working opens under it, indented. */
+		${PREFIX} ._workSummary ._thinkingHeader._static {
 			cursor: default;
 		}
 
-		${PREFIX} ._answerOnlyThinking ._thinkingHeader:hover {
+		${PREFIX} ._workSummary ._thinkingHeader._static:hover {
 			background: none;
+		}
+
+		${PREFIX} ._workSummary ._thinkingChevron {
+			margin-left: 0;
+		}
+
+		${PREFIX} ._workSummary ._thinkingHeader {
+			width: auto;
+		}
+
+		${PREFIX} ._workSummaryBody {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			margin: 4px 0 4px 16px;
+			padding-left: 12px;
+			border-left: 1px solid ${t('borderColorNine', '#e5e5e5')};
+			min-width: 0;
+		}
+
+		${PREFIX} ._workError {
+			font-size: 12px;
+			color: ${t('promptTertiaryFontColor', '#8b8b8b')};
+			white-space: pre-wrap;
+			word-break: break-word;
 		}
 
 		${PREFIX} ._thinkingHeader i,
