@@ -6,13 +6,29 @@ import {
 	findPropertyDefinitions,
 	lazyStylePropertyLoadFunction,
 	applyPreloadedStyleProperties,
+	inflateAndSetStyleProps,
 } from '../util/lazyStylePropertyUtil';
 import { usedComponents } from '../../App/usedComponents';
-import { styleProperties, styleDefaults, stylePropertiesForTheme } from './audioStyleProperties';
+import {
+	styleProperties,
+	styleDefaults,
+	stylePropertiesForTheme,
+	waveformStyleProperties,
+	waveformStyleDefaults,
+	waveformStylePropertiesForTheme,
+} from './audioStyleProperties';
 import { propertiesDefinition } from './audioProperties';
 
 const PREFIX = '.comp.compAudio';
 const NAME = 'Audio';
+
+// The waveform entries are bundled, so they are expanded for the colour schemes right away.
+inflateAndSetStyleProps(
+	[findPropertyDefinitions(propertiesDefinition, 'colorScheme').colorScheme],
+	waveformStylePropertiesForTheme,
+	props => waveformStyleProperties.splice(0, waveformStyleProperties.length, ...props),
+	waveformStyleDefaults,
+);
 export default function AudioStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
@@ -219,8 +235,46 @@ ${PREFIX} ._volumeControls:hover ._onHoverVolumeControl {
    ${PREFIX} ._playBackSpeed span{
 	cursor:pointer;
 	}
+
+	${PREFIX} ._waveform {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--audio-waveform-bar-gap, 2px);
+		width: 100%;
+		height: 40px;
+		cursor: pointer;
+		touch-action: none;
+		user-select: none;
+	}
+	${PREFIX} ._waveform:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 2px;
+	}
+	${PREFIX} ._waveform ._waveformBar {
+		flex: 0 0 var(--audio-waveform-bar-width, 3px);
+		min-height: 2px;
+		border-radius: 2px;
+		background-color: #d0d5dd;
+		pointer-events: none;
+	}
+	${PREFIX} ._waveform ._waveformBar._played {
+		background-color: currentColor;
+	}
+	${PREFIX} ._waveform ._waveformCursor {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 2px;
+		margin-left: -1px;
+		background-color: currentColor;
+		pointer-events: none;
+	}
 	 
 	
-     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
+     ` +
+		processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme) +
+		processStyleDefinition(PREFIX, waveformStyleProperties, waveformStyleDefaults, theme);
 	return <style id="AudioStyle">{css}</style>;
 }

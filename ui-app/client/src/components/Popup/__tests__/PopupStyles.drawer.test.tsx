@@ -35,3 +35,16 @@ describe('PopupStyles drawer rules', () => {
 		rules.forEach(r => expect(r.substring(0, r.indexOf('{'))).toContain('._drawer'));
 	});
 });
+
+describe('PopupStyles drawer closing rules', () => {
+	const css = renderToStaticMarkup(<PopupStyles theme={new Map()} />);
+
+	it('slides a closing drawer out the way it came and lets clicks through', () => {
+		expect(css).toContain('._drawer._closing.backdrop { pointer-events: none; }');
+		expect(css).toContain('@keyframes popupDrawerToRight');
+		expect(css).toContain('@keyframes popupDrawerToLeft');
+		expect(css).toMatch(
+			/\._drawer\._closing\._right_top\.backdrop > \.modal[^{]*\{ animation-name: popupDrawerToRight; \}/,
+		);
+	});
+});

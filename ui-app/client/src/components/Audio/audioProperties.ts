@@ -41,6 +41,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'Audio Player Design 4',
 				description: 'A compact and minimalistic design for the player.',
 			},
+			{
+				name: '_audioDesign5',
+				displayName: 'Audio Player Waveform',
+				description:
+					'Design 1 with the seek bar drawn as a waveform of the recording. Click or drag the waveform to seek. Falls back to the seek bar while the waveform loads or when it cannot be drawn (a stream, an unknown length, a file the browser cannot read).',
+			},
 		],
 	},
 	{
@@ -415,6 +421,12 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	waveform: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	fileName: [
