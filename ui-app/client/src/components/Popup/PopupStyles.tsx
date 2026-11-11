@@ -84,9 +84,24 @@ export default function PopupStyles({
       border-bottom-left-radius: 0;
       animation-name: popupDrawerFromLeft;
     }
+    /* Closing: the drawer slides back out the way it came, then the component unmounts it.
+       The page behind takes clicks at once. */
+    ${PREFIX} ._drawer._closing.backdrop { pointer-events: none; }
+    ${PREFIX} ._drawer._closing.backdrop > .modal {
+      animation: popupDrawerDown 200ms ease-in forwards;
+    }
+    ${PREFIX} ._drawer._closing._right_top.backdrop > .modal,
+    ${PREFIX} ._drawer._closing._right_center.backdrop > .modal,
+    ${PREFIX} ._drawer._closing._right_bottom.backdrop > .modal { animation-name: popupDrawerToRight; }
+    ${PREFIX} ._drawer._closing._left_top.backdrop > .modal,
+    ${PREFIX} ._drawer._closing._left_center.backdrop > .modal,
+    ${PREFIX} ._drawer._closing._left_bottom.backdrop > .modal { animation-name: popupDrawerToLeft; }
     @keyframes popupDrawerFromRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
     @keyframes popupDrawerFromLeft { from { transform: translateX(-100%); } to { transform: translateX(0); } }
     @keyframes popupDrawerUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @keyframes popupDrawerToRight { from { transform: translateX(0); } to { transform: translateX(100%); } }
+    @keyframes popupDrawerToLeft { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+    @keyframes popupDrawerDown { from { transform: translateY(0); } to { transform: translateY(100%); } }
     @media (prefers-reduced-motion: reduce) {
       ${PREFIX} ._drawer.backdrop > .modal { animation: none; }
     }
