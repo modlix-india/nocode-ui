@@ -559,6 +559,9 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			} else if (maxChars) {
 				maxLen = maxChars;
 			}
+			// A national trunk 0 (098xxx) is never part of the number: drop it rather than the last digit.
+			if (maxLen > 0 && text.length > maxLen && text.startsWith('0'))
+				text = text.replace(/^0+/, '');
 			if (maxLen > 0 && text.length > maxLen) {
 				text = text.substring(0, maxLen);
 			}
