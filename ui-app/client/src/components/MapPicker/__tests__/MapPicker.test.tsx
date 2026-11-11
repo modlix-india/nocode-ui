@@ -442,6 +442,28 @@ describe('ADZ-1257: Match Place Type', () => {
 		expect(drawn.map(d => d.kind)).toEqual(['rect']);
 	});
 
+	test('ADZ-1655: with Area dots an area with no outline is a small dot, the map still fits it', async () => {
+		properties = {
+			apiKey: 'k',
+			matchPlaceType: true,
+			areaDots: true,
+			places: [
+				{ name: 'Bengaluru,Karnataka,India', type: 'CITY', platformId: '1007768' },
+				{ name: 'Indiranagar,Karnataka,India', type: 'NEIGHBORHOOD' },
+				{ name: 'Pin', type: 'CUSTOM_LOCATION', lat: 12.5, lng: 77.1, radius: 2 },
+			],
+		};
+		render();
+		await act(async () => {
+			await new Promise(r => setTimeout(r, 0));
+		});
+		expect(drawn.map(d => d.kind)).toEqual(['circle', 'marker', 'circle']);
+		expect(drawn[0].opts.radius).toBe(120);
+		expect(drawn[0].opts.center).toBeDefined();
+		expect(Math.round(drawn[2].opts.radius)).toBe(2000);
+		expect(fitted).toBe(1);
+	});
+
 	test('with a map id, a matched city is outlined by its boundary layer through the found place id', async () => {
 		const layer: any = {
 			type: 'LOCALITY',

@@ -139,3 +139,36 @@ describe('Popup restoreFocus', () => {
 		expect(document.activeElement).toBe(other);
 	});
 });
+
+describe('Popup drawer (opt-in)', () => {
+	let host: HTMLDivElement;
+	let root: Root;
+
+	beforeEach(() => {
+		storeValues.clear();
+		listeners.clear();
+		document.body.innerHTML = '';
+		host = document.createElement('div');
+		document.body.append(host);
+	});
+
+	afterEach(() => act(() => root.unmount()));
+
+	it('marks the backdrop as a drawer when drawer is on', () => {
+		properties = { designType: '_design1', modalPosition: '_right_top', drawer: true };
+		root = render(host);
+		setOpen(true);
+		const backdrop = host.querySelector('.backdrop')!;
+		expect(backdrop.classList.contains('_drawer')).toBe(true);
+		expect(backdrop.classList.contains('_right_top')).toBe(true);
+	});
+
+	it('keeps the floating box without drawer (old behaviour)', () => {
+		properties = { designType: '_design1', modalPosition: '_right_top' };
+		root = render(host);
+		setOpen(true);
+		const backdrop = host.querySelector('.backdrop')!;
+		expect(backdrop.classList.contains('_drawer')).toBe(false);
+		expect(backdrop.className).toBe('backdrop _right_top');
+	});
+});

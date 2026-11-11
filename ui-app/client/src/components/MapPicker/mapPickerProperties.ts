@@ -103,6 +103,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		name: 'areaDots',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Area dots',
+		description:
+			'Draw a place that has an area but no boundary outline on this map (a neighbourhood, or any area without a map id with boundary layers) as a small dot at its centre, with its label, instead of the box of its bounds. The map still fits the whole area. Off: drawn as before.',
+		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
+	},
+	{
 		name: 'placeColor',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Place colour',
