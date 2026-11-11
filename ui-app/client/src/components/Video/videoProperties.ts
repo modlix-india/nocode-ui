@@ -180,7 +180,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Controls on a dark scrim',
 		description:
-			'Shows the player controls in white on a dark fade at the bottom of the video, so they read on any picture and in any theme. Off keeps the theme colours.',
+			'Shows the player controls in white on a dark fade at the bottom of the video, so they read on any picture and in any theme. In full screen any mouse move, tap or key press shows them, and they hide after a few idle seconds only while the video plays. Off keeps the theme colours and the hover behaviour.',
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
 	},
