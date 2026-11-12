@@ -253,6 +253,7 @@ export const DRAFT_AGENT_CSS = `
 	font: inherit;
 }
 ._mlxDAConfirmBtn._yes { background: var(--mlxda-accent); border-color: var(--mlxda-accent); color: #fff; }
+._mlxDAConfirmBtn:disabled { opacity: 0.45; cursor: default; }
 ._mlxDAReload {
 	margin: 4px 6px 2px 30px;
 	border: 0;
