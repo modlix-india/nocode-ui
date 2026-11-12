@@ -165,6 +165,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		name: 'followPoint',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Follow the point',
+		description:
+			'CXZ-1830: each time the bound point changes (a list item picked on the page, not only the first time), the map moves to it and zooms in to street level. Off: the map centres on the point only when it is first set.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
+	{
 		name: 'onPlaceClick',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On place click',
