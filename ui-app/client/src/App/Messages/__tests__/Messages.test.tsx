@@ -6,6 +6,7 @@ import React, { act } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
 jest.mock('../../../sso/ssoModule', () => ({ takeSocialArrivalMessage: () => undefined }));
+jest.mock('../../../components/util/runEvent', () => ({ runEvent: jest.fn() }));
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -164,5 +165,145 @@ describe('Messages lift (opt-in, per page)', () => {
 		expect(mod.messagesLiftValue('10px; color: red')).toBeUndefined();
 		expect(mod.messagesLiftValue(' 72px ')).toBe('72px');
 		expect(mod.messagesLiftValue(72.5)).toBe('72.5px');
+	});
+});
+
+describe('Toast actions, sticky and details (opt-in)', () => {
+	const store = () => require('../../../context/StoreContext');
+	const { runEvent } = require('../../../components/util/runEvent');
+	const buttons = () =>
+		Array.from(container.querySelectorAll('._msgActionBtn')).map(b => b.textContent);
+
+	beforeEach(() => {
+		(runEvent as jest.Mock).mockClear();
+		act(() =>
+			store().setData('Store.pageDefinition.toastPage', {
+				name: 'toastPage',
+				eventFunctions: {
+					k1: { name: 'undoPause', steps: {} },
+					k2: { name: 'other', steps: {} },
+				},
+			}),
+		);
+	});
+
+	it('leaves a toast without the new options exactly as before', () => {
+		add('Saved', mod.MESSAGE_TYPE.SUCCESS);
+		expect(container.querySelector('._msgActions')).toBeNull();
+		expect(container.querySelector('._msgDetails')).toBeNull();
+		expect(container.querySelector('._message')?.className).toBe('_message SUCCESS');
+		const stored = store().getDataFromPath('Store.messages', []);
+		expect(Object.keys(stored[0]).sort()).toEqual([
+			'id',
+			'isGlobalScope',
+			'msg',
+			'type',
+			'when',
+		]);
+	});
+
+	it('shows an action, writes its value, runs the page event by name and closes', async () => {
+		act(() =>
+			mod.addMessage(mod.MESSAGE_TYPE.SUCCESS, '3 campaigns paused', true, '', {
+				actions: mod.toastActions([
+					{
+						label: 'Undo',
+						eventFunction: 'undoPause',
+						path: 'Page.undo',
+						value: ['a', 'b'],
+					},
+				]),
+				page: 'toastPage',
+			}),
+		);
+		expect(buttons()).toEqual(['Undo']);
+		await act(async () => (container.querySelector('._msgActionBtn') as HTMLElement).click());
+		expect(store().getDataFromPath('Store.pageData.toastPage.undo', [])).toEqual(['a', 'b']);
+		expect(runEvent).toHaveBeenCalledTimes(1);
+		const [def, , page, , pageDef] = (runEvent as jest.Mock).mock.calls[0];
+		expect(def.name).toBe('undoPause');
+		expect(page).toBe('toastPage');
+		expect(pageDef.name).toBe('toastPage');
+		expect(container.querySelector('._message')).toBeNull();
+	});
+
+	it('runs an event by its key, and a named function as a one step event', async () => {
+		act(() =>
+			mod.addMessage(mod.MESSAGE_TYPE.INFORMATION, 'x', true, '', {
+				actions: mod.toastActions([
+					{ label: 'Open', eventFunction: 'k2' },
+					{ label: 'Run', function: 'AdZumpV2.cmpList' },
+				]),
+				page: 'toastPage',
+			}),
+		);
+		await act(async () =>
+			(container.querySelectorAll('._msgActionBtn')[0] as HTMLElement).click(),
+		);
+		expect((runEvent as jest.Mock).mock.calls[0][0].name).toBe('other');
+
+		act(() =>
+			mod.addMessage(mod.MESSAGE_TYPE.INFORMATION, 'y', true, '', {
+				actions: mod.toastActions([{ label: 'Run', function: 'AdZumpV2.cmpList' }]),
+				page: 'toastPage',
+			}),
+		);
+		await act(async () => (container.querySelector('._msgActionBtn') as HTMLElement).click());
+		const step = (runEvent as jest.Mock).mock.calls[1][0].steps.run;
+		expect([step.namespace, step.name]).toEqual(['AdZumpV2', 'cmpList']);
+	});
+
+	it('keeps a sticky toast past the timeout and drops a plain one', () => {
+		act(() =>
+			mod.addMessage(mod.MESSAGE_TYPE.ERROR, '2 paused, 1 failed', true, '', {
+				sticky: true,
+			}),
+		);
+		add('Saved', mod.MESSAGE_TYPE.SUCCESS);
+		expect(container.querySelectorAll('._message')).toHaveLength(2);
+		expect(container.querySelector('._message._sticky')).not.toBeNull();
+		act(() => {
+			jest.advanceTimersByTime(12000);
+		});
+		const left = Array.from(container.querySelectorAll('._message ._msgString')).map(
+			e => e.textContent,
+		);
+		expect(left).toEqual(['2 paused, 1 failed']);
+		act(() => (container.querySelector('._msgCloseIcon') as HTMLElement).click());
+		expect(container.querySelector('._message')).toBeNull();
+	});
+
+	it('opens the details lines behind a Details button', () => {
+		act(() =>
+			mod.addMessage(mod.MESSAGE_TYPE.ERROR, '2 paused, 1 failed', true, '', {
+				sticky: true,
+				details: mod.toastDetails('Broad: Meta refused the change\nCityville: no access'),
+			}),
+		);
+		expect(buttons()).toEqual(['Details']);
+		expect(container.querySelector('._msgDetails')).toBeNull();
+		act(() => (container.querySelector('._msgDetailsBtn') as HTMLElement).click());
+		expect(
+			Array.from(container.querySelectorAll('._msgDetails li')).map(l => l.textContent),
+		).toEqual(['Broad: Meta refused the change', 'Cityville: no access']);
+		expect(buttons()).toEqual(['Hide details']);
+	});
+
+	it('keeps only usable actions and printable details', () => {
+		expect(
+			mod.toastActions([
+				{ label: '', eventFunction: 'x' },
+				{ label: 'No target' },
+				null,
+				'Undo',
+				new Map<string, any>([
+					['label', 'Undo'],
+					['eventFunction', 'undoPause'],
+				]),
+			]),
+		).toEqual([{ label: 'Undo', eventFunction: 'undoPause' }]);
+		expect(mod.toastActions(undefined)).toEqual([]);
+		expect(mod.toastDetails(['a', 2, { x: 1 }, ' '])).toEqual(['a', '2']);
+		expect(mod.toastDetails(undefined)).toEqual([]);
 	});
 });
