@@ -29,5 +29,6 @@ export * from './EnablePushNotifications';
 export * from './GetPushStatus';
 export * from './InitiateSocialLogin';
 export * from './BuildLeadAdData';
+export * from './HashData';
 export * from './call';
 export * from './kirun';
