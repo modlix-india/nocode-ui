@@ -55,6 +55,7 @@ const icon2 = (computedStyles: any, def: ComponentDefinition) => (
 
 function FileUpload(props: Readonly<ComponentProps>) {
 	const [fileValue, setFileValue] = useState<any>();
+	const [picked, setPicked] = useState<{ name: string; size: number } | undefined>();
 	const inputRef = useRef<any>(undefined);
 	const [hover, setHover] = useState<boolean>(false);
 	const [active, setActive] = useState<boolean>(false);
@@ -193,6 +194,7 @@ function FileUpload(props: Readonly<ComponentProps>) {
 	// Resolves true once the file is in the binding, false when it was refused (too big, bad JSON).
 	const setFiles = async (files: FileList | null): Promise<boolean> => {
 		if (!files?.length) return false;
+		if (!isMultiple) setPicked({ name: files[0].name, size: files[0].size });
 
 		if (maxFileSize && !isNaN(parseInt(maxFileSize, 10)) && parseInt(maxFileSize, 10) > 0) {
 			const maxSizeInBytes = parseInt(maxFileSize, 10);
@@ -417,30 +419,38 @@ function FileUpload(props: Readonly<ComponentProps>) {
 		fileArray = isMultiple ? fileValue : [fileValue];
 	}
 
-	const fileContainer = fileArray.map((each: any, index: any) => (
-		<div
-			className="_selectedDetails"
-			key={`st_${each?.name ?? index}`}
-			style={computedStyles?.selectedFiles ?? {}}
-		>
-			<SubHelperComponent definition={props.definition} subComponentName="_selectedFiles" />
-			<span>{each?.name}</span>
-			<span>{`(${returnFileSize(each?.size)})`}</span>
-			{uploadImmediatelyEvent ? null : (
-				<i
-					className="fa fa-solid fa-close closeIcon"
-					style={computedStyles?.closeIcon ?? {}}
-					onClick={e => handleDelete(e, each)}
-					onKeyUp={e => e.key === 'Enter' && handleDelete(e, each)}
-				>
-					<SubHelperComponent
-						definition={props.definition}
-						subComponentName="closeIcon"
-					/>
-				</i>
-			)}
-		</div>
-	));
+	// A value read from the file (JSON, rows of a CSV, base64) has no name or size of its own: show the chosen file's.
+	const fileContainer = fileArray.map((each: any, index: any) => {
+		const name = typeof each?.name === 'string' ? each.name : picked?.name;
+		const size = typeof each?.size === 'number' ? each.size : picked?.size;
+		return (
+			<div
+				className="_selectedDetails"
+				key={`st_${name ?? index}`}
+				style={computedStyles?.selectedFiles ?? {}}
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="_selectedFiles"
+				/>
+				<span>{name}</span>
+				{size === undefined ? null : <span>{`(${returnFileSize(size)})`}</span>}
+				{uploadImmediatelyEvent ? null : (
+					<i
+						className="fa fa-solid fa-close closeIcon"
+						style={computedStyles?.closeIcon ?? {}}
+						onClick={e => handleDelete(e, each)}
+						onKeyUp={e => e.key === 'Enter' && handleDelete(e, each)}
+					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="closeIcon"
+						/>
+					</i>
+				)}
+			</div>
+		);
+	});
 
 	let fileText = undefined;
 
