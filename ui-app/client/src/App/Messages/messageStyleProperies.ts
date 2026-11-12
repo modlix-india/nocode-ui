@@ -244,6 +244,21 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		sel: '._message',
 	},
 	{
+		n: 'messageActionColor',
+		cp: 'color',
+		dn: 'Message action color',
+		de: 'Colour of the buttons on a toast (Undo, Details). Unset, they take the toast kind hue.',
+		sel: '._message ._msgActionBtn',
+	},
+	{
+		n: 'messageDetailsMaxHeight',
+		cp: 'max-height',
+		dn: 'Message details max height',
+		de: 'Tallest the Details lines of a toast grow before they scroll.',
+		dv: '160px',
+		sel: '._message ._msgDetails',
+	},
+	{
 		n: 'messageBoxShadow',
 		cp: 'box-shadow',
 		dn: 'Message Box Shadow',
