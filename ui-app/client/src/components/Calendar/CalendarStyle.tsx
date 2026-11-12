@@ -62,6 +62,10 @@ export default function CalendarStyle({
 		display: flex;
 	}
 
+	${PREFIX} ._clearText {
+		cursor: pointer;
+	}
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return (
