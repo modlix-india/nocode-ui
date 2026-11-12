@@ -13,6 +13,7 @@ const runEventMock = jest.fn().mockResolvedValue(undefined);
 jest.mock('../../util/runEvent', () => ({ runEvent: (...a: any[]) => runEventMock(...a) }));
 
 const storeValues = new Map<string, any>();
+const pathListeners = new Map<string, (path: string, v: any) => void>();
 const childWatches: Array<{ cb: () => void; paths: string[] }> = [];
 jest.mock('../../../context/StoreContext', () => ({
 	PageStoreExtractor: { getForContext: () => ({ getPageName: () => 'p' }) },
@@ -22,6 +23,7 @@ jest.mock('../../../context/StoreContext', () => ({
 		cb: (path: string, v: any) => void,
 		path: string,
 	) => {
+		pathListeners.set(path, cb); // CXZ-1830: a test can change a bound value later
 		cb(path, storeValues.get(path));
 		return () => {};
 	},
@@ -182,6 +184,7 @@ beforeEach(() => {
 	document.body.appendChild(host);
 	root = createRoot(host);
 	storeValues.clear();
+	pathListeners.clear();
 	runEventMock.mockClear();
 	clickHandler = undefined;
 	drawn.length = 0;
@@ -803,5 +806,39 @@ describe('CXZ-1650: point markers', () => {
 		expect(plain.scale).toBe(8);
 		expect(labelled.fillColor).toBe('#1a1a1a');
 		expect(labelled.scale).toBe(10);
+	});
+});
+
+describe('CXZ-1830: Follow the point', () => {
+	async function settle() {
+		await act(async () => {
+			await Promise.resolve();
+			await new Promise(r => setTimeout(r, 0));
+		});
+	}
+	function movePin(v: any) {
+		storeValues.set('Page.pin', v);
+		act(() => pathListeners.get('Page.pin')!('Page.pin', v));
+	}
+
+	test('with Follow the point a new point moves the map there and zooms in', async () => {
+		properties = { apiKey: 'k', readOnly: true, followPoint: true };
+		storeValues.set('Page.pin', { lat: 12.9, lng: 77.6 });
+		render();
+		await settle();
+		views.length = 0;
+		movePin({ lat: 17.4, lng: 78.4 });
+		expect(views).toContainEqual({ center: { lat: 17.4, lng: 78.4 } });
+		expect(views).toContainEqual({ zoom: 15 });
+	});
+
+	test('without it a moved point keeps the view (the old behaviour)', async () => {
+		properties = { apiKey: 'k', readOnly: true };
+		storeValues.set('Page.pin', { lat: 12.9, lng: 77.6 });
+		render();
+		await settle();
+		views.length = 0;
+		movePin({ lat: 17.4, lng: 78.4 });
+		expect(views).toEqual([]);
 	});
 });
