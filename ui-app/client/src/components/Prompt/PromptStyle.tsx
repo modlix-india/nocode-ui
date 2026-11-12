@@ -3005,6 +3005,26 @@ export default function PromptStyle({
 			color: ${t('colorTwelve', '#dc3545')};
 		}
 
+		${PREFIX} ._confirmationWaiting {
+			margin-left: auto;
+			font-size: 12px;
+			font-weight: 600;
+			color: ${t('promptSecondaryFontColor', '#555')};
+		}
+
+		${PREFIX} ._confirmationOutcome {
+			margin: 0 0 12px;
+			font-size: 13px;
+			font-weight: 600;
+			color: ${t('promptFontColor', '#1a1a1a')};
+		}
+
+		${PREFIX} ._confirmationPrompt._resolved ._confirmationOutcome {
+			margin: 6px 0 0 24px;
+			font-weight: 400;
+			color: ${t('promptSecondaryFontColor', '#444')};
+		}
+
 		/* Resolved confirmation states */
 		${PREFIX} ._confirmationPrompt._resolved {
 			padding: 10px 16px;

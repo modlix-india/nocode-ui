@@ -13,44 +13,118 @@ export interface ConfirmationAction {
 	details: Record<string, any>;
 	options: ActionOption[];
 	toolUseId: string;
-	// `expired`: nothing is waiting on this card any more. The server said so
-	// (`confirmation_expired`: no answer in time, or the run was stopped), or a
-	// click was refused as expired. Shown with its buttons disabled (LZT-1952).
-	status: 'pending' | 'approved' | 'denied' | 'timeout' | 'expired';
+	// What the SERVER says happened, never what was clicked (LZ-828: the card read
+	// "Approved: Link Items" while the step read "Expired: no answer" and nothing
+	// was written). `approved` = the tool ran and succeeded, `failed` = it was
+	// approved but the tool failed, `denied` / `expired` = nothing ran. Set from
+	// the tool's result row, `confirmation_expired`, or a click refused as expired.
+	status: 'pending' | 'approved' | 'denied' | 'timeout' | 'expired' | 'failed';
 	selectedValue?: string;
-	// A click is on its way to POST /confirm. The card only says "Approved" once
-	// the server has taken it, so a click on a dead card never reads as done.
+	// A click is on its way to POST /confirm.
 	sending?: boolean;
+	// The server accepted the click; the outcome is still to come.
+	sent?: boolean;
+	// Why it expired: "timeout" (no answer in time), "cancelled" (the run was
+	// stopped) or "late" (a click arrived after it expired).
+	expiredReason?: string;
+	// The tool's own words when an approved change failed.
+	note?: string;
 }
 
-export const EXPIRED_LABEL = 'Expired, ask again';
+// One set of words for an approval's outcome, used by the card AND by the step
+// row under the reply (nocode-ai app/core/agent.py writes the step row with the
+// same words), so the two never tell different stories (LZ-828).
+export const EXPIRED_LABEL = 'Expired';
+export const EXPIRED_TEXT = 'Expired: no answer, nothing changed';
+export const STOPPED_TEXT = 'Expired: the run was stopped, nothing changed';
+export const LATE_TEXT = 'Expired: the change did not run';
+export const ASK_AGAIN = 'Ask again if you still want it.';
+export const DENIED_TEXT = 'Denied: nothing changed';
+export const SENT_TEXT = 'Waiting for the result';
 
-// Mark one card expired wherever it is. A card already answered keeps its
-// answer: an expiry can only reach a card that was still waiting. Returns the
-// same array when nothing changed, so React skips the render.
-export function markConfirmationExpired<M extends { confirmationActions?: ConfirmationAction[] }>(
+export function expiredText(reason?: string): string {
+	if (reason === 'cancelled') return STOPPED_TEXT;
+	if (reason === 'late') return LATE_TEXT;
+	return EXPIRED_TEXT;
+}
+
+// The tool_use_id a card belongs to. The server names a card `confirm_<tool_use_id>`.
+export function cardToolUseId(action: Pick<ConfirmationAction, 'confirmationId' | 'toolUseId'>) {
+	if (action.toolUseId) return action.toolUseId;
+	return action.confirmationId.startsWith('confirm_')
+		? action.confirmationId.slice('confirm_'.length)
+		: '';
+}
+
+// Has the server not yet said what became of this card?
+export function isUndecided(a: ConfirmationAction): boolean {
+	return a.status === 'pending';
+}
+
+// Is the card waiting on the person (buttons live)?
+export function isAwaitingAnswer(a: ConfirmationAction): boolean {
+	return a.status === 'pending' && !a.sending && !a.sent;
+}
+
+function patchCards<M extends { confirmationActions?: ConfirmationAction[] }>(
 	messages: M[],
-	confirmationId: string,
+	match: (a: ConfirmationAction) => boolean,
+	patch: (a: ConfirmationAction) => Partial<ConfirmationAction>,
 ): M[] {
 	let changed = false;
 	const next = messages.map(m => {
-		if (
-			!m.confirmationActions?.some(
-				a => a.confirmationId === confirmationId && a.status === 'pending',
-			)
-		)
-			return m;
+		if (!m.confirmationActions?.some(match)) return m;
 		changed = true;
 		return {
 			...m,
 			confirmationActions: m.confirmationActions.map(a =>
-				a.confirmationId === confirmationId && a.status === 'pending'
-					? { ...a, status: 'expired' as const, sending: false }
-					: a,
+				match(a) ? { ...a, ...patch(a) } : a,
 			),
 		};
 	});
 	return changed ? next : messages;
+}
+
+// Mark one card expired wherever it is. Only a card the server has not decided
+// can expire: one sent but never taken included (LZ-828: a click answered 200 by
+// another worker that never reached the run). Returns the same array when
+// nothing changed, so React skips the render.
+export function markConfirmationExpired<M extends { confirmationActions?: ConfirmationAction[] }>(
+	messages: M[],
+	confirmationId: string,
+	reason?: string,
+): M[] {
+	return patchCards(
+		messages,
+		a => a.confirmationId === confirmationId && isUndecided(a),
+		() => ({ status: 'expired' as const, sending: false, sent: false, expiredReason: reason }),
+	);
+}
+
+// The tool's result row decides the card: the run either did the change, failed
+// it, or never ran it (denied or expired). This is the server's real outcome.
+export function applyToolOutcome<M extends { confirmationActions?: ConfirmationAction[] }>(
+	messages: M[],
+	toolUseId: string,
+	success: boolean | undefined,
+	summary: string,
+): M[] {
+	if (!toolUseId) return messages;
+	const text = (summary ?? '').trim();
+	let patch: Partial<ConfirmationAction>;
+	if (success) patch = { status: 'approved' };
+	else if (/^expired\b/i.test(text))
+		patch = {
+			status: 'expired',
+			expiredReason: /stopped/i.test(text) ? 'cancelled' : 'timeout',
+		};
+	else if (/^denied\b/i.test(text)) patch = { status: 'denied' };
+	else patch = { status: 'failed', note: text };
+	return patchCards(
+		messages,
+		a => cardToolUseId(a) === toolUseId && a.status !== 'expired',
+		() => ({ ...patch, sending: false, sent: false }),
+	);
 }
 
 interface ActionBlockProps {
@@ -90,7 +164,10 @@ export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 	const [selected, setSelected] = useState<string | null>(null);
 	const isExpired = action.status === 'expired' || action.status === 'timeout';
 	// Buttons work only while the server is waiting and no click is in flight.
-	const isPending = action.status === 'pending' && !action.sending;
+	const isPending = isAwaitingAnswer(action);
+	// Clicked and taken (or on its way): the result is still to come.
+	const isWaitingResult = action.status === 'pending' && !isPending;
+	const name = action.displayName || action.toolName;
 
 	const isApproveOrDeny =
 		action.options.length === 2 &&
@@ -118,13 +195,21 @@ export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 
 	const detailLines = formatDetails(action.details);
 
-	// Answered state — show compact result
-	if (action.status === 'approved' || action.status === 'denied') {
+	// Decided by the server: show the compact result, in the step row's words.
+	if (action.status === 'approved' || action.status === 'denied' || action.status === 'failed') {
 		const isApproved = action.status === 'approved';
 		const icon = isApproved ? 'fa fa-check-circle' : 'fa fa-times-circle';
 		const label = isApproved
-			? `Approved: ${action.displayName || action.toolName}`
-			: `Denied: ${action.displayName || action.toolName}`;
+			? `Approved: ${name}`
+			: action.status === 'denied'
+				? `Denied: ${name}`
+				: `Not done: ${name}`;
+		const line =
+			action.status === 'denied'
+				? DENIED_TEXT
+				: action.status === 'failed'
+					? action.note || 'The change failed, so nothing was changed.'
+					: '';
 		const statusClass = isApproved ? '_approved' : '_denied';
 
 		return (
@@ -133,6 +218,7 @@ export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 					<i className={`_confirmationIcon ${icon}`} />
 					<span className="_confirmationTitle">{label}</span>
 				</div>
+				{line && <p className="_confirmationOutcome">{line}</p>}
 			</div>
 		);
 	}
@@ -144,8 +230,9 @@ export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 				<i
 					className={`_confirmationIcon fa ${isExpired ? 'fa-clock' : 'fa-shield-halved'}`}
 				/>
-				<span className="_confirmationTitle">{action.displayName || action.toolName}</span>
+				<span className="_confirmationTitle">{name}</span>
 				{isExpired && <span className="_confirmationExpired">{EXPIRED_LABEL}</span>}
+				{isWaitingResult && <span className="_confirmationWaiting">{SENT_TEXT}</span>}
 			</div>
 
 			<p className="_confirmationMessage">{action.message}</p>
@@ -156,6 +243,12 @@ export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 						<li key={i}>{line}</li>
 					))}
 				</ul>
+			)}
+
+			{isExpired && (
+				<p className="_confirmationOutcome">
+					{expiredText(action.expiredReason)}. {ASK_AGAIN}
+				</p>
 			)}
 
 			<div className="_confirmationOptions">
