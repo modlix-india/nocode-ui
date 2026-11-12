@@ -29,7 +29,14 @@ import {
 	splitWork,
 } from './collapseWork';
 import { AgentGroup } from './components/AgentGroup';
-import { ActionBlock, ConfirmationAction, markConfirmationExpired } from './components/ActionBlock';
+import {
+	ActionBlock,
+	applyToolOutcome,
+	cardToolUseId,
+	ConfirmationAction,
+	isAwaitingAnswer,
+	markConfirmationExpired,
+} from './components/ActionBlock';
 import { InputBar } from './components/InputBar';
 import { SessionList, Session } from './components/SessionList';
 import { CraftCard } from './components/CraftCard';
@@ -505,8 +512,16 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			break;
 		}
 		case 'tool_result': {
-			if (!ctx.showToolCalls) break;
 			const tcId = data.tool_use_id ?? '';
+			// An approval card shows what the run really did with its tool: done,
+			// failed, denied or expired. Never the click alone (LZ-828). Runs even
+			// when tool rows are hidden: the card is always shown.
+			if (tcId) {
+				ctx.setMessages(prev =>
+					applyToolOutcome(prev, tcId, data.success, data.summary ?? ''),
+				);
+			}
+			if (!ctx.showToolCalls) break;
 			const existing = ctx.toolCalls.get(tcId);
 			if (existing) {
 				existing.summary = data.summary ?? '';
@@ -723,9 +738,10 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 							{ label: 'Approve', value: 'approve' },
 							{ label: 'Deny', value: 'deny' },
 						],
-				toolUseId: data.tool_use_id ?? '',
+				toolUseId: '',
 				status: 'pending',
 			};
+			action.toolUseId = data.tool_use_id || cardToolUseId(action);
 			ctx.setMessages(prev =>
 				prev.map(m =>
 					m.id === ctx.assistantMsgId
@@ -743,7 +759,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			// was stopped). Keep it on screen, buttons off, saying so (LZT-1952).
 			const expiredId = data.confirmation_id ?? '';
 			if (!expiredId) break;
-			ctx.setMessages(prev => markConfirmationExpired(prev, expiredId));
+			ctx.setMessages(prev => markConfirmationExpired(prev, expiredId, data.reason));
 			break;
 		}
 		case 'error': {
@@ -3540,19 +3556,25 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			const sid = sessionIdRef.current;
 			if (!sid) return;
 
+			// Only a card the server has not decided yet is touched: an expiry or
+			// the tool's result may land while the click is still travelling.
 			const update = (patch: Partial<ConfirmationAction>) =>
 				setMessages(prev =>
 					prev.map(m => ({
 						...m,
 						confirmationActions: m.confirmationActions?.map(a =>
-							a.confirmationId === confirmationId ? { ...a, ...patch } : a,
+							a.confirmationId === confirmationId && a.status === 'pending'
+								? { ...a, ...patch }
+								: a,
 						),
 					})),
 				);
 
-			// Buttons off while the click travels. "Approved" only once the server
-			// took it: a click on a card nothing waits on must never read as done
-			// (LZT-1952: "Approved: Create Deal" on screen, no deal written).
+			// Buttons off while the click travels. The card never says "Approved"
+			// from the click: only the tool's result row does that, once the change
+			// was really made (LZT-1952, LZ-828: a 200 from a worker that does not
+			// hold the run showed "Approved: Link Items", the run then expired and
+			// nothing was written).
 			update({ sending: true, selectedValue });
 
 			try {
@@ -3571,7 +3593,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				// "expired"). The card had timed out, or the run behind it stopped
 				// or ended, so the click did nothing.
 				if (response.status === 404 || response.status === 410) {
-					update({ sending: false, status: 'expired' });
+					update({ sending: false, status: 'expired', expiredReason: 'late' });
 					return;
 				}
 				if (!response.ok) {
@@ -3579,7 +3601,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					update({ sending: false });
 					return;
 				}
-				update({ sending: false, status: approved ? 'approved' : 'denied' });
+				// Taken. What happened is told by the run: the tool's result row, or
+				// `confirmation_expired` if the answer never reached it.
+				update({ sending: false, sent: true });
 			} catch {
 				// Network failure: let them try again. If it never arrives the
 				// server expires the card and says so.
@@ -3760,7 +3784,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							const folded = collapseWork && msg.role === 'assistant';
 							const split = folded ? splitWork(msg, isLive, errorText) : undefined;
 							const waitingOnUser = (msg.confirmationActions ?? []).some(
-								a => a.status === 'pending',
+								isAwaitingAnswer,
 							);
 							const parts =
 								msg.role === 'assistant'
