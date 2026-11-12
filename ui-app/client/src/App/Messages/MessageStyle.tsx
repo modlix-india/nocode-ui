@@ -68,6 +68,44 @@ export default function MessageStyle({
 			opacity: 0.85;
 		}
 
+		/* Toast buttons (UIEngine.Message actions, and Details): text buttons in the toast's own
+		   font and hue, after the text and before the close icon. */
+		${PREFIX} ._message ._msgString._msgActions {
+			flex: 0 0 auto;
+			gap: 2px;
+		}
+
+		${PREFIX} ._message ._msgActionBtn {
+			font: inherit;
+			color: inherit;
+			font-weight: 600;
+			background: none;
+			border: none;
+			border-radius: 6px;
+			padding: 2px 6px;
+			cursor: pointer;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._message ._msgActionBtn:hover,
+		${PREFIX} ._message ._msgActionBtn:focus-visible {
+			background: color-mix(in srgb, currentColor 12%, transparent);
+			outline: none;
+		}
+
+		/* Details: the lines open inside the toast, which grows only while they show. */
+		${PREFIX} ._message ._msgString._msgDetails {
+			display: block;
+			margin: 4px 0 0;
+			padding: 0 0 0 16px;
+			font-weight: 400;
+			overflow: auto;
+		}
+
+		${PREFIX} ._message._detailsOpen {
+			align-items: flex-start;
+		}
+
 		${PREFIX} ._msgStackTrace {
 			padding: 10px;
 			border-radius: 0px 2px 2px 0;
