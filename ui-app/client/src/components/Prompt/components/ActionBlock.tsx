@@ -97,8 +97,53 @@ export function markConfirmationExpired<M extends { confirmationActions?: Confir
 	return patchCards(
 		messages,
 		a => a.confirmationId === confirmationId && isUndecided(a),
-		() => ({ status: 'expired' as const, sending: false, sent: false, expiredReason: reason }),
+		() => expiredPatch(reason),
 	);
+}
+
+// What an expiry does to a card. Shared with the Draft agent's floating bar
+// (AB-1065), so both say the same thing.
+export function expiredPatch(reason?: string): Partial<ConfirmationAction> {
+	return { status: 'expired' as const, sending: false, sent: false, expiredReason: reason };
+}
+
+// What the tool's result row does to a card: done, failed, denied or expired.
+export function toolOutcomePatch(
+	success: boolean | undefined,
+	summary: string,
+): Partial<ConfirmationAction> {
+	const text = (summary ?? '').trim();
+	let patch: Partial<ConfirmationAction>;
+	if (success) patch = { status: 'approved' };
+	else if (/^expired\b/i.test(text))
+		patch = {
+			status: 'expired',
+			expiredReason: /stopped/i.test(text) ? 'cancelled' : 'timeout',
+		};
+	else if (/^denied\b/i.test(text)) patch = { status: 'denied' };
+	else patch = { status: 'failed', note: text };
+	return { ...patch, sending: false, sent: false };
+}
+
+// The words for a card the server decided (approved, denied, failed): a title
+// and the line under it, in the step row's words.
+export function decidedWords(
+	action: Pick<ConfirmationAction, 'status' | 'displayName' | 'toolName' | 'note'>,
+): { label: string; line: string } {
+	const name = action.displayName || action.toolName;
+	const label =
+		action.status === 'approved'
+			? `Approved: ${name}`
+			: action.status === 'denied'
+				? `Denied: ${name}`
+				: `Not done: ${name}`;
+	const line =
+		action.status === 'denied'
+			? DENIED_TEXT
+			: action.status === 'failed'
+				? action.note || 'The change failed, so nothing was changed.'
+				: '';
+	return { label, line };
 }
 
 // The tool's result row decides the card: the run either did the change, failed
@@ -110,20 +155,11 @@ export function applyToolOutcome<M extends { confirmationActions?: ConfirmationA
 	summary: string,
 ): M[] {
 	if (!toolUseId) return messages;
-	const text = (summary ?? '').trim();
-	let patch: Partial<ConfirmationAction>;
-	if (success) patch = { status: 'approved' };
-	else if (/^expired\b/i.test(text))
-		patch = {
-			status: 'expired',
-			expiredReason: /stopped/i.test(text) ? 'cancelled' : 'timeout',
-		};
-	else if (/^denied\b/i.test(text)) patch = { status: 'denied' };
-	else patch = { status: 'failed', note: text };
+	const patch = toolOutcomePatch(success, summary);
 	return patchCards(
 		messages,
 		a => cardToolUseId(a) === toolUseId && a.status !== 'expired',
-		() => ({ ...patch, sending: false, sent: false }),
+		() => patch,
 	);
 }
 
@@ -199,17 +235,7 @@ export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 	if (action.status === 'approved' || action.status === 'denied' || action.status === 'failed') {
 		const isApproved = action.status === 'approved';
 		const icon = isApproved ? 'fa fa-check-circle' : 'fa fa-times-circle';
-		const label = isApproved
-			? `Approved: ${name}`
-			: action.status === 'denied'
-				? `Denied: ${name}`
-				: `Not done: ${name}`;
-		const line =
-			action.status === 'denied'
-				? DENIED_TEXT
-				: action.status === 'failed'
-					? action.note || 'The change failed, so nothing was changed.'
-					: '';
+		const { label, line } = decidedWords(action);
 		const statusClass = isApproved ? '_approved' : '_denied';
 
 		return (
