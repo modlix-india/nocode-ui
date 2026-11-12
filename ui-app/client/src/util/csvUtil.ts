@@ -39,7 +39,9 @@ export function ToArray(lines: string, hasHeaders: boolean = false, delim: strin
 		if (ch === delim || ch === '\n' || ch === '\r' || i === lines.length) {
 			if (ch === '\r' && lines[i] === '\n') ch = lines[i++];
 
-			if (i === lines.length && ch !== '\n' && ch !== '\r') sb.append(ch);
+			// The last character of the text is part of the cell unless it ends the cell (a delimiter after the last
+			// value used to be appended to it: "a@b.com," read as "a@b.com,").
+			if (i === lines.length && ch !== '\n' && ch !== '\r' && ch !== delim) sb.append(ch);
 
 			addRow(sb, firstRow, hasHeaders, headers, rows, rowIndex, colIndex);
 
