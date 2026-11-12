@@ -51,6 +51,16 @@ import { newSteerId, postSteer, QUEUED_NOTE, SteerQueue } from '../Prompt/steer'
 import { DRAFT_AGENT_CSS } from './draftAgentCss';
 import { activeObjectNow, PickedComponent } from './draftAgentContext';
 import { usePicker } from './draftAgentPicker';
+import {
+	confirmationAtRunEnd,
+	confirmationFromRequest,
+	confirmationOutcome,
+	DraftConfirmation,
+	DraftConfirmBar,
+	expireConfirmation,
+	postConfirmation,
+} from './DraftConfirmBar';
+import { isAwaitingAnswer } from '../Prompt/components/ActionBlock';
 
 /**
  * The AI, inside the running draft of an app.
@@ -268,7 +278,12 @@ interface RunState {
 	busy: boolean;
 	status: string;
 	error?: string;
-	confirmation?: { id: string; message: string; sessionId: string };
+	confirmation?: DraftConfirmation;
+}
+
+// The same state when the bar did not change, so React skips the render.
+function withConfirmation(r: RunState, confirmation: DraftConfirmation | undefined): RunState {
+	return confirmation === r.confirmation ? r : { ...r, confirmation };
 }
 
 export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
@@ -630,6 +645,7 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 			setRun({ busy: true, status: 'Thinking...' });
 			let sid = prefsRef.current.sessionId ?? null;
 			let lostContact = false;
+			let stopped = false;
 			try {
 				const { status, outcome } = await followRun({
 					endpoint,
@@ -687,15 +703,37 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 							case 'confirmation_request':
 								setRun(r => ({
 									...r,
-									confirmation: {
-										id: data.confirmation_id ?? '',
-										message:
-											data.message ||
-											data.display_name ||
-											'Allow this change?',
-										sessionId: data.session_id ?? sid ?? '',
-									},
+									confirmation: confirmationFromRequest(data, sid),
 								}));
+								break;
+							case 'confirmation_expired':
+								// No answer in time, or the run was stopped: buttons
+								// off, saying nothing changed (AB-1065).
+								setRun(r =>
+									withConfirmation(
+										r,
+										expireConfirmation(
+											r.confirmation,
+											data.confirmation_id ?? '',
+											data.reason,
+										),
+									),
+								);
+								break;
+							case 'tool_result':
+								// The tool's result decides what the bar says, never
+								// the click alone (AB-1065, LZ-828).
+								setRun(r =>
+									withConfirmation(
+										r,
+										confirmationOutcome(
+											r.confirmation,
+											data.tool_use_id ?? '',
+											data.success,
+											data.summary ?? '',
+										),
+									),
+								);
 								break;
 							case 'error':
 								setRun(r => ({
@@ -731,8 +769,8 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 				} else if (status >= 400)
 					setRun(r => ({ ...r, error: `The agent answered ${status}.` }));
 			} catch (e: any) {
-				if (e?.name !== 'AbortError')
-					setRun(r => ({ ...r, error: e?.message ?? 'Connection lost.' }));
+				if (e?.name === 'AbortError') stopped = true;
+				else setRun(r => ({ ...r, error: e?.message ?? 'Connection lost.' }));
 			} finally {
 				abortRef.current = null;
 				// Queued and never read: the run ended first. Back to the box.
@@ -741,7 +779,7 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 				setRun(r => ({
 					...r,
 					busy: false,
-					confirmation: undefined,
+					confirmation: confirmationAtRunEnd(r.confirmation, stopped),
 					status: lostContact
 						? 'Still working, but this window lost contact. Open the docked view to follow it.'
 						: tailOf(textRef.current) || r.status,
@@ -785,18 +823,23 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 	const answer = useCallback(
 		(approved: boolean) => {
 			const c = run.confirmation;
-			if (!c) return;
-			setRun(r => ({ ...r, confirmation: undefined }));
-			fetch(`${agentBaseUrl(endpoint)}/confirm`, {
-				method: 'POST',
+			if (!c || !isAwaitingAnswer(c)) return;
+			// Only a card the server has not decided yet is touched: an expiry or
+			// the tool's result may land while the click is still travelling.
+			const patch = (p: Partial<DraftConfirmation>) =>
+				setRun(r =>
+					r.confirmation?.confirmationId === c.confirmationId &&
+					r.confirmation.status === 'pending'
+						? { ...r, confirmation: { ...r.confirmation, ...p } }
+						: r,
+				);
+			postConfirmation({
+				baseUrl: agentBaseUrl(endpoint),
 				headers: headers(),
-				body: JSON.stringify({
-					confirmation_id: c.id,
-					session_id: c.sessionId,
-					approved,
-					selected: approved ? 'approve' : 'deny',
-				}),
-			}).catch(() => undefined);
+				card: c,
+				approved,
+				patch,
+			});
 		},
 		[run.confirmation, endpoint, headers],
 	);
@@ -1036,6 +1079,7 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 					onMenu={() => setMenuOpen(o => !o)}
 					onMinimise={() => chooseMode('button')}
 					onDismissError={() => setRun(r => ({ ...r, error: undefined }))}
+					onDismissConfirmation={() => setRun(r => ({ ...r, confirmation: undefined }))}
 					menu={modeMenu}
 					reloadChip={reloadChip}
 					pickButton={pickButton}
@@ -1139,6 +1183,7 @@ function CompactPrompt({
 	onMenu,
 	onMinimise,
 	onDismissError,
+	onDismissConfirmation,
 	menu,
 	reloadChip,
 	pickButton,
@@ -1156,6 +1201,7 @@ function CompactPrompt({
 	onMenu: () => void;
 	onMinimise: () => void;
 	onDismissError: () => void;
+	onDismissConfirmation: () => void;
 	menu: React.ReactNode;
 	reloadChip: React.ReactNode;
 	pickButton: React.ReactNode;
@@ -1401,15 +1447,11 @@ function CompactPrompt({
 					</div>
 				)}
 				{run.confirmation && (
-					<div className="_mlxDAConfirm">
-						<span>{run.confirmation.message}</span>
-						<button className="_mlxDAConfirmBtn _yes" onClick={() => onAnswer(true)}>
-							Allow
-						</button>
-						<button className="_mlxDAConfirmBtn" onClick={() => onAnswer(false)}>
-							Deny
-						</button>
-					</div>
+					<DraftConfirmBar
+						confirmation={run.confirmation}
+						onAnswer={onAnswer}
+						onDismiss={onDismissConfirmation}
+					/>
 				)}
 				{reloadChip}
 			</div>
