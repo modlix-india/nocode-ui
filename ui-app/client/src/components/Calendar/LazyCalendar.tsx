@@ -71,6 +71,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 			isMultiSelect,
 			multipleDateSeparator,
 			disableTextEntry,
+			showClearButton,
 			onChange,
 			onMonthChange,
 			leftIcon,
@@ -304,6 +305,19 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 		if (!currentBindingPath) return;
 
 		validateRangesAndSetData(currentBindingPath, undefined, context.pageName, validationProps);
+	};
+
+	// Opt-in clear (X) inside the box (showClearButton, CXZ-1791): empties the date this box
+	// shows, typed or picked, including text that never parsed into a date, and runs On Change.
+	const clearDate = () => {
+		if (readOnly) return;
+		setThisDate(undefined);
+		setShowDropdown(false);
+		setFocus(false);
+		const path = dateType === 'endDate' ? bindingPathPath2 : bindingPathPath1;
+		if (!path) return;
+		if (validateRangesAndSetData(path, undefined, context.pageName, validationProps))
+			callChangeEvent();
 	};
 
 	const handleChange = (e: any, close: boolean) => {
@@ -581,6 +595,11 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 		);
 	}
 
+	// With the opt-in clear (X), the X takes the arrow's place at the right edge.
+	let dropdownIcon: string | undefined;
+	if (!showClearButton)
+		dropdownIcon = showDropdown ? 'fa-solid fa-angle-up' : 'fa-solid fa-angle-down';
+
 	return (
 		<CommonInputText
 			id={key}
@@ -590,14 +609,15 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 			value={thisDate ?? ''}
 			label={editOn ? undefined : label}
 			translations={translations}
-			rightIcon={showDropdown ? 'fa-solid fa-angle-up' : 'fa-solid fa-angle-down'}
+			rightIcon={dropdownIcon}
 			valueType="text"
 			isPassword={false}
 			placeholder={placeholder}
 			hasFocusStyles={stylePropertiesWithPseudoStates?.focus}
 			validationMessages={validationMessages}
 			context={context}
-			hideClearContentIcon={true}
+			hideClearContentIcon={!showClearButton || editOn}
+			clearContentHandler={showClearButton && !editOn ? clearDate : undefined}
 			blurHandler={handleBlur}
 			focusHandler={() => {
 				setFocus(true);

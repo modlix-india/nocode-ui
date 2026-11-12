@@ -574,6 +574,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+	{
+		name: 'showClearButton',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Clear Button',
+		description:
+			'Shows a clear (X) icon inside the box, in place of the dropdown arrow, while a date is set (typed or picked). Clicking it empties the date and runs On Change.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	COMMON_COMPONENT_PROPERTIES.onChange,
 	{
 		name: 'onMonthChange',
