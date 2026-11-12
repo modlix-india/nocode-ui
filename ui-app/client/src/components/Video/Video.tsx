@@ -257,7 +257,9 @@ function Video(props: Readonly<ComponentProps>) {
 	const updateTimeElapsed = () => {
 		if (!video.current) return;
 		const time = formatTime(Math.round(video.current.currentTime));
-		setProgressbarCurr(Math.floor(video.current.currentTime));
+		// ADZ-1673: the seek bar rounds like the timer and the bar's max (Math.round of the duration). With
+		// Math.floor an 8.6 s video ended with the thumb at 8 of 9 while the timer read 00:09/00:09.
+		setProgressbarCurr(Math.round(video.current.currentTime));
 		//to show in the time tag of time Elapsed
 		setTimeElapsed(time);
 	};

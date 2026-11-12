@@ -190,8 +190,9 @@ function FileUpload(props: Readonly<ComponentProps>) {
 		return isMultiple ? [...stringFiles] : stringFiles[0];
 	};
 
-	const setFiles = async (files: FileList | null) => {
-		if (!files?.length) return;
+	// Resolves true once the file is in the binding, false when it was refused (too big, bad JSON).
+	const setFiles = async (files: FileList | null): Promise<boolean> => {
+		if (!files?.length) return false;
 
 		if (maxFileSize && !isNaN(parseInt(maxFileSize, 10)) && parseInt(maxFileSize, 10) > 0) {
 			const maxSizeInBytes = parseInt(maxFileSize, 10);
@@ -206,56 +207,61 @@ function FileUpload(props: Readonly<ComponentProps>) {
 						props.context.pageName,
 					);
 				});
-				return;
+				return false;
 			}
 		}
 
 		if (uploadType === 'FILE_OBJECT') {
 			setData(bindingPathPath!, isMultiple ? Array.from(files) : files[0], context?.pageName);
-			return;
+			return true;
 		}
 
 		if (uploadType.startsWith('BINARY_TO_BASE_64')) {
 			const fileObjects = await filesToBase64(files, uploadType != 'BINARY_TO_BASE_64');
 			setData(bindingPathPath!, fileObjects, context?.pageName);
-			return;
+			return true;
 		}
 
-		let fReader = new FileReader();
-		fReader.onload = () => {
-			let fileContent: any = fReader.result;
+		return new Promise<boolean>(resolve => {
+			let fReader = new FileReader();
+			fReader.onload = () => {
+				let fileContent: any = fReader.result;
 
-			try {
-				switch (uploadType) {
-					case 'JSON_OBJECT':
-						fileContent = JSON.parse(fileContent);
-						break;
-					case 'JSON_LIST_CSV':
-						fileContent = ToArray(fileContent, false, ',');
-						break;
-					case 'JSON_LIST_CSV_OBJECTS':
-						fileContent = ToArray(fileContent, true, ',');
-						break;
-					case 'JSON_LIST_TSV':
-						fileContent = ToArray(fileContent, false, '\t');
-						break;
-					case 'JSON_LIST_TSV_OBJECTS':
-						fileContent = ToArray(fileContent, true, '\t');
-						break;
+				try {
+					switch (uploadType) {
+						case 'JSON_OBJECT':
+							fileContent = JSON.parse(fileContent);
+							break;
+						case 'JSON_LIST_CSV':
+							fileContent = ToArray(fileContent, false, ',');
+							break;
+						case 'JSON_LIST_CSV_OBJECTS':
+							fileContent = ToArray(fileContent, true, ',');
+							break;
+						case 'JSON_LIST_TSV':
+							fileContent = ToArray(fileContent, false, '\t');
+							break;
+						case 'JSON_LIST_TSV_OBJECTS':
+							fileContent = ToArray(fileContent, true, '\t');
+							break;
+					}
+				} catch (error: any) {
+					addMessage(
+						MESSAGE_TYPE.ERROR,
+						'Invalid JSON file : ' + error.message,
+						true,
+						props.context.pageName,
+					);
+					resolve(false);
+					return;
 				}
-			} catch (error: any) {
-				addMessage(
-					MESSAGE_TYPE.ERROR,
-					'Invalid JSON file : ' + error.message,
-					true,
-					props.context.pageName,
-				);
-				return;
-			}
 
-			setData(bindingPathPath!, fileContent, context?.pageName);
-		};
-		fReader.readAsText(files[0]);
+				setData(bindingPathPath!, fileContent, context?.pageName);
+				resolve(true);
+			};
+			fReader.onerror = () => resolve(false);
+			fReader.readAsText(files[0]);
+		});
 	};
 
 	const setOtherBindingPaths = (files: FileList | null) => {
@@ -275,20 +281,26 @@ function FileUpload(props: Readonly<ComponentProps>) {
 		}
 	};
 
+	// The select event runs after the file is in the binding, so it reads the new file, and not
+	// at all when the file was refused (LZT-2418: the event used to start before the binding was set).
+	const runSelectEvent = async () => {
+		if (!uploadImmediatelyEvent) return;
+		await runEvent(
+			uploadImmediatelyEvent,
+			key,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		);
+	};
+
 	const onChangeFile = (event: ChangeEvent<HTMLInputElement>) => {
-		setOtherBindingPaths(event.target.files);
-		if (uploadImmediatelyEvent) {
-			(async () =>
-				await runEvent(
-					uploadImmediatelyEvent,
-					key,
-					props.context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				))();
-		}
-		if (!event.target.files?.length || !bindingPathPath) return;
-		setFiles(event.target.files);
+		const files = event.target.files;
+		setOtherBindingPaths(files);
+		(async () => {
+			if (files?.length && bindingPathPath && !(await setFiles(files))) return;
+			await runSelectEvent();
+		})();
 	};
 
 	const handleDelete = (event: any, content: any) => {
@@ -301,9 +313,16 @@ function FileUpload(props: Readonly<ComponentProps>) {
 		setData(bindingPathPath!, deleted, context?.pageName);
 	};
 
+	// A dropped file is treated as a chosen one: other bindings and the select event too (LZT-2418).
 	const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
 		event.preventDefault();
-		setFiles(event.dataTransfer.files);
+		const files = event.dataTransfer.files;
+		if (!files?.length) return;
+		setOtherBindingPaths(files);
+		(async () => {
+			if (bindingPathPath && !(await setFiles(files))) return;
+			await runSelectEvent();
+		})();
 	};
 
 	const preventDefault = (event: React.DragEvent<HTMLDivElement>) => {
