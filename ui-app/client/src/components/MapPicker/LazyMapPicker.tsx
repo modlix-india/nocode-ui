@@ -18,6 +18,8 @@ import { propertiesDefinition, stylePropertiesDefinition } from './mapPickerProp
 type Point = { lat: number; lng: number };
 
 const PIN_ZOOM = 13;
+/** CXZ-1830: Follow the point zooms in at least this far when the point moves */
+export const FOLLOW_ZOOM = 15;
 
 function asPoint(v: any): Point | undefined {
 	const lat = Number(v?.lat);
@@ -445,6 +447,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			readOnly,
 			onChange,
 			onPlaceClick,
+			followPoint,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -496,8 +499,9 @@ function MapPicker(props: Readonly<ComponentProps>) {
 		onChange?: string;
 		onPlaceClick?: string;
 		clickedPath?: string;
+		followPoint?: boolean;
 	}>({});
-	latest.current = { bound, readOnly, onChange, onPlaceClick, clickedPath };
+	latest.current = { bound, readOnly, onChange, onPlaceClick, clickedPath, followPoint };
 
 	useEffect(() => {
 		if (!path) return;
@@ -584,6 +588,14 @@ function MapPicker(props: Readonly<ComponentProps>) {
 				))();
 	}
 
+	// CXZ-1830: move the map to the point and zoom in to street level (never out)
+	function follow(map: any, p: Point) {
+		live.current.fit = undefined;
+		if (typeof map.panTo === 'function') map.panTo(p);
+		else map.setCenter(p);
+		if ((map.getZoom?.() ?? 0) < FOLLOW_ZOOM) map.setZoom(FOLLOW_ZOOM);
+	}
+
 	function drawPoint(p?: Point) {
 		const { google, map } = live.current;
 		if (!google || !map) return;
@@ -605,11 +617,16 @@ function MapPicker(props: Readonly<ComponentProps>) {
 				if (pos) pick({ lat: pos.lat(), lng: pos.lng() });
 			});
 			live.current.marker = marker;
-			if (!live.current.keepView) {
+			if (latest.current.followPoint) follow(map, p);
+			else if (!live.current.keepView) {
 				map.setCenter(p);
 				if (map.getZoom() < PIN_ZOOM - 4) map.setZoom(PIN_ZOOM - 2);
 			}
-		} else live.current.marker.setPosition(p);
+		} else {
+			live.current.marker.setPosition(p);
+			// CXZ-1830: with Follow the point, every new point is brought into view, not only the first one
+			if (latest.current.followPoint) follow(map, p);
+		}
 		const km = Number(radiusKm);
 		if (km > 0) {
 			if (!live.current.circle)
