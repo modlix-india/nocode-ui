@@ -288,3 +288,44 @@ describe('full screen controls', () => {
 		expect(controls()).toBeNull();
 	});
 });
+
+// ── ADZ-1673: the seek bar and the timer agree (both round the playing time like the bar's max) ──────────────
+
+describe('seek bar position', () => {
+	const play = (duration: number, currentTime: number) => {
+		properties = { ...BASE };
+		render();
+		const v = host.querySelector('video') as HTMLVideoElement;
+		Object.defineProperty(v, 'duration', { configurable: true, get: () => duration });
+		Object.defineProperty(v, 'currentTime', { configurable: true, get: () => currentTime });
+		act(() => {
+			v.dispatchEvent(new Event('loadedmetadata'));
+		});
+		act(() => {
+			v.dispatchEvent(new Event('timeupdate'));
+		});
+		act(() => {
+			host.querySelector('.compVideo')!.dispatchEvent(
+				new MouseEvent('mouseover', { bubbles: true }),
+			);
+		});
+		return host.querySelector('input#seek') as HTMLInputElement;
+	};
+
+	test('at the end of a video with a part second the thumb is at the end', () => {
+		const seek = play(8.6, 8.6);
+		expect(seek.max).toBe('9');
+		expect(seek.value).toBe('9');
+	});
+
+	test('mid play the bar matches the timer second', () => {
+		const seek = play(8.6, 4.6);
+		expect(seek.value).toBe('5');
+		expect(host.textContent).toContain('00:05');
+	});
+
+	test('a whole second video still runs 0 to its length', () => {
+		expect(play(10, 0).value).toBe('0');
+		expect(play(10, 10).value).toBe('10');
+	});
+});
