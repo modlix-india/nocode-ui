@@ -112,6 +112,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		name: 'areaFrames',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Area frames',
+		description:
+			'A place whose area has no outline drawn on this map (a neighbourhood; a city or postal code whose boundary the map cannot draw, for example without a map id or in a browser without WebGL) also gets a light frame of its area under its dot and label, so every place shows where it is. With a map id, a frame is added only when the boundary has not drawn shortly after the map settles, and goes when it does. Off: drawn as before.',
+		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
+	},
+	{
 		name: 'placeColor',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Place colour',
@@ -161,6 +170,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Place labels',
 		description:
 			'Show each chosen or excluded place’s name in a small tag at its centre (the part of the name before the first comma; "Pin" for a dropped pin). Suggested places get none.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
+	{
+		name: 'tagSpacing',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Keep labels apart',
+		description:
+			'With Place labels on, labels never cover each other: the larger place keeps its label at its centre, a label that would cover another moves just below, above or beside its own place, and a label with no room left (a small place inside a larger one) shows once the map is zoomed in far enough. Off: every label sits at its place centre, as before.',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: false,
 	},

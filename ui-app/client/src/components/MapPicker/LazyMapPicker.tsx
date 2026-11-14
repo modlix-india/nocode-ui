@@ -229,13 +229,117 @@ export function labelOf(pl: Place): string {
 		.trim();
 }
 
+type TagBox = { x: number; y: number; w: number; h: number };
+export type TagSpot = { dx: number; dy: number; hidden: boolean };
+
+/**
+ * ADZ-1435: where each tag goes so that no two cover each other. Tags come in priority order (the larger place
+ * first) as boxes centred on their place, in pixels. Each takes the first free spot of: its centre, just below,
+ * just above, beside, then the corners and two rows away; a tag with no free spot is hidden (it shows again when
+ * the map is zoomed in and the places move apart).
+ */
+export function spreadTags(items: TagBox[], gap = 4): TagSpot[] {
+	const placed: Array<{ l: number; t: number; r: number; b: number }> = [];
+	const hits = (a: { l: number; t: number; r: number; b: number }) =>
+		placed.some(
+			p => a.l < p.r + gap && p.l < a.r + gap && a.t < p.b + gap && p.t < a.b + gap,
+		);
+	return items.map(it => {
+		const dy = it.h + gap;
+		const dx = it.w + gap;
+		const tries = [
+			[0, 0],
+			[0, dy],
+			[0, -dy],
+			[dx, 0],
+			[-dx, 0],
+			[dx, dy],
+			[-dx, dy],
+			[dx, -dy],
+			[-dx, -dy],
+			[0, 2 * dy],
+			[0, -2 * dy],
+		];
+		for (const [ox, oy] of tries) {
+			const box = {
+				l: it.x + ox - it.w / 2,
+				r: it.x + ox + it.w / 2,
+				t: it.y + oy - it.h / 2,
+				b: it.y + oy + it.h / 2,
+			};
+			if (hits(box)) continue;
+			placed.push(box);
+			return { dx: ox, dy: oy, hidden: false };
+		}
+		return { dx: 0, dy: 0, hidden: true };
+	});
+}
+
+/** ADZ-1435: the tags of one drawing, laid out together after any of them moves (Keep labels apart). */
+export type TagBoard = {
+	items: Array<{ div: HTMLDivElement; x: number; y: number; rank: number; seq: number }>;
+	queued: boolean;
+};
+
+/** ADZ-1435: the size a box covers (degrees squared), to give the larger place's tag its centre. */
+export function boxSize(box: any): number {
+	const b = typeof box?.toJSON === 'function' ? box.toJSON() : box;
+	const n = Number(b?.north) - Number(b?.south);
+	const e = Number(b?.east) - Number(b?.west);
+	return Number.isFinite(n) && Number.isFinite(e) ? Math.abs(n * e) : 0;
+}
+
+export function layoutTags(board: TagBoard) {
+	board.queued = false;
+	const order = board.items
+		.filter(t => Number.isFinite(t.x) && Number.isFinite(t.y))
+		.sort((a, b) => b.rank - a.rank || a.seq - b.seq);
+	const spots = spreadTags(
+		order.map(t => ({
+			x: t.x,
+			y: t.y,
+			// jsdom and a tag not laid out yet have no size: a fair guess from the text
+			w: t.div.offsetWidth || (t.div.textContent ?? '').length * 7 + 16,
+			h: t.div.offsetHeight || 22,
+		})),
+	);
+	order.forEach((t, i) => {
+		const s = spots[i];
+		t.div.style.transform = `translate(calc(-50% + ${s.dx}px), calc(-50% + ${s.dy}px))`;
+		t.div.style.visibility = s.hidden ? 'hidden' : '';
+	});
+}
+
+function queueLayout(board: TagBoard) {
+	if (board.queued) return;
+	board.queued = true;
+	const later =
+		typeof requestAnimationFrame === 'function'
+			? requestAnimationFrame
+			: (f: () => void) => setTimeout(f, 0);
+	later(() => layoutTags(board));
+}
+
 /** ADZ-1407: a place's name tag at a point, as a map overlay (none when the Maps script has no overlays). */
-function placeTag(google: any, map: any, at: Point, text: string, excluded: boolean) {
+function placeTag(
+	google: any,
+	map: any,
+	at: Point,
+	text: string,
+	excluded: boolean,
+	board?: TagBoard,
+	rank = 0,
+) {
 	const Base = google?.maps?.OverlayView;
 	if (!Base || !text) return undefined;
 	const div = document.createElement('div');
 	div.className = excluded ? '_placeLabel _excluded' : '_placeLabel';
 	div.textContent = text;
+	// ADZ-1435: with Keep labels apart, the tag's pixel position is shared with the others on the board
+	const item = board
+		? { div, x: NaN, y: NaN, rank, seq: board.items.length }
+		: undefined;
+	if (board && item) board.items.push(item);
 	const tag = new Base();
 	tag.onAdd = () => tag.getPanes?.()?.floatPane?.appendChild(div);
 	tag.draw = () => {
@@ -245,11 +349,35 @@ function placeTag(google: any, map: any, at: Point, text: string, excluded: bool
 		if (!p) return;
 		div.style.left = p.x + 'px';
 		div.style.top = p.y + 'px';
+		if (board && item) {
+			item.x = p.x;
+			item.y = p.y;
+			queueLayout(board);
+		}
 	};
-	tag.onRemove = () => div.remove();
+	tag.onRemove = () => {
+		div.remove();
+		if (board && item) board.items = board.items.filter(t => t !== item);
+	};
 	tag.setMap(map);
 	return tag;
 }
+
+/** ADZ-1435: the light frame of a place's area (Area frames): thinner and fainter than a drawn outline. */
+export function frameLook(
+	pl: Place,
+	colors: { place?: string; excluded?: string; suggested?: string },
+) {
+	return {
+		...placeLook(pl, colors),
+		strokeOpacity: pl.suggested ? 0.35 : 0.6,
+		strokeWeight: 1,
+		fillOpacity: pl.excluded ? 0.1 : 0.05,
+	};
+}
+
+/** ADZ-1435: how long a boundary may take to draw after the map settles before its place gets a frame instead. */
+export const FRAME_WAIT_MS = 2500;
 
 /** radiusKm, else radius in its distanceUnit (MILE / mile: miles, anything else: km). */
 function placeKm(p: Place): number {
@@ -443,6 +571,8 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			matchPlaceType,
 			pointMarkers,
 			areaDots,
+			areaFrames,
+			tagSpacing,
 			noMapText,
 			readOnly,
 			onChange,
@@ -758,12 +888,25 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			if (layers.length && pl.placeId && !(placeKm(pl) > 0)) outlined.set(pl.placeId, pl);
 		});
 		let listening = false;
+		// ADZ-1435 (Area frames): the place ids whose boundary the map has drawn, and the frames standing in for one
+		const styled = new Set<string>();
+		const frames = new Map<string, any>();
 		const styleLayers = () => {
 			if (!outlined.size) return;
 			live.current.layers = layers;
 			layers.forEach(layer => {
 				layer.style = (opts: any) => {
-					const pl = outlined.get(opts?.feature?.placeId);
+					const id = opts?.feature?.placeId;
+					const pl = outlined.get(id);
+					if (pl && id) {
+						styled.add(id);
+						// the boundary drew after all: its stand-in frame goes (not inside the style call)
+						const fr = frames.get(id);
+						if (fr) {
+							frames.delete(id);
+							setTimeout(() => fr.setMap(null), 0);
+						}
+					}
 					return pl ? placeLook(pl, colors, true) : null;
 				};
 				if (clickable && !listening)
@@ -789,9 +932,18 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			const all = new google.maps.LatLngBounds();
 			let any = false;
 			let moreOutlines = false;
+			// ADZ-1435: Keep labels apart lays this drawing's tags out together
+			const board: TagBoard | undefined = tagSpacing ? { items: [], queued: false } : undefined;
+			// ADZ-1435: Area frames: places left to a boundary layer, framed if it draws nothing for them
+			const pending: Array<{ pl: Place; id: string; bounds?: any }> = [];
 			found.forEach((spot, i) => {
-				if (!spot) return;
 				const pl = list[i];
+				if (!spot) {
+					// a place id outlined with no lookup: its frame, if it needs one, is looked up then
+					if (areaFrames && pl?.placeId && outlined.has(pl.placeId) && !(placeKm(pl) > 0))
+						pending.push({ pl, id: pl.placeId });
+					return;
+				}
 				const look = { map, clickable, ...placeLook(pl, colors) };
 				const km = placeKm(pl);
 				// CXZ-1650: with Point markers on, a place given by lat / lng with no radius is a marker (a fixed
@@ -842,8 +994,31 @@ function MapPicker(props: Readonly<ComponentProps>) {
 				const { shape, box } = shapeOf(google, look, pl, spot, fit, km, layered, !!areaDots);
 				if (clickable) shape.addListener?.('click', () => clickPlace(pl));
 				live.current.shapes!.push(shape);
+				if (areaFrames && !(km > 0) && !asPoint(pl) && fit !== 'point') {
+					const id = layered ? (fit === 'outline' ? spot.placeId : pl.placeId) : undefined;
+					if (id) pending.push({ pl, id, bounds: spot.bounds });
+					else if (areaDots && spot.bounds) {
+						// ADZ-1435: an area with no outline on this map: its dot sits on a light frame of its area
+						const fr = new google.maps.Rectangle({
+							map,
+							clickable,
+							...frameLook(pl, colors),
+							bounds: spot.bounds,
+						});
+						if (clickable) fr.addListener?.('click', () => clickPlace(pl));
+						live.current.shapes!.push(fr);
+					}
+				}
 				if (placeLabels && !pl.suggested) {
-					const tag = placeTag(google, map, spot.center, labelOf(pl), !!pl.excluded);
+					const tag = placeTag(
+						google,
+						map,
+						spot.center,
+						labelOf(pl),
+						!!pl.excluded,
+						board,
+						boxSize(box ?? spot.bounds),
+					);
 					if (tag) live.current.shapes!.push(tag);
 				}
 				if (box) all.union(box);
@@ -851,6 +1026,40 @@ function MapPicker(props: Readonly<ComponentProps>) {
 				any = true;
 			});
 			if (moreOutlines) styleLayers();
+			// ADZ-1435: a boundary that has not drawn once the map settled (no WebGL, or none at Google for that
+			// place) gets the light frame of the place's area instead; it goes if the boundary draws later
+			if (pending.length) {
+				let tries = 0;
+				const check = () => {
+					if (stale || live.current.map !== map) return;
+					if (!live.current.idled && tries++ < 4) {
+						setTimeout(check, FRAME_WAIT_MS);
+						return;
+					}
+					pending.forEach(({ pl, id, bounds }) => {
+						if (styled.has(id) || frames.has(id)) return;
+						(bounds
+							? Promise.resolve(bounds)
+							: pl.name
+								? findPlace(google, String(pl.name)).then(s => s?.bounds)
+								: Promise.resolve(undefined)
+						).then(b => {
+							if (!b || stale || live.current.map !== map) return;
+							if (styled.has(id) || frames.has(id)) return;
+							const fr = new google.maps.Rectangle({
+								map,
+								clickable,
+								...frameLook(pl, colors),
+								bounds: b,
+							});
+							if (clickable) fr.addListener?.('click', () => clickPlace(pl));
+							live.current.shapes!.push(fr);
+							frames.set(id, fr);
+						});
+					});
+				};
+				setTimeout(check, FRAME_WAIT_MS);
+			}
 			// ADZ-1435: the first draw on a map made for a new look keeps the view the old map had
 			const keep = live.current.keepView;
 			live.current.keepView = false;
@@ -876,6 +1085,8 @@ function MapPicker(props: Readonly<ComponentProps>) {
 		placeLabels,
 		pointMarkers,
 		areaDots,
+		areaFrames,
+		tagSpacing,
 	]);
 
 	return (

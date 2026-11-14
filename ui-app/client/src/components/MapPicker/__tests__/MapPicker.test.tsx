@@ -157,9 +157,15 @@ jest.mock('../../../util/googleMapsLoader', () => ({
 }));
 
 import MapPicker, {
+	boxSize,
 	DARK_GREY_STYLE,
+	FRAME_WAIT_MS,
+	frameLook,
 	GREY_STYLE,
 	labelOf,
+	layoutTags,
+	spreadTags,
+	TagBoard,
 	lookOptions,
 	markerIcon,
 	placeFit,
@@ -840,5 +846,172 @@ describe('CXZ-1830: Follow the point', () => {
 		views.length = 0;
 		movePin({ lat: 17.4, lng: 78.4 });
 		expect(views).toEqual([]);
+	});
+});
+
+describe('ADZ-1435: labels kept apart', () => {
+	test('spreadTags: apart tags stay at their centre', () => {
+		expect(
+			spreadTags([
+				{ x: 0, y: 0, w: 80, h: 22 },
+				{ x: 300, y: 0, w: 80, h: 22 },
+			]),
+		).toEqual([
+			{ dx: 0, dy: 0, hidden: false },
+			{ dx: 0, dy: 0, hidden: false },
+		]);
+	});
+
+	test('spreadTags: a tag on top of another moves just below it, the first one keeps its centre', () => {
+		const out = spreadTags([
+			{ x: 100, y: 100, w: 80, h: 22 },
+			{ x: 102, y: 101, w: 110, h: 22 },
+		]);
+		expect(out[0]).toEqual({ dx: 0, dy: 0, hidden: false });
+		expect(out[1]).toEqual({ dx: 0, dy: 26, hidden: false });
+	});
+
+	test('spreadTags: side by side tags that touch (a city and its postcode) are moved apart', () => {
+		// Bangalore at the city centre, 560066 some 30 px east: their boxes overlap
+		const out = spreadTags([
+			{ x: 100, y: 100, w: 80, h: 22 },
+			{ x: 130, y: 99, w: 60, h: 22 },
+		]);
+		expect(out[1].hidden).toBe(false);
+		const a = { l: 60, r: 140, t: 89, b: 111 };
+		const bx = 130 + out[1].dx;
+		const by = 99 + out[1].dy;
+		const b = { l: bx - 30, r: bx + 30, t: by - 11, b: by + 11 };
+		expect(a.l < b.r && b.l < a.r && a.t < b.b && b.t < a.b).toBe(false);
+	});
+
+	test('spreadTags: a tag with no free spot left is hidden (shows when zoomed in)', () => {
+		const crowd = Array.from({ length: 12 }, () => ({ x: 0, y: 0, w: 60, h: 22 }));
+		const out = spreadTags(crowd);
+		const shown = out.filter(o => !o.hidden);
+		expect(shown.length).toBeGreaterThan(5);
+		expect(out[11]).toEqual({ dx: 0, dy: 0, hidden: true });
+		// no two shown tags cover each other
+		for (let i = 0; i < shown.length; i++)
+			for (let j = i + 1; j < shown.length; j++)
+				expect(
+					Math.abs(shown[i].dx - shown[j].dx) >= 60 || Math.abs(shown[i].dy - shown[j].dy) >= 22,
+				).toBe(true);
+	});
+
+	test('layoutTags: the larger place keeps the centre, the smaller one moves; hidden ones are not shown', () => {
+		const div = (t: string) => {
+			const d = document.createElement('div');
+			d.textContent = t;
+			return d;
+		};
+		const board: TagBoard = {
+			items: [
+				{ div: div('Chamundipuram'), x: 50, y: 50, rank: 0.00005, seq: 0 },
+				{ div: div('Mysuru'), x: 51, y: 50, rank: 0.02, seq: 1 },
+			],
+			queued: true,
+		};
+		layoutTags(board);
+		expect(board.queued).toBe(false);
+		expect(board.items[1].div.style.transform).toBe('translate(calc(-50% + 0px), calc(-50% + 0px))');
+		expect(board.items[0].div.style.transform).toBe('translate(calc(-50% + 0px), calc(-50% + 26px))');
+		expect(board.items[0].div.style.visibility).toBe('');
+	});
+
+	test('boxSize: the size of a literal or a LatLngBounds box, 0 when there is none', () => {
+		expect(boxSize({ south: 1, west: 1, north: 2, east: 3 })).toBe(2);
+		expect(boxSize({ toJSON: () => ({ south: 0, west: 0, north: 1, east: 1 }) })).toBe(1);
+		expect(boxSize(undefined)).toBe(0);
+		expect(boxSize({})).toBe(0);
+	});
+});
+
+describe('ADZ-1435: area frames', () => {
+	beforeEach(() => {
+		jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(600);
+		jest.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(300);
+		GEOCODED = {
+			'Bangalore City, Karnataka, India': geo(['locality', 'political'], [12.96, 77.58], {
+				id: 'ChIJcity',
+			}),
+			'Chamundipuram, Mysuru, Karnataka, India': geo(['neighborhood', 'political'], [12.29, 76.65]),
+			'560066, Bangalore, Karnataka, India': geo(['postal_code'], [12.97, 77.75], {
+				id: 'ChIJzip',
+			}),
+		};
+	});
+	afterEach(() => {
+		jest.useRealTimers();
+		jest.restoreAllMocks();
+	});
+	const settle = () =>
+		act(async () => {
+			await new Promise(r => setTimeout(r, 0));
+		});
+	const places = [
+		{ name: 'Bangalore City, Karnataka, India', type: 'city' },
+		{ name: 'Chamundipuram, Mysuru, Karnataka, India', type: 'neighborhood' },
+		{ name: '560066, Bangalore, Karnataka, India', type: 'zip' },
+	];
+
+	test('frameLook: thinner and fainter than a place outline', () => {
+		const f = frameLook({}, { place: '#111111' });
+		expect(f.strokeColor).toBe('#111111');
+		expect(f.strokeWeight).toBe(1);
+		expect(f.fillOpacity).toBeLessThan(0.08);
+		expect(frameLook({ excluded: true }, {}).strokeColor).toBe('#c0362c');
+	});
+
+	test('off (the default): Area dots alone draw only the dots, as before', async () => {
+		properties = { apiKey: 'k', matchPlaceType: true, areaDots: true, places };
+		render();
+		await settle();
+		expect(drawn.map(d => d.kind)).toEqual(['circle', 'circle', 'circle']);
+	});
+
+	test('without a map id (as without WebGL) each area gets its dot on a frame of its own area', async () => {
+		properties = { apiKey: 'k', matchPlaceType: true, areaDots: true, areaFrames: true, places };
+		render();
+		await settle();
+		expect(drawn.map(d => d.kind)).toEqual(['circle', 'rect', 'circle', 'rect', 'circle', 'rect']);
+		const zip = drawn[5].opts;
+		// the postcode is framed on its own area (Whitefield), not at the city centre
+		expect(zip.bounds).toEqual(GEOCODED['560066, Bangalore, Karnataka, India'].geometry.bounds);
+		expect(zip.strokeWeight).toBe(1);
+		expect(drawn[4].opts.center).toEqual({ lat: 12.97, lng: 77.75 });
+	});
+
+	test('with a map id: a boundary that draws gets no frame, one that never draws is framed after the wait', async () => {
+		jest.useFakeTimers();
+		const layer: any = { type: 'LOCALITY', isAvailable: true, style: null, addListener: () => ({}) };
+		const zipLayer: any = { type: 'POSTAL_CODE', isAvailable: true, style: null, addListener: () => ({}) };
+		layers = [layer, zipLayer];
+		properties = {
+			apiKey: 'k',
+			mapId: 'm1',
+			matchPlaceType: true,
+			areaDots: true,
+			areaFrames: true,
+			places,
+		};
+		const tick = (ms: number) =>
+			act(async () => {
+				jest.advanceTimersByTime(ms);
+				for (let i = 0; i < 5; i++) await Promise.resolve();
+			});
+		render();
+		await tick(0);
+		await tick(0);
+		// the city boundary draws (Google asks its style); the postcode one never does
+		layer.style({ feature: { placeId: 'ChIJcity' } });
+		const before = drawn.length;
+		await tick(FRAME_WAIT_MS + 10);
+		await tick(0);
+		const added = drawn.slice(before);
+		expect(added.map(d => d.kind)).toEqual(['rect']);
+		expect(added[0].opts.bounds).toEqual(GEOCODED['560066, Bangalore, Karnataka, India'].geometry.bounds);
+		// the neighbourhood (no boundary layer) has its frame from the start
+		expect(drawn.slice(0, before).filter(d => d.kind === 'rect')).toHaveLength(1);
 	});
 });
