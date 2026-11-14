@@ -181,6 +181,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'closeOnSelect',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Close on select',
+		description:
+			'Single select only: when false, picking an option leaves the list open, with its search text, so the next pick needs no reopening (a picker whose On Click adds the pick to a list elsewhere). The list still closes on a click outside, Escape or the arrow. Empty or true: the list closes after a pick (the old behaviour).',
+		defaultValue: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'closeOnMouseLeave',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Close dropdown on mouse leave',
