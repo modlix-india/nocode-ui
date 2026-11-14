@@ -353,6 +353,46 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+	{
+		name: 'dragToMove',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Move by dragging',
+		description:
+			"For a floating grid (position fixed): the person can drag it, with whatever is inside it, anywhere in the window with a mouse, a finger or a pen. A press that moves less than 5 px is a tap and reaches the grid's children as usual (a button inside still clicks); once a drag starts nothing inside the grid gets the drag's moves, release or click. The grid is kept inside the window. Off: the grid stays where its style puts it.",
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'dragMemory',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Remember the dragged position',
+		description:
+			'With Move by dragging: where the spot the person dragged the grid to is kept. Personalization saves it for the signed in user on the server, so it follows them to other browsers and devices; signed out, or when it cannot be read, the grid starts where its style puts it.',
+		defaultValue: '_NONE',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{
+				name: '_NONE',
+				displayName: 'Not remembered',
+				description: 'Back to its style position on every load',
+			},
+			{
+				name: '_PERSONALIZATION',
+				displayName: 'Per user (personalization)',
+				description: "Saved in the user's personalization, per page and grid",
+			},
+		],
+	},
+	{
+		name: 'dragInset',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Drag margin (px)',
+		description:
+			'With Move by dragging: how close to the edges of the window the grid may be dragged. Use an expression to keep it clear of a bar, e.g. a phone bottom bar.',
+		defaultValue: 4,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
