@@ -182,6 +182,68 @@ export default function DropdownStyle({
             cursor: not-allowed;
         }
 
+        ${PREFIX} ._richList ._dropdownItem {
+            min-height: 36px;
+            box-sizing: border-box;
+        }
+
+        ${PREFIX} ._richList ._dropdownItemLabel {
+            flex: 1 1 auto;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: inherit;
+        }
+
+        ${PREFIX} ._richList ._dropdownItem._selected ._dropdownItemLabel {
+            font-weight: 600;
+        }
+
+        ${PREFIX} ._richList ._dropdownItem._selected:not(._hover) {
+            background-color: color-mix(in srgb, currentColor 7%, transparent);
+        }
+
+        ${PREFIX} ._richList ._dropdownItemSecondary {
+            flex: 0 0 auto;
+            font-size: 0.8em;
+            opacity: 0.6;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        ${PREFIX} ._richList ._dropdownTickSlot {
+            flex: 0 0 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        ${PREFIX} ._richList ._dropdownTickSlot ._dropdownCheckIcon {
+            position: relative;
+            right: auto;
+        }
+
+        ${PREFIX} ._dropdownGroupHeader {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            opacity: 0.6;
+            padding: 10px 12px 4px;
+            cursor: default;
+        }
+
+        ${PREFIX} ._dropdownNoMatch {
+            padding: 10px 12px;
+            opacity: 0.8;
+            cursor: default;
+        }
+
+        ${PREFIX} ._dropdownMatch {
+            font-weight: 700;
+        }
+
         ${PREFIX} ._dropdownSearchBoxContainer {
             width: 100%;
             display: flex;

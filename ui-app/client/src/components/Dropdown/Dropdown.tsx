@@ -86,6 +86,36 @@ function scrollForRoom(input: HTMLElement | null, fieldTop: number, need: number
 	return true;
 }
 
+// The parts of `text` the typed search matches, in order, for highlightSearchMatch. The
+// search is the same case-insensitive regular expression the local filter uses; text it
+// cannot compile to is shown plain.
+export function splitSearchMatches(
+	text: string,
+	search: string,
+): Array<{ text: string; match: boolean }> {
+	if (!search) return [{ text, match: false }];
+	let re: RegExp;
+	try {
+		re = new RegExp(search, 'gi');
+	} catch {
+		return [{ text, match: false }];
+	}
+	const parts: Array<{ text: string; match: boolean }> = [];
+	let last = 0;
+	let m: RegExpExecArray | null;
+	while ((m = re.exec(text)) !== null) {
+		if (m[0] === '') {
+			re.lastIndex++;
+			continue;
+		}
+		if (m.index > last) parts.push({ text: text.slice(last, m.index), match: false });
+		parts.push({ text: m[0], match: true });
+		last = m.index + m[0].length;
+	}
+	if (last < text.length) parts.push({ text: text.slice(last), match: false });
+	return parts.length ? parts : [{ text, match: false }];
+}
+
 function findOptionByValue(value: any, ...lists: Array<Array<DropdownOption | undefined>>) {
 	for (const list of lists) {
 		const found = list.find(e => deepEqual(e?.value, value));
@@ -179,6 +209,12 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			listBottomGap,
 			disabledOptionKey,
 			disabledOptionValues,
+			listWidth,
+			listAlign,
+			optionGroupKey,
+			optionSecondaryKey,
+			highlightSearchMatch,
+			noMatchText,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -403,6 +439,30 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		return disabled;
 	};
 
+	// A field of the option's row in `data`, for optionGroupKey / optionSecondaryKey. Read
+	// once per row and field while `data` stays the same.
+	const rowFieldCache = useMemo(() => new Map<string, any>(), [data]);
+	const readRowField = (option: DropdownOption | undefined, field: string | undefined) => {
+		if (!option || !field || isNullValue(option.originalObjectKey)) return undefined;
+		const cacheKey = `${field}\u0000${option.originalObjectKey}`;
+		if (rowFieldCache.has(cacheKey)) return rowFieldCache.get(cacheKey);
+		const row = data?.[option.originalObjectKey];
+		let value: any = undefined;
+		if (row !== null && typeof row === 'object') {
+			try {
+				value = new ExpressionEvaluator(`Data.${field}`).evaluate(getExtractionMap(row));
+			} catch {
+				value = undefined;
+			}
+		}
+		rowFieldCache.set(cacheKey, value);
+		return value;
+	};
+	const groupOf = (option: DropdownOption | undefined): string => {
+		const g = readRowField(option, optionGroupKey);
+		return isNullValue(g) ? '' : String(g);
+	};
+
 	const handleClick = async (each: DropdownOption | undefined) => {
 		if (!each || !bindingPathPath || isOptionDisabled(each)) return;
 
@@ -491,9 +551,15 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		setSearchDropdownData(
 			dropdownData
 				.filter(e => !isNullValue(e?.label))
-				.filter(e => (e?.label + '').search(searchExpression) !== -1),
+				.filter(e => {
+					if ((e?.label + '').search(searchExpression) !== -1) return true;
+					// optionSecondaryKey (opt-in): the secondary text, e.g. an ID, matches too.
+					if (!optionSecondaryKey) return false;
+					const secondary = readRowField(e, optionSecondaryKey);
+					return !isNullValue(secondary) && (secondary + '').search(searchExpression) !== -1;
+				}),
 		);
-	}, [searchText, dropdownData]);
+	}, [searchText, dropdownData, optionSecondaryKey]);
 
 	const [mouseIsInside, setMouseIsInside] = useState(false);
 	const mouseIsInsideRef = useRef(false);
@@ -720,13 +786,27 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	// undefined list, found no length, cleared the hover key and returned. Arrow-key
 	// navigation was dead in every server-searched dropdown, which is all of the client
 	// pickers. Sharing the decision is what stops it drifting again.
-	const visibleOptions = useMemo(
+	const filteredOptions = useMemo(
 		() =>
 			searchDropdownData?.length || (searchText && !onSearch)
 				? searchDropdownData
 				: dropdownData,
 		[searchDropdownData, searchText, onSearch, dropdownData],
 	);
+	// optionGroupKey (opt-in): the options of one group together, groups in the order they
+	// first appear, so the arrow keys walk the list in the order it is drawn.
+	const visibleOptions = useMemo(() => {
+		if (!optionGroupKey || !filteredOptions?.length) return filteredOptions;
+		const order = new Map<string, number>();
+		return filteredOptions
+			.map((option, index) => {
+				const group = groupOf(option);
+				if (!order.has(group)) order.set(group, order.size);
+				return { option, index, group };
+			})
+			.sort((a, b) => order.get(a.group)! - order.get(b.group)! || a.index - b.index)
+			.map(e => e.option);
+	}, [filteredOptions, optionGroupKey, data]);
 
 	const keyHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key.startsWith('Arrow')) {
@@ -777,13 +857,67 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		let options = visibleOptions;
 
 		if (sortOrder && options?.length) {
+			// With groups, the selection moves to the top of its own group.
+			const groupOrder = new Map<string, number>();
+			if (optionGroupKey)
+				options.forEach(o => {
+					const g = groupOf(o);
+					if (!groupOrder.has(g)) groupOrder.set(g, groupOrder.size);
+				});
 			options = [...options].sort((a, b) => {
+				if (optionGroupKey) {
+					const byGroup = groupOrder.get(groupOf(a))! - groupOrder.get(groupOf(b))!;
+					if (byGroup) return byGroup;
+				}
 				let aIndex = sortOrder.indexOf(a.key);
 				let bIndex = sortOrder.indexOf(b.key);
 				if (aIndex === -1) aIndex = options!.length;
 				if (bIndex === -1) bIndex = options!.length;
 				return aIndex - bIndex;
 			});
+		}
+
+		// optionGroupKey: how many of the shown options each group has, for its header.
+		const groupCounts = new Map<string, number>();
+		if (optionGroupKey)
+			options?.forEach(o => {
+				const g = groupOf(o);
+				groupCounts.set(g, (groupCounts.get(g) ?? 0) + 1);
+			});
+		// optionSecondaryKey / optionGroupKey draw one-line rows (label, secondary text, tick).
+		const richList = !!(optionSecondaryKey || optionGroupKey);
+		const highlight = (value: any) => {
+			if (!highlightSearchMatch || !searchText || isNullValue(value)) return value;
+			if (typeof value !== 'string' && typeof value !== 'number') return value;
+			return splitSearchMatches(String(value), searchText).map((p, i) =>
+				p.match ? (
+					<b key={i} className="_dropdownMatch">
+						{p.text}
+					</b>
+				) : (
+					<React.Fragment key={i}>{p.text}</React.Fragment>
+				),
+			);
+		};
+		const noMatchLine =
+			noMatchText && searchText && !options?.length
+				? String(getTranslations(noMatchText, translations) ?? noMatchText).split('{search}').join(searchText)
+				: undefined;
+
+		// listWidth (opt-in): the list's own width, placed against the field's left or right
+		// edge and kept inside the window.
+		let listPlacement: { width: number; left: number } | undefined = undefined;
+		const wantWidth =
+			typeof listWidth === 'number' ? listWidth : Number.parseFloat(listWidth ?? '');
+		if (wantWidth > 0) {
+			const room = Math.max(window.innerWidth - 2 * DROPDOWN_VIEWPORT_EDGE, 0);
+			const width = Math.min(Math.max(wantWidth, wrapperRect.width), room);
+			let left = listAlign === 'RIGHT' ? wrapperRect.width - width : 0;
+			const maxRight = window.innerWidth - DROPDOWN_VIEWPORT_EDGE;
+			if (wrapperRect.left + left + width > maxRight) left = maxRight - width - wrapperRect.left;
+			if (wrapperRect.left + left < DROPDOWN_VIEWPORT_EDGE)
+				left = DROPDOWN_VIEWPORT_EDGE - wrapperRect.left;
+			listPlacement = { width, left };
 		}
 
 		const optionId = (index: number) => `${listboxId}_${index}`;
@@ -803,10 +937,14 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 							? getTranslations(label, translations)
 							: undefined
 				}
-				className={`_dropdownContainer ${isAtBottom ? '_atBottom' : ''}`}
+				className={`_dropdownContainer ${isAtBottom ? '_atBottom' : ''}${richList ? ' _richList' : ''}`}
 				style={{
 					pointerEvents: 'auto',
 					...(computedStyles.dropDownContainer ?? {}),
+					...(listPlacement && {
+						width: `${listPlacement.width}px`,
+						left: `${listPlacement.left}px`,
+					}),
 					...(roomHeight !== undefined && {
 						maxHeight:
 							(computedStyles.dropDownContainer?.maxHeight ?? themeMaxHeight.current)
@@ -963,7 +1101,20 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 						);
 					}
 
-					return (
+					const group = optionGroupKey ? groupOf(each) : undefined;
+					// An option without a group value gets no header of its own.
+					const groupHeader =
+						group &&
+						(optionIndex === 0 || groupOf(options![optionIndex - 1]) !== group) ? (
+							<div className="_dropdownGroupHeader" role="presentation">
+								{`${group} · ${groupCounts.get(group) ?? 0}`}
+							</div>
+						) : undefined;
+					const secondary = optionSecondaryKey
+						? readRowField(each, optionSecondaryKey)
+						: undefined;
+
+					const row = (
 						<div
 							className={`_dropdownItem ${
 								isOptionSelected ? '_selected' : ''
@@ -1009,14 +1160,38 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 											definition={props.definition}
 											subComponentName="dropdownItemLabel"
 										/>
-										{each?.label}
+										{highlight(each?.label)}
 									</label>
-									{tick}
+									{richList ? (
+										<>
+											{!isNullValue(secondary) && secondary !== '' ? (
+												<span className="_dropdownItemSecondary">
+													{highlight(secondary)}
+												</span>
+											) : undefined}
+											<span className="_dropdownTickSlot">{tick}</span>
+										</>
+									) : (
+										tick
+									)}
 								</>
 							)}
 						</div>
 					);
+					return groupHeader ? (
+						<React.Fragment key={`_g_${each?.key}`}>
+							{groupHeader}
+							{row}
+						</React.Fragment>
+					) : (
+						row
+					);
 				})}
+				{noMatchLine !== undefined ? (
+					<div className="_dropdownNoMatch" role="presentation">
+						{noMatchLine}
+					</div>
+				) : undefined}
 			</div>
 		);
 
