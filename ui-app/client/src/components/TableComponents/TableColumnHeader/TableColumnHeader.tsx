@@ -53,7 +53,9 @@ function MenuIcon({ name }: Readonly<{ name: string }>) {
 			strokeLinejoin="round"
 			aria-hidden="true"
 		>
-			{MENU_ICON_PATHS[name]?.map(d => <path key={d} d={d} />)}
+			{MENU_ICON_PATHS[name]?.map(d => (
+				<path key={d} d={d} />
+			))}
 		</svg>
 	);
 }
@@ -486,6 +488,16 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 			);
 		}
 
+		// LZT-2218: the last visible column cannot be hidden, so a table never turns into an empty box.
+		const isHidden = (c: any) => {
+			const flag = !!personalizedObject?.hiddenFields?.[c.key];
+			return c.hideIfNotPersonalized ? !flag : flag;
+		};
+		const visibleCount = (context.table.columnNames ?? []).filter(
+			(c: any) => !isHidden(c),
+		).length;
+		const lastVisible = visibleCount <= 1;
+
 		menu = (
 			<div
 				className="_popupBackground"
@@ -511,17 +523,23 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 				>
 					{sortItems}
 					<div
-						className="_popupMenuItem _action"
+						className={`_popupMenuItem _action${lastVisible ? ' _disabled' : ''}`}
 						role="menuitem"
 						tabIndex={0}
+						aria-disabled={lastVisible}
+						title={lastVisible ? 'At least one column stays visible' : undefined}
 						onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
-						onClick={() =>
+						onClick={e => {
+							if (lastVisible) {
+								e.stopPropagation();
+								return;
+							}
 							setData(
 								`${context.table.personalizationBindingPath}.hiddenFields.${key}`,
 								true,
 								pageExtractor.getPageName(),
-							)
-						}
+							);
+						}}
 					>
 						<MenuIcon name="hideColumn" />
 						<span className="_popupMenuItemLabel">Hide Column</span>
@@ -551,22 +569,34 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 						// A column that is hidden unless personalized is SHOWN when its flag is set.
 						const flag = !!personalizedObject?.hiddenFields?.[key];
 						const hidden = hideIfNotPersonalized ? !flag : flag;
+						const locked = !hidden && lastVisible;
 						return (
 							<div
 								key={key}
-								className={`_popupMenuItem _column${hidden ? ' _hidden' : ''}`}
+								className={`_popupMenuItem _column${hidden ? ' _hidden' : ''}${locked ? ' _disabled' : ''}`}
 								role="menuitemcheckbox"
 								aria-checked={!hidden}
-								title={hidden ? 'Hidden: click to show' : 'Shown: click to hide'}
+								aria-disabled={locked}
+								title={
+									locked
+										? 'At least one column stays visible'
+										: hidden
+											? 'Hidden: click to show'
+											: 'Shown: click to hide'
+								}
 								tabIndex={0}
 								onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
-								onClick={() =>
+								onClick={e => {
+									if (locked) {
+										e.stopPropagation();
+										return;
+									}
 									setData(
 										`${context.table.personalizationBindingPath}.hiddenFields.${key}`,
 										!flag,
 										pageExtractor.getPageName(),
-									)
-								}
+									);
+								}}
 							>
 								<span className="_popupMenuItemLabel">{label}</span>
 								<MenuIcon name={hidden ? 'columnHidden' : 'columnShown'} />
