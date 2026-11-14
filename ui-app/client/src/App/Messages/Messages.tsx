@@ -158,7 +158,6 @@ export function Messages() {
 						) : undefined}
 						{details.errorId ? <CopyErrorId errorId={details.errorId} /> : undefined}
 						{debugMessage}
-						{toastDetailsList}
 					</div>
 					{toastButtons}
 					<i
@@ -166,6 +165,7 @@ export function Messages() {
 						tabIndex={0}
 						onClick={() => removeMessage(e.id)}
 					/>
+					{toastDetailsList}
 				</div>
 				{stackTrace}
 			</React.Fragment>

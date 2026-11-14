@@ -1138,3 +1138,53 @@ describe('disabled options (opt-in)', () => {
 		expect(controlInput().value).toBe('Fincity');
 	});
 });
+
+describe('closeOnSelect (opt-in)', () => {
+	beforeEach(() => {
+		properties = serverSearchedProperties({ isSearchable: false, onSearch: undefined });
+	});
+
+	function mouseDown(label: string) {
+		const el = Array.from(document.querySelectorAll<HTMLElement>('._dropdownItem')).find(
+			e => e.textContent?.trim() === label,
+		);
+		if (!el) throw new Error(`no option ${label}`);
+		act(() => {
+			el.dispatchEvent(
+				new MouseEvent('mouseover', { bubbles: true, relatedTarget: document.body }),
+			);
+		});
+		act(() => {
+			el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+		});
+	}
+
+	it('closes the list after a pick by default (old behaviour)', () => {
+		render();
+		openPanel();
+		mouseDown('Fincity');
+		expect(storeValues.get(SELECTION_PATH)).toBe('FIN');
+		expect(optionLabels()).toEqual([]);
+	});
+
+	it('keeps the list open after a pick when closeOnSelect is false', () => {
+		properties = { ...properties, closeOnSelect: false };
+		render();
+		openPanel();
+		mouseDown('Fincity');
+		expect(storeValues.get(SELECTION_PATH)).toBe('FIN');
+		expect(optionLabels()).toEqual(['CLIENT A', 'Fincity', 'RajaAvinash']);
+		mouseDown('RajaAvinash');
+		expect(storeValues.get(SELECTION_PATH)).toBe('RAJAA');
+		expect(optionLabels().length).toBe(3);
+	});
+
+	it('still closes on Escape when closeOnSelect is false', () => {
+		properties = { ...properties, closeOnSelect: false };
+		render();
+		openPanel();
+		mouseDown('Fincity');
+		pressKey('Escape');
+		expect(optionLabels()).toEqual([]);
+	});
+});

@@ -53,6 +53,23 @@ export function withLeadingSlash(location?: string): string | undefined {
 	return location.startsWith('/') ? location : '/' + location;
 }
 
+// With restrictNavigationToTopLevel the crumbs show the path from the start folder down ('420/Channel Partner' for
+// '/_withInSubClient/products/420/Channel Partner'). A crumb click used to set that display text as the path, so the
+// listing asked for '/api/files/static420' and the browser went blank. This turns a crumb back into the real path.
+export function crumbTargetPath(
+	crumbPath: string,
+	startLocation?: string,
+	restricted?: boolean,
+): string {
+	if (!restricted || !startLocation || startLocation === '/')
+		return crumbPath === '' ? '/' : crumbPath;
+	const trimmed = startLocation.endsWith('/')
+		? startLocation.substring(0, startLocation.length - 1)
+		: startLocation;
+	const parent = trimmed.substring(0, trimmed.lastIndexOf('/'));
+	return `${parent}/${crumbPath}`;
+}
+
 export default function FileBrowser({
 	selectedFile,
 	onChange,
@@ -430,6 +447,11 @@ export default function FileBrowser({
 		);
 
 	let actualPath = path ?? '/';
+	const restrictedCrumbs = !!(
+		startLocation &&
+		restrictNavigationToTopLevel &&
+		startLocation != '/'
+	);
 	if (startLocation && restrictNavigationToTopLevel && startLocation != '/') {
 		actualPath = actualPath.substring(
 			startLocation.length + (startLocation.endsWith('/') ? 1 : 0),
@@ -452,7 +474,9 @@ export default function FileBrowser({
 			<div
 				className="_pathPart"
 				key={e}
-				onClick={() => setPathAndClearFilter(spath == '' ? '/' : spath)}
+				onClick={() =>
+					setPathAndClearFilter(crumbTargetPath(spath, startLocation, restrictedCrumbs))
+				}
 			>
 				{e !== '' ? e : 'All'}
 			</div>,

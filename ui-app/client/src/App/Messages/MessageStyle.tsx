@@ -96,14 +96,16 @@ export default function MessageStyle({
 		/* Details: the lines open inside the toast, which grows only while they show. */
 		${PREFIX} ._message ._msgString._msgDetails {
 			display: block;
-			margin: 4px 0 0;
-			padding: 0 0 0 16px;
+			flex: 1 0 100%;
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0 0 2px 44px;
 			font-weight: 400;
 			overflow: auto;
 		}
 
 		${PREFIX} ._message._detailsOpen {
-			align-items: flex-start;
+			flex-wrap: wrap;
 		}
 
 		${PREFIX} ._msgStackTrace {
