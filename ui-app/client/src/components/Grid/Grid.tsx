@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { STORE_PATH_FUNCTION_EXECUTION, STORE_PREFIX } from '../../constants';
+import { LOCAL_STORE_PREFIX, STORE_PATH_FUNCTION_EXECUTION, STORE_PREFIX } from '../../constants';
 import {
 	PageStoreExtractor,
 	addListener,
@@ -26,6 +26,14 @@ import { isNullValue } from '@fincity/kirun-js';
 import { styleProperties, styleDefaults } from './gridStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { gridKeyboardProps } from './gridKeyboard';
+import {
+	clampOffsets,
+	draggedThisVisit,
+	EdgeOffsets,
+	isEdgeOffsets,
+	usePointerDrag,
+	viewportSize,
+} from '../../functions/usePointerDrag';
 
 function Grid(props: Readonly<ComponentProps>) {
 	const location = useLocation();
@@ -73,6 +81,9 @@ function Grid(props: Readonly<ComponentProps>) {
 			keyboardClickable = false,
 			accessibleName,
 			pressed,
+			dragToMove = false,
+			dragMemory = '_NONE',
+			dragInset = 4,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -141,8 +152,20 @@ function Grid(props: Readonly<ComponentProps>) {
 	const isResizable = resizeHandle !== '_NONE';
 	const isVerticalResize = resizeHandle === '_TOP' || resizeHandle === '_BOTTOM';
 
+	// ── Move by dragging (opt-in) ───────────────────────────────────────────
+	// Off by default: no listeners, no position, nothing fetched. Never in the page
+	// editor, whose canvas has its own drag. A dragged position shares the grid's
+	// one personalization document with the dragged size, and is only remembered for
+	// a signed in user.
+	const canDrag = !!dragToMove && !globalThis.isDesignMode;
+	const inset = Number.isFinite(dragInset) ? Math.max(0, dragInset) : 4;
+	const remembersDrag =
+		canDrag &&
+		dragMemory === '_PERSONALIZATION' &&
+		!!getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
+
 	const personalizationBindingPath =
-		isResizable && enablePersonalization
+		(isResizable && enablePersonalization) || remembersDrag
 			? ((bindingPath4 &&
 					getPathFromLocation(bindingPath4, locationHistory, pageExtractor)) ??
 				`${STORE_PREFIX}.personalization.${context.pageName}.${flattenUUID(key)}`)
@@ -154,6 +177,31 @@ function Grid(props: Readonly<ComponentProps>) {
 			: undefined,
 	);
 
+	// A grid shown again on the same visit (a panel closed, another page of the same
+	// shell) starts where this visit last dragged it, or where the store already has it.
+	const [dragPos, setDragPos] = useState<EdgeOffsets | undefined>(() => {
+		if (!remembersDrag || !personalizationBindingPath) return undefined;
+		const dragged = draggedThisVisit.get(personalizationBindingPath);
+		if (dragged) return dragged;
+		const saved = getDataFromPath(
+			`${personalizationBindingPath}.dragPosition`,
+			locationHistory,
+			pageExtractor,
+		);
+		return isEdgeOffsets(saved) ? saved : undefined;
+	});
+
+	const fitted = (o: EdgeOffsets): EdgeOffsets => {
+		const el = ref.current as HTMLElement | null;
+		if (!el) return o;
+		return clampOffsets(
+			o,
+			{ width: el.offsetWidth, height: el.offsetHeight },
+			inset,
+			viewportSize(),
+		);
+	};
+
 	useEffect(
 		() =>
 			personalizationEvent({
@@ -162,10 +210,77 @@ function Grid(props: Readonly<ComponentProps>) {
 				key,
 				locationHistory,
 				pageExtractor,
-				onLoad: data => setResizeSize(data.resizeSize),
+				onLoad: data => {
+					setResizeSize(data.resizeSize);
+					if (
+						!remembersDrag ||
+						!personalizationBindingPath ||
+						draggedThisVisit.has(personalizationBindingPath)
+					)
+						return;
+					if (isEdgeOffsets(data?.dragPosition)) setDragPos(fitted(data.dragPosition));
+				},
 			}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[personalizationBindingPath],
 	);
+
+	// A resized or turned window keeps a dragged grid inside it.
+	const hasDragPos = !!dragPos;
+	useEffect(() => {
+		if (!canDrag || !hasDragPos) return;
+		const onResize = () =>
+			setDragPos(p => {
+				if (!p) return p;
+				const f = fitted(p);
+				return f.right === p.right && f.bottom === p.bottom ? p : f;
+			});
+		window.addEventListener('resize', onResize);
+		return () => window.removeEventListener('resize', onResize);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [canDrag, hasDragPos, inset]);
+
+	usePointerDrag(ref, canDrag, {
+		inset,
+		// Straight to the DOM while dragging: a store write per move would re-evaluate
+		// every expression on the page.
+		onMove: o => {
+			const el = ref.current as HTMLElement | null;
+			if (!el) return;
+			el.style.right = `${o.right}px`;
+			el.style.bottom = `${o.bottom}px`;
+			el.style.left = 'auto';
+			el.style.top = 'auto';
+		},
+		onEnd: o => {
+			setDragPos(o);
+			if (!remembersDrag || !personalizationBindingPath) return;
+			draggedThisVisit.set(personalizationBindingPath, o);
+			const current =
+				getDataFromPath(personalizationBindingPath, locationHistory, pageExtractor) ?? {};
+			// The personalization listener picks this up and POSTs it, debounced.
+			setData(
+				personalizationBindingPath,
+				{ ...(typeof current === 'object' ? current : {}), dragPosition: o },
+				context.pageName,
+			);
+		},
+	});
+
+	const dragStyle: React.CSSProperties | undefined = canDrag
+		? {
+				touchAction: 'none',
+				cursor: 'grab',
+				...(dragPos
+					? {
+							right: `${dragPos.right}px`,
+							bottom: `${dragPos.bottom}px`,
+							left: 'auto',
+							top: 'auto',
+						}
+					: {}),
+			}
+		: undefined;
 
 	// Built on onMouseDownDragStartCurry rather than hand-rolled listeners: it bails
 	// when the button is no longer held, tears down on mouseleave, and puts a
@@ -511,7 +626,7 @@ function Grid(props: Readonly<ComponentProps>) {
 			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${padding} ${
 				sepStyle ? `_${key}_grid_css` : ''
 			}${isResizable ? ' _resizableGrid' : ''}${keyboardClickable && handleClick ? ' _keyboardClickable' : ''}`,
-			style: { ...(resolvedStyles.comp ?? {}), ...resizeStyle },
+			style: { ...(resolvedStyles.comp ?? {}), ...resizeStyle, ...dragStyle },
 
 			onClick: ev => {
 				if (stopPropagation) ev.stopPropagation();

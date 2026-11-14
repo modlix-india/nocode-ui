@@ -82,6 +82,11 @@ export default function TableColumnStyle({
 			white-space: nowrap;
 		}
 
+		.comp.compTable ._popupMenu ._popupMenuItem._disabled {
+			opacity: 0.45;
+			cursor: not-allowed;
+		}
+
 		.comp.compTable ._popupMenu ._popupMenuIcon {
 			flex: none;
 		}
