@@ -144,6 +144,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			readOnly,
 			label,
 			closeOnMouseLeave,
+			closeOnSelect,
 			isMultiSelect,
 			isSearchable,
 			noFloat,
@@ -435,7 +436,8 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			);
 			if (editOn) setSelected(each.value);
 			callClickEvent();
-			handleClose();
+			// closeOnSelect false (opt-in): the list stays open for the next pick
+			if (closeOnSelect !== false) handleClose();
 		}
 	};
 

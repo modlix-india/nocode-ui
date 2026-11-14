@@ -476,24 +476,10 @@ export const RenderEngineContainer = () => {
 		pageDefinition?.pageName,
 	]);
 
-	// This is to execute the shell page on load event function so this acts as a application on load event.
-	// This has to execute even the shell page is not loaded.
-	useEffect(() => {
-		if (
-			!shellPageDefinition?.properties?.onLoadEvent ||
-			!shellPageDefinition?.eventFunctions?.[shellPageDefinition?.properties?.onLoadEvent]
-		)
-			return;
-
-		(async () =>
-			await runEvent(
-				shellPageDefinition.eventFunctions[shellPageDefinition.properties.onLoadEvent!],
-				'appOnLoad',
-				GLOBAL_CONTEXT_NAME,
-				[],
-				shellPageDefinition,
-			))();
-	}, [shellPageDefinition?.properties?.onLoadEvent]);
+	// The shell page's on load event (the application on load event) runs from the
+	// `application.properties.shellPageDefinition` listener above, also when the shell page
+	// is not rendered. A second runner here made every app's shell on load run twice on
+	// each document load (LZT-151: wallet, notification and partner calls doubled).
 
 	const [, setLastChanged] = useState(Date.now());
 
