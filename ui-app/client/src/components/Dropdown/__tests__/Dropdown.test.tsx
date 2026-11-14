@@ -1188,3 +1188,233 @@ describe('closeOnSelect (opt-in)', () => {
 		expect(optionLabels()).toEqual([]);
 	});
 });
+
+// ADZ-1665: an ad account filter with 22 accounts was a list as narrow as its field,
+// each account on 2 to 3 lines and its ID cut off. The props below are all opt-in.
+describe('wide, grouped one-line list (opt-in)', () => {
+	const ACCOUNTS = [
+		{ _id: 'a1', n: 'Cityville by Fincity', id: '852565919728055', g: 'Meta' },
+		{ _id: 'a2', n: 'Modlix Dev', id: '108-212-2237', g: 'Google' },
+		{ _id: 'a3', n: 'Purva Prepaid', id: '1234133553808527', g: 'Meta' },
+		{ _id: 'a4', n: 'CoEvolve Misty Shores', id: '934-405-3819', g: 'Google' },
+	];
+
+	function accountProps(overrides: Record<string, any> = {}) {
+		return serverSearchedProperties({
+			data: ACCOUNTS,
+			uniqueKey: '_id',
+			selectionKey: '_id',
+			labelKey: 'n',
+			onSearch: undefined,
+			...overrides,
+		});
+	}
+
+	const rows = () => Array.from(document.querySelectorAll<HTMLElement>('._dropdownItem'));
+	const labels = () =>
+		rows().map(r => r.querySelector('._dropdownItemLabel')?.textContent?.trim() ?? '');
+	const headers = () =>
+		Array.from(document.querySelectorAll('._dropdownGroupHeader')).map(e => e.textContent);
+	const panel = () => document.querySelector<HTMLElement>('._dropdownContainer')!;
+
+	it('keeps the old list without the new props', () => {
+		properties = accountProps();
+		render();
+		openPanel();
+		expect(panel().classList.contains('_richList')).toBe(false);
+		expect(headers()).toEqual([]);
+		expect(document.querySelector('._dropdownItemSecondary')).toBeNull();
+		expect(document.querySelector('._dropdownTickSlot')).toBeNull();
+		expect(labels()).toEqual(ACCOUNTS.map(a => a.n));
+		expect(panel().style.width).toBe('');
+		expect(panel().style.left).toBe('');
+		typeSearch('zzz');
+		expect(document.querySelector('._dropdownNoMatch')).toBeNull();
+		// the ID is not searched without optionSecondaryKey
+		typeSearch('934-405');
+		expect(labels()).toEqual([]);
+	});
+
+	it('groups options under "<group> · <count>" headers, in first-seen order', () => {
+		properties = accountProps({ optionGroupKey: 'g' });
+		render();
+		openPanel();
+		expect(headers()).toEqual(['Meta · 2', 'Google · 2']);
+		expect(labels()).toEqual([
+			'Cityville by Fincity',
+			'Purva Prepaid',
+			'Modlix Dev',
+			'CoEvolve Misty Shores',
+		]);
+		// the headers are not options
+		expect(document.querySelectorAll('[role="option"]')).toHaveLength(4);
+	});
+
+	it('walks the grouped order with the arrow keys', () => {
+		properties = accountProps({ optionGroupKey: 'g' });
+		render();
+		openPanel();
+		pressKey('ArrowDown');
+		pressKey('ArrowDown');
+		expect(
+			document.querySelector('._dropdownItem._hover ._dropdownItemLabel')?.textContent,
+		).toBe('Purva Prepaid');
+	});
+
+	it('counts only the options a search leaves, and drops empty groups', () => {
+		properties = accountProps({ optionGroupKey: 'g' });
+		render();
+		typeSearch('purva');
+		expect(headers()).toEqual(['Meta · 1']);
+		expect(labels()).toEqual(['Purva Prepaid']);
+	});
+
+	it('shows the secondary text on the right and searches it too', () => {
+		properties = accountProps({ optionSecondaryKey: 'id' });
+		render();
+		openPanel();
+		expect(panel().classList.contains('_richList')).toBe(true);
+		expect(
+			Array.from(document.querySelectorAll('._dropdownItemSecondary')).map(e => e.textContent),
+		).toEqual(ACCOUNTS.map(a => a.id));
+		typeSearch('934-405');
+		expect(labels()).toEqual(['CoEvolve Misty Shores']);
+		typeSearch('cityville');
+		expect(labels()).toEqual(['Cityville by Fincity']);
+	});
+
+	it('bolds the matching letters with highlightSearchMatch, case-insensitive', () => {
+		properties = accountProps({ optionSecondaryKey: 'id', highlightSearchMatch: true });
+		render();
+		typeSearch('PURVA');
+		expect(
+			Array.from(document.querySelectorAll('._dropdownMatch')).map(e => e.textContent),
+		).toEqual(['Purva']);
+		expect(labels()).toEqual(['Purva Prepaid']);
+		typeSearch('108-212');
+		expect(document.querySelector('._dropdownItemSecondary ._dropdownMatch')?.textContent).toBe(
+			'108-212',
+		);
+	});
+
+	it('does not bold anything without highlightSearchMatch', () => {
+		properties = accountProps({ optionSecondaryKey: 'id' });
+		render();
+		typeSearch('purva');
+		expect(document.querySelector('._dropdownMatch')).toBeNull();
+	});
+
+	it('says nothing matches with noMatchText, the typed text in place of {search}', () => {
+		properties = accountProps({ noMatchText: 'No accounts match "{search}"' });
+		render();
+		openPanel();
+		expect(document.querySelector('._dropdownNoMatch')).toBeNull();
+		typeSearch('zzz');
+		expect(document.querySelector('._dropdownNoMatch')?.textContent).toBe(
+			'No accounts match "zzz"',
+		);
+		typeSearch('');
+		expect(document.querySelector('._dropdownNoMatch')).toBeNull();
+		expect(labels()).toHaveLength(4);
+	});
+
+	it('marks the picked option and keeps a tick slot on every row', () => {
+		storeValues.set(SELECTION_PATH, 'a3');
+		properties = accountProps({ optionSecondaryKey: 'id', selectionOptionTickType: 'TICK' });
+		render();
+		openPanel();
+		const picked = rows().find(r => r.classList.contains('_selected'))!;
+		expect(picked.querySelector('._dropdownItemLabel')?.textContent).toBe('Purva Prepaid');
+		expect(picked.querySelector('._dropdownTickSlot ._dropdownCheckIcon')).not.toBeNull();
+		expect(document.querySelectorAll('._dropdownTickSlot')).toHaveLength(4);
+		expect(document.querySelectorAll('._dropdownCheckIcon')).toHaveLength(1);
+	});
+
+	describe('listWidth and listAlign', () => {
+		const originalRect = HTMLElement.prototype.getBoundingClientRect;
+		const originalWidth = window.innerWidth;
+		let field = { left: 900, right: 1045 };
+
+		beforeEach(() => {
+			HTMLElement.prototype.getBoundingClientRect = function (this: HTMLElement) {
+				const r = this.classList.contains('compDropdown')
+					? { top: 100, bottom: 140, left: field.left, right: field.right }
+					: { top: 0, bottom: 0, left: 0, right: 0 };
+				return {
+					...r,
+					x: r.left,
+					y: r.top,
+					width: r.right - r.left,
+					height: r.bottom - r.top,
+					toJSON: () => r,
+				} as DOMRect;
+			};
+			Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1440 });
+		});
+
+		afterEach(() => {
+			HTMLElement.prototype.getBoundingClientRect = originalRect;
+			Object.defineProperty(window, 'innerWidth', { configurable: true, value: originalWidth });
+		});
+
+		it('is as wide as the field without listWidth', () => {
+			properties = accountProps();
+			render();
+			openPanel();
+			expect(panel().style.width).toBe('');
+		});
+
+		it('opens 420px wide, left edges lined up by default', () => {
+			field = { left: 900, right: 1045 };
+			properties = accountProps({ listWidth: 420 });
+			render();
+			openPanel();
+			expect(panel().style.width).toBe('420px');
+			expect(panel().style.left).toBe('0px');
+		});
+
+		it('lines up the right edges with listAlign RIGHT', () => {
+			field = { left: 900, right: 1045 };
+			properties = accountProps({ listWidth: 420, listAlign: 'RIGHT' });
+			render();
+			openPanel();
+			expect(panel().style.width).toBe('420px');
+			expect(panel().style.left).toBe(`${145 - 420}px`);
+		});
+
+		it('stays inside a phone-wide window', () => {
+			Object.defineProperty(window, 'innerWidth', { configurable: true, value: 390 });
+			field = { left: 200, right: 374 };
+			properties = accountProps({ listWidth: 420, listAlign: 'RIGHT' });
+			render();
+			openPanel();
+			expect(panel().style.width).toBe(`${390 - 16}px`);
+			// the list starts 8px from the window's left edge
+			expect(panel().style.left).toBe(`${8 - 200}px`);
+		});
+
+		it('is never narrower than the field', () => {
+			field = { left: 100, right: 700 };
+			properties = accountProps({ listWidth: 420, listAlign: 'RIGHT' });
+			render();
+			openPanel();
+			expect(panel().style.width).toBe('600px');
+			expect(panel().style.left).toBe('0px');
+		});
+	});
+});
+
+describe('splitSearchMatches', () => {
+	const { splitSearchMatches } = require('../Dropdown');
+	it('splits out every case-insensitive match', () => {
+		expect(splitSearchMatches('Purva Sparkling Purva', 'purva')).toEqual([
+			{ text: 'Purva', match: true },
+			{ text: ' Sparkling ', match: false },
+			{ text: 'Purva', match: true },
+		]);
+	});
+	it('returns the text plain for an empty-matching or invalid pattern', () => {
+		expect(splitSearchMatches('abc', 'x*')).toEqual([{ text: 'abc', match: false }]);
+		expect(splitSearchMatches('a(b', '(')).toEqual([{ text: 'a(b', match: false }]);
+	});
+});

@@ -299,6 +299,61 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'listWidth',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'List Width',
+		description:
+			'Width in px of the open list, independent of the field (never narrower than the field, never wider than the window less 8px each side). Empty: the list is as wide as the field (the old behaviour).',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'listAlign',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'List Align',
+		description:
+			'With List Width: which edge of the open list lines up with the field. Left (the default) or Right. The list is moved back inside the window when it would leave it.',
+		defaultValue: 'LEFT',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{ name: 'LEFT', displayName: 'Left', description: 'Left edges line up' },
+			{ name: 'RIGHT', displayName: 'Right', description: 'Right edges line up' },
+		],
+	},
+	{
+		name: 'optionGroupKey',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Option Group Key',
+		description:
+			"Key in each option's data (object data types) to group the options by: the options of one value sit together, in the order the values first appear, under a small header '<value> · <count>' (the count of options shown). Empty: no groups (the old behaviour).",
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'optionSecondaryKey',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Option Secondary Text Key',
+		description:
+			"Key in each option's data (object data types) whose value shows on the right of the option in small muted text, e.g. an ID. The option then sits on one line, its label cut with an ellipsis when long, and the search box also matches this text. Empty: label only (the old behaviour).",
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'highlightSearchMatch',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Highlight Search Match',
+		description:
+			'While text is typed in the search box, the matching letters of each option (label and secondary text) show in bold. Off: plain options (the old behaviour).',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'noMatchText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'No Match Text',
+		description:
+			'Line shown in the open list when the typed search matches no option; {search} is replaced with the typed text, e.g. No accounts match "{search}". Empty: the list is left empty (the old behaviour).',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'editRequestIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Edit Request Icon',
