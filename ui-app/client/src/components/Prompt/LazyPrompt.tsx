@@ -38,6 +38,7 @@ import {
 	markConfirmationExpired,
 } from './components/ActionBlock';
 import { InputBar } from './components/InputBar';
+import { newChatAsked } from './newChatSignal';
 import { SessionList, Session } from './components/SessionList';
 import { CraftCard } from './components/CraftCard';
 import { CraftPanel } from './components/CraftPanel';
@@ -1057,7 +1058,7 @@ const RECONNECT_BACKOFF_MS = 1_000;
 
 export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const {
-		definition: { bindingPath, bindingPath2, bindingPath3, bindingPath4 },
+		definition: { bindingPath, bindingPath2, bindingPath3, bindingPath4, bindingPath5 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
@@ -2977,6 +2978,31 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		setPendingApps([]);
 		setSavedObjects([]);
 	}, [stopPolling, overlaySessions, releaseStream]);
+
+	// The New Chat Binding (opt-in): a page that writes a value there starts a new
+	// conversation, as the New chat button does (the AdZump craft's "Start over").
+	// The path is cleared at once, so a reload or a re-render never asks again.
+	const newChatPath = useMemo(
+		() =>
+			bindingPath5
+				? getPathFromLocation(bindingPath5, props.locationHistory, pageExtractor)
+				: undefined,
+		[bindingPath5, props.locationHistory, pageExtractor],
+	);
+	const handleNewChatRef = useRef(handleNewChat);
+	handleNewChatRef.current = handleNewChat;
+	useEffect(() => {
+		if (!newChatPath) return;
+		return addListenerAndCallImmediately(
+			props.context.pageName,
+			(_, value) => {
+				if (!newChatAsked(value)) return;
+				setData(newChatPath, undefined, props.context.pageName);
+				handleNewChatRef.current();
+			},
+			newChatPath,
+		);
+	}, [newChatPath, props.context.pageName]);
 
 	// Delete a session
 	const handleDeleteSession = useCallback(
