@@ -81,6 +81,9 @@ export interface EditorBlockEnvironment {
 	onToggleTodo: (blockId: string) => void;
 	onToggleCollapse: (blockId: string) => void;
 	onDragStart: (e: React.DragEvent, blockId: string) => void;
+	/** An image block reports when it is clicked selected (outlined) or loses it, so
+	 *  Backspace / Delete remove the selected image (LZ-831). */
+	onImageSelect?: (blockId: string, selected: boolean) => void;
 }
 
 export const EditorBlockEnvContext = React.createContext<EditorBlockEnvironment | null>(null);
