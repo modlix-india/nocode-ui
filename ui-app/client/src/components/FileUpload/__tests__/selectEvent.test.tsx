@@ -123,3 +123,19 @@ test('a file refused as too big does not run the select event', async () => {
 	expect(calls).toEqual([]);
 	expect(messages[0]).toContain('big.mp4');
 });
+
+test('the button look is opt-in: the theme button by default, the small outlined one when asked', () => {
+	render();
+	const comp = host.querySelector('.compFileUpload') as HTMLElement;
+	expect(comp.className).not.toContain('_outlinedSmall');
+	properties = { ...properties, buttonLook: '_outlinedSmall' };
+	render();
+	expect((host.querySelector('.compFileUpload') as HTMLElement).className).toContain(
+		'_outlinedSmall',
+	);
+	properties = { ...properties, buttonLook: '_themeButton' };
+	render();
+	expect((host.querySelector('.compFileUpload') as HTMLElement).className).not.toContain(
+		'_outlinedSmall',
+	);
+});
