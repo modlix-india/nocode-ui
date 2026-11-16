@@ -74,6 +74,39 @@ export default function ProgressBarStyles({
 		width: 100% !important;
 	}
 
+	${PREFIX}._outlinedSmall ._fileUploadButton {
+		height: 34px;
+		min-height: 34px;
+		padding: 0 12px;
+		gap: 6px;
+		border-radius: 8px;
+		font-size: 13px;
+		font-weight: 500;
+		line-height: 18px;
+		color: inherit !important;
+		background: transparent !important;
+		border: 1px solid color-mix(in srgb, currentColor 22%, transparent) !important;
+		box-shadow: none !important;
+	}
+
+	${PREFIX}._outlinedSmall._onlyButton ._fileUploadButton {
+		width: auto !important;
+	}
+
+	${PREFIX}._outlinedSmall ._fileUploadButton:hover {
+		background: color-mix(in srgb, currentColor 6%, transparent) !important;
+	}
+
+	${PREFIX}._outlinedSmall ._fileUploadButton:focus-within {
+		outline: 2px solid currentColor;
+		outline-offset: 2px;
+	}
+
+	${PREFIX}._outlinedSmall ._uploadIcon {
+		font-size: 16px;
+		color: inherit !important;
+	}
+
 	${PREFIX} ._subtext {
 		text-overflow: ellipsis;
     	overflow: hidden;
