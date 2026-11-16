@@ -74,6 +74,7 @@ function FileUpload(props: Readonly<ComponentProps>) {
 		key,
 		properties: {
 			uploadViewType,
+			buttonLook,
 			uploadIcon,
 			options,
 			subText,
@@ -496,7 +497,7 @@ function FileUpload(props: Readonly<ComponentProps>) {
 		<div
 			key={'fileUpload'}
 			className={`comp compFileUpload ${hideSelectedFileName ? '_onlyButton' : ''}
-				${uploadViewType} ${colorScheme} ${fileValue ? '_hasValue' : ''} ${active ? '_isActive' : ''}`}
+				${uploadViewType} ${colorScheme} ${buttonLook === '_outlinedSmall' ? '_outlinedSmall' : ''} ${fileValue ? '_hasValue' : ''} ${active ? '_isActive' : ''}`}
 			style={computedStyles?.comp ?? {}}
 			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
 			onMouseLeave={
