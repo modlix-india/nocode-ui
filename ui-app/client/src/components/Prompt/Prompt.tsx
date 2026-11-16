@@ -39,6 +39,9 @@ const component: Component = {
 		// The session id of the chat on screen, empty for a new chat; written before
 		// On Session Change fires, so a page can follow the conversation.
 		bindingPath4: { name: 'Session Binding' },
+		// Opt-in: a value written here starts a new chat (as New chat does); the chat
+		// clears it at once. Unset, nothing changes.
+		bindingPath5: { name: 'New Chat Binding' },
 	},
 	defaultTemplate: {
 		key: '',
