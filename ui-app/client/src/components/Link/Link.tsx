@@ -44,6 +44,7 @@ function Link(props: Readonly<ComponentProps>) {
 			colorScheme,
 			showLines,
 			analyticsLabel,
+			tooltip,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -156,6 +157,7 @@ function Link(props: Readonly<ComponentProps>) {
 				href={resolvedLink}
 				target={target}
 				data-analytics-label={analyticsLabel || undefined}
+				title={tooltip ? getTranslations(tooltip, translations) : undefined}
 				onClick={e => {
 					// Cmd/Ctrl, Shift or Alt click on a real link is the browser's gesture to open
 					// it in a new tab or window. Every branch below hijacks the anchor with a
