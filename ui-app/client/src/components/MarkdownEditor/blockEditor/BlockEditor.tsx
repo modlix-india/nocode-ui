@@ -1189,6 +1189,14 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 		setSelectedBlockIds(ids);
 	}, []);
 
+	// The image block currently clicked selected (outlined), if any: Backspace /
+	// Delete remove it (LZ-831). Set by ImageBlock through the block env.
+	const selectedImageRef = useRef<string | null>(null);
+	const onImageSelect = useCallback((blockId: string, selected: boolean) => {
+		if (selected) selectedImageRef.current = blockId;
+		else if (selectedImageRef.current === blockId) selectedImageRef.current = null;
+	}, []);
+
 	const clearBlockSelection = useCallback(() => {
 		if (selectedBlockIdsRef.current.length === 0) return;
 		selectedBlockIdsRef.current = [];
@@ -2630,6 +2638,26 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 			const target = e.target as HTMLElement;
 			if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
 
+			// ---- Selected image: Backspace / Delete remove it (LZ-831) ----
+			// A clicked image is outlined but holds no caret, so the text handlers
+			// below never reached it (an image pasted into an empty editor could not
+			// be removed at all).
+			const imageId = selectedImageRef.current;
+			if (
+				imageId &&
+				(e.key === 'Backspace' || e.key === 'Delete') &&
+				!e.metaKey &&
+				!e.ctrlKey &&
+				!e.altKey
+			) {
+				selectedImageRef.current = null;
+				if (findBlock(docRef.current, imageId)) {
+					e.preventDefault();
+					apply(deleteBlockOp(docRef.current, imageId));
+					return;
+				}
+			}
+
 			// ---- Whole-block selection commands ----
 			// Handled before the list/table guard below so Delete works even when
 			// a self-managed block is part of the selection (those swallow their
@@ -3865,6 +3893,7 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 			onToggleTodo,
 			onToggleCollapse,
 			onDragStart: handleDragStart,
+			onImageSelect,
 		}),
 		[
 			readOnly,
@@ -3874,6 +3903,7 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 			onToggleTodo,
 			onToggleCollapse,
 			handleDragStart,
+			onImageSelect,
 		],
 	);
 

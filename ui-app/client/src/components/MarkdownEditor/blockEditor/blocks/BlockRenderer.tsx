@@ -27,6 +27,7 @@ import { getRegisteredComponent } from './component-registry';
 import { TableBlock } from './TableBlock';
 import { ListItemBlock } from './ListItemBlock';
 import {
+	useEditorBlockEnv,
 	useEditorDoc,
 	useImageUploading,
 	useIsPrintMode,
@@ -1411,6 +1412,12 @@ function ImageBlock({ block }: { block: Block; readOnly?: boolean }) {
 	// --- Image selection, resize, crop, and toolbar state ---
 	const isInline = block.props.inline === true;
 	const [selected, setSelected] = useState(false);
+	// Tell the editor which image is selected, so Backspace / Delete remove it (LZ-831).
+	const onImageSelect = useEditorBlockEnv()?.onImageSelect;
+	useEffect(() => {
+		onImageSelect?.(block.id, selected);
+	}, [onImageSelect, block.id, selected]);
+	useEffect(() => () => onImageSelect?.(block.id, false), [onImageSelect, block.id]);
 	const [imgW, setImgW] = useState<number>((block.props.width as number) || 0);
 	const [imgH, setImgH] = useState<number>((block.props.height as number) || 0);
 	const [naturalW, setNaturalW] = useState(0);
