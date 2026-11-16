@@ -79,6 +79,28 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	{
+		name: 'buttonLook',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Button look',
+		description:
+			"How the upload button looks: the theme's own upload button (default), or a small outlined button like a secondary Button.",
+		defaultValue: '_themeButton',
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{
+				name: '_themeButton',
+				displayName: 'Theme upload button',
+				description: "The theme's upload button (the look so far).",
+			},
+			{
+				name: '_outlinedSmall',
+				displayName: 'Small outlined button',
+				description: 'A small outlined button with the icon before the text.',
+			},
+		],
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'uploadType',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Upload Value Type',
