@@ -16,6 +16,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		translatable: true,
 		group: ComponentPropertyGroup.BASIC,
 	},
+	{
+		// Shown on hover as the link's title, e.g. the full name of a label cut short by an
+		// ellipsis style. Unset (the default) keeps the link without a title, as before.
+		name: 'tooltip',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Tooltip',
+		description: 'Text shown on hover, e.g. the full label when it is cut short.',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	{ ...COMMON_COMPONENT_PROPERTIES.linkPath, group: ComponentPropertyGroup.BASIC },
 	{ ...COMMON_COMPONENT_PROPERTIES.linkTargetType, group: ComponentPropertyGroup.BASIC },
 	{ ...COMMON_COMPONENT_PROPERTIES.linkTargetFeatures, group: ComponentPropertyGroup.BASIC },
