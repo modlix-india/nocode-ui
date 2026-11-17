@@ -1018,6 +1018,24 @@ function DragHandle({
 	);
 }
 
+// LZ-844: an image pasted or dropped as the last block left no line to type on. The caret
+// still pointed at the paragraph the image replaced, so every key after the paste went
+// nowhere. Give such an image an empty paragraph after it and the caret to go with it.
+function withLineAfterImage(
+	doc: EditorDocument,
+	imageId: string,
+): { doc: EditorDocument; caret?: EditorSelection } {
+	if (doc.blocks.at(-1)?.id !== imageId) return { doc };
+	const line = createBlock('paragraph');
+	return {
+		doc: insertBlockAfter(doc, imageId, line),
+		caret: {
+			anchor: { blockId: line.id, offset: 0 },
+			focus: { blockId: line.id, offset: 0 },
+		},
+	};
+}
+
 // ---- Component ----
 
 // Which editor instance most recently held focus. Undo/redo is handled by a
@@ -3252,11 +3270,18 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 							currentBlock.children.length === 0 &&
 							getTextLength(currentBlock.content) === 0;
 						const imgBlock = createBlock('image');
-						const newDoc = replaceInPlace
-							? updateBlock(docRef.current, currentBlockId, () => imgBlock)
-							: insertBlockAfter(docRef.current, currentBlockId, imgBlock);
+						const { doc: newDoc, caret } = withLineAfterImage(
+							replaceInPlace
+								? updateBlock(docRef.current, currentBlockId, () => imgBlock)
+								: insertBlockAfter(docRef.current, currentBlockId, imgBlock),
+							imgBlock.id,
+						);
 						setDoc(newDoc);
 						docRef.current = newDoc;
+						if (caret) {
+							setSelection(caret);
+							selectionRef.current = caret;
+						}
 						onChange?.(newDoc);
 
 						// Read the file and dispatch the upload event
@@ -3318,8 +3343,15 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 				placed.push({ blockId: imgBlock.id, file });
 			}
 			if (placed.length) {
+				const withLine = withLineAfterImage(doc, anchorId);
+				doc = withLine.doc;
 				setDoc(doc);
 				docRef.current = doc;
+				if (withLine.caret) {
+					setSelection(withLine.caret);
+					selectionRef.current = withLine.caret;
+					requestAnimationFrame(() => rootRef.current?.focus());
+				}
 				onChange?.(doc);
 			}
 			for (const { blockId, file } of placed) {
