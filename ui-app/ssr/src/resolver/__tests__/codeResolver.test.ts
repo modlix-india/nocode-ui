@@ -20,3 +20,27 @@ test('live hosts keep the cache', () => {
 	assert.equal(isCacheableResolution('deadbeef.modlix.com'), true);
 	assert.equal(isCacheableResolution('d893dd891db83e69bd399ca6cae1ff43ex.modlix.com'), true);
 });
+
+test('the hosting gate swaps only when security names another app for a suspended client', async () => {
+	const { askHostingGate } = await import('../codeResolver.js');
+	const realFetch = globalThis.fetch;
+	const answer = (status: number, body: unknown) => {
+		globalThis.fetch = (async () => new Response(JSON.stringify(body), { status })) as typeof fetch;
+	};
+	try {
+		answer(200, { suspended: true, serveAppCode: 'paused', serveClientCode: 'SYSTEM' });
+		assert.deepEqual(await askHostingGate('site1', 'FIN'), { appCode: 'paused', clientCode: 'SYSTEM' });
+		answer(200, { suspended: false, serveAppCode: 'site1', serveClientCode: 'FIN' });
+		assert.equal(await askHostingGate('site1', 'FIN'), null);
+		// suspended but no target named: serve the site
+		answer(200, { suspended: true, serveAppCode: 'site1', serveClientCode: 'FIN' });
+		assert.equal(await askHostingGate('site1', 'FIN'), null);
+		answer(200, { suspended: true, serveAppCode: '', serveClientCode: 'SYSTEM' });
+		assert.equal(await askHostingGate('site1', 'FIN'), null);
+		// security did not answer: undefined, so the caller serves the site and caches nothing
+		answer(500, {});
+		assert.equal(await askHostingGate('site1', 'FIN'), undefined);
+	} finally {
+		globalThis.fetch = realFetch;
+	}
+});
