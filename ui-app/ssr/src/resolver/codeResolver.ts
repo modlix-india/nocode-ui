@@ -80,6 +80,61 @@ export async function resolveCodesFromRequest(request: Request): Promise<Codes> 
 	return resolveFromSecurityService(scheme, host, port);
 }
 
+/**
+ * The billing hosting gate: which app and client to render for the resolved ones.
+ *
+ * Security answers `{suspended, serveAppCode, serveClientCode}`. It names another app (the
+ * SYSTEM `paused` app) when the client's billing config is in BLOCK_APP mode and the client owes
+ * it: credits below zero, or an invoice past its due date. The Rust ui shell asks the same
+ * question before it builds an index page (crates/ui shell/server.rs `served_codes`); this keeps
+ * a pre-rendered page from showing a site the shell would not serve.
+ *
+ * Cached for a minute so a client who pays gets the site back within one. The HTML cache key
+ * carries the codes this returns, so the paused render and the site's own render are kept apart.
+ * Any failure renders the resolved app (fails open, like the shell). A swapped app is always LIVE:
+ * the paused app has no draft.
+ */
+export async function applyHostingGate(codes: Codes): Promise<Codes> {
+	const { appCode, clientCode } = codes;
+	if (!appCode || !clientCode || appCode === DEFAULT_APP || clientCode === DEFAULT_CLIENT) return codes;
+
+	const cacheKey = `hosting:${appCode}:${clientCode}`;
+	try {
+		const redis = getRedisClient();
+		const cached = await redis.get(cacheKey).catch(() => null);
+		const served = cached ? fromCache(cached) : await askHostingGate(appCode, clientCode);
+		if (served === undefined) return codes;
+		if (!cached) await redis.setex(cacheKey, 60, served ? JSON.stringify(served) : '-').catch(() => undefined);
+		if (!served) return codes;
+		logger.info('Hosting gate swapped the app', { from: { appCode, clientCode }, to: served });
+		return { ...served, urlType: 'LIVE' };
+	} catch (error) {
+		logger.error('Hosting gate failed, rendering the resolved app', { error: String(error), appCode, clientCode });
+		return codes;
+	}
+}
+
+type ServedCodes = { appCode: string; clientCode: string };
+
+/** '-' caches "serve the resolved app". */
+function fromCache(cached: string): ServedCodes | null {
+	return cached === '-' ? null : (JSON.parse(cached) as ServedCodes);
+}
+
+/** The gate's answer: the app to serve instead, null to serve the resolved one, undefined when security did not answer. */
+export async function askHostingGate(appCode: string, clientCode: string): Promise<ServedCodes | null | undefined> {
+	const response = await fetch(
+		`${getGatewayUrl()}/api/security/internal/billing/hosting` +
+			`?urlAppCode=${encodeURIComponent(appCode)}&urlClientCode=${encodeURIComponent(clientCode)}`
+	);
+	if (!response.ok) return undefined;
+	const data = (await response.json()) as Record<string, unknown>;
+	const serveApp = typeof data.serveAppCode === 'string' ? data.serveAppCode : '';
+	const serveClient = typeof data.serveClientCode === 'string' ? data.serveClientCode : '';
+	const swapped = data.suspended === true && !!serveApp && !!serveClient && (serveApp !== appCode || serveClient !== clientCode);
+	return swapped ? { appCode: serveApp, clientCode: serveClient } : null;
+}
+
 /** `t-` plus 32 lowercase hex, matched over the first label only. */
 const DRAFT_TOKEN_LABEL = /^t-[0-9a-f]{32}$/;
 
