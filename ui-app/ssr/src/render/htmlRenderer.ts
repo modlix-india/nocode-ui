@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { resolveCodesFromRequest, extractPageName, extractPagePath, getAuthToken } from '../resolver/codeResolver.js';
+import { resolveCodesFromRequest, applyHostingGate, extractPageName, extractPagePath, getAuthToken } from '../resolver/codeResolver.js';
 import {
 	fetchAllPageData,
 	fetchApplication,
@@ -1285,7 +1285,8 @@ export async function handlePageRequest(
 		headers,
 	} as Request;
 
-	const codes = await resolveCodesFromRequest(request);
+	// The billing hosting gate may serve another app (the SYSTEM paused page) for a client that owes.
+	const codes = await applyHostingGate(await resolveCodesFromRequest(request));
 	const urlPageName = extractPageName(url.pathname);
 	// Everything after the page name; only a page declaring `seo.paths` makes anything of it.
 	const urlPath = extractPagePath(url.pathname);
