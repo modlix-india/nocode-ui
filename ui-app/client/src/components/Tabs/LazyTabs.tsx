@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { CSSProperties, useEffect, useId, useLayoutEffect, useRef } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
@@ -16,6 +16,7 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
 import { runEvent } from '../util/runEvent';
 import { isNullValue } from '@fincity/kirun-js';
+import { tabKeyTarget } from './tabsKeys';
 
 function setHighlighter(
 	tabsOrientation: string,
@@ -69,6 +70,7 @@ export default function TabsComponent(props: Readonly<ComponentProps>) {
 			image,
 			showLabel,
 			analyticsLabel,
+			ariaLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -151,19 +153,34 @@ export default function TabsComponent(props: Readonly<ComponentProps>) {
 	const selectedChild = entry ? { [entry[0]]: entry[1] } : {};
 
 	const tabRefs = useRef<any[]>([]);
+	const uid = useId();
+	const panelId = `${uid}-panel`;
+	const tabId = (i: number) => `${uid}-tab-${i}`;
+	const shownIndex = Math.max(tabs.indexOf(shownTab), 0);
+	const isVertical = tabsOrientation === '_vertical';
+
+	const handleKeyDown = (ev: React.KeyboardEvent, i: number) => {
+		if (ev.key === 'Enter' || ev.key === ' ') {
+			ev.preventDefault();
+			handleClick(tabs[i]);
+			return;
+		}
+		const present: number[] = [];
+		tabs.forEach((t: any, n: number) => {
+			if (!isNullValue(t)) present.push(n);
+		});
+		const next = tabKeyTarget(ev.key, i, present, isVertical);
+		if (next === -1) return;
+		ev.preventDefault();
+		handleClick(tabs[next]);
+		tabRefs.current[next]?.focus();
+	};
 
 	const [highlighterPosition, setHighlighterPosition] = React.useState<CSSProperties>({});
 
 	useLayoutEffect(() => {
 		const place = () =>
-			setHighlighter(
-				tabsOrientation,
-				tabRefs,
-				hover,
-				tabs,
-				shownTab,
-				setHighlighterPosition,
-			);
+			setHighlighter(tabsOrientation, tabRefs, hover, tabs, shownTab, setHighlighterPosition);
 		place();
 		// Tabs change size after mount (icons and fonts load, the popup finishes opening, the
 		// container is resized), so follow the tab list instead of measuring once.
@@ -198,6 +215,11 @@ export default function TabsComponent(props: Readonly<ComponentProps>) {
 			<div
 				className={`tabsContainer ${tabsPosition}`}
 				style={resolvedStyles.tabsContainer ?? {}}
+				role="tablist"
+				aria-orientation={isVertical ? 'vertical' : 'horizontal'}
+				aria-label={
+					ariaLabel ? getTranslations(ariaLabel, pageDefinition.translations) : undefined
+				}
 			>
 				<SubHelperComponent
 					definition={props.definition}
@@ -209,13 +231,22 @@ export default function TabsComponent(props: Readonly<ComponentProps>) {
 						!isNullValue(e) && (
 							<div
 								key={e}
+								id={tabId(i)}
+								role="tab"
+								aria-selected={shownTab === e}
+								aria-controls={panelId}
+								aria-label={
+									showLabel
+										? undefined
+										: getTranslations(e, pageDefinition.translations)
+								}
+								tabIndex={i === shownIndex ? 0 : -1}
+								onKeyDown={ev => handleKeyDown(ev, i)}
 								ref={el => {
 									tabRefs.current[i] = el;
 								}}
 								className={`tabDiv ${tabNameOrientation} ${
-									hover === i || (hover === -1 && shownTab === e)
-										? '_active'
-										: ''
+									hover === i || (hover === -1 && shownTab === e) ? '_active' : ''
 								}`}
 								style={
 									hover === i || shownTab === e
@@ -239,7 +270,7 @@ export default function TabsComponent(props: Readonly<ComponentProps>) {
 									<img
 										src={image[i]}
 										className="icon"
-										alt="icon"
+										alt=""
 										style={resolvedStyles.icon}
 									></img>
 								) : (
@@ -285,7 +316,13 @@ export default function TabsComponent(props: Readonly<ComponentProps>) {
 					/>
 				</div>
 			</div>
-			<div className="tabGridDiv" style={resolvedStyles.childContainer ?? {}}>
+			<div
+				className="tabGridDiv"
+				style={resolvedStyles.childContainer ?? {}}
+				id={panelId}
+				role="tabpanel"
+				aria-labelledby={tabId(shownIndex)}
+			>
 				<SubHelperComponent
 					definition={props.definition}
 					subComponentName="childContainer"
