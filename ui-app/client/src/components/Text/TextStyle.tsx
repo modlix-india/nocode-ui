@@ -107,6 +107,9 @@ export default function LabelStyle({
 		text-Emphasis: inherit;
 		text-Overflow: inherit;
 		white-Space: inherit;
+		/* the wrapper clips with overflow hidden + text-overflow ellipsis: the ellipsis is drawn by the box that holds
+		   the line of text, which is this one, so it takes the wrapper's overflow too (ADZ-2011) */
+		overflow: inherit;
 	}
 
 	/* A picture never grows past the text box: a wide screenshot shrinks to fit (and its
