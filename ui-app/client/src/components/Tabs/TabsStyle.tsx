@@ -92,6 +92,15 @@ export default function TabsStyles({
 			z-index: 3;
 		}
 		
+		${PREFIX} .tabDiv:focus {
+			outline: none;
+		}
+
+		${PREFIX} .tabDiv:focus-visible {
+			outline: 2px solid currentColor;
+			outline-offset: -2px;
+		}
+
 		${PREFIX} .tabDiv._vertical {
 			flex-direction: column;
 		}
