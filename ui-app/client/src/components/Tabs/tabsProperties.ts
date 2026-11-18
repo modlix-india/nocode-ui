@@ -129,6 +129,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
+		name: 'ariaLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Accessible name',
+		description:
+			'Name a screen reader reads for the tab row, for example "Campaign panel". Optional.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'onTabChange',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Tab Change',
