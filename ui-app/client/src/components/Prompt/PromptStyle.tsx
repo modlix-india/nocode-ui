@@ -1946,6 +1946,61 @@ export default function PromptStyle({
 			color: ${t('promptFontColor', '#333')};
 		}
 
+		/* flow block: the cards are AutomationFlow's own sheet; only the frame is here */
+		${PREFIX} ._craftLoading { font-size: 13px; color: ${t('promptSecondaryFontColor', '#6b6b6b')}; }
+		${PREFIX} ._craftFlow { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+		${PREFIX} ._craftFlow._inline {
+			padding: 10px 12px;
+			border: 1px solid ${t('borderColorNine', '#e5e5e5')};
+			border-radius: 10px;
+			background: ${t('surfaceColorOne', '#f9f9f9')};
+		}
+		${PREFIX} ._craftFlowActions { margin-top: 0; }
+
+		/* kirun block: a one-line chip inline, two tabs in the panel */
+		${PREFIX} ._craftKirunChip {
+			display: inline-flex;
+			align-items: center;
+			gap: 4px;
+			padding: 4px 10px;
+			border: 1px solid ${t('borderColorNine', '#e5e5e5')};
+			border-radius: 9999px;
+			font-size: 13px;
+			color: ${t('promptFontColor', '#333')};
+			width: fit-content;
+		}
+		${PREFIX} ._craftKirunView {
+			border: 0;
+			background: none;
+			padding: 0;
+			font: inherit;
+			text-decoration: underline;
+			cursor: pointer;
+			color: ${t('promptFontColor', '#333')};
+		}
+		${PREFIX} ._craftKirun { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+		${PREFIX} ._craftKirunHead { font-size: 14px; color: ${t('promptFontColor', '#333')}; }
+		${PREFIX} ._craftKirunNs { margin-left: 8px; font-size: 12px; color: ${t('promptSecondaryFontColor', '#6b6b6b')}; }
+		${PREFIX} ._craftKirunTabs { display: flex; gap: 4px; border-bottom: 1px solid ${t('borderColorNine', '#e5e5e5')}; }
+		${PREFIX} ._craftKirunTab {
+			border: 0;
+			background: none;
+			padding: 6px 10px;
+			font: inherit;
+			font-size: 13px;
+			cursor: pointer;
+			color: ${t('promptSecondaryFontColor', '#6b6b6b')};
+			border-bottom: 2px solid transparent;
+			margin-bottom: -1px;
+		}
+		${PREFIX} ._craftKirunTab._active {
+			color: ${t('promptFontColor', '#333')};
+			border-bottom-color: ${t('promptFontColor', '#333')};
+		}
+		${PREFIX} ._craftKirunSummary { margin: 0; padding-left: 22px; font-size: 14px; line-height: 1.7; color: ${t('promptFontColor', '#333')}; }
+		${PREFIX} ._craftKirunNote { font-size: 13px; color: ${t('promptSecondaryFontColor', '#6b6b6b')}; }
+		${PREFIX} ._craftKirunEditor { height: 520px; min-height: 320px; position: relative; }
+
 		${PREFIX} ._craftRow {
 			display: flex;
 			gap: 16px;
