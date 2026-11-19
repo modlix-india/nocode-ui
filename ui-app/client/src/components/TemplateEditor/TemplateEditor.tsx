@@ -41,6 +41,7 @@ function TemplateEditor(props: Readonly<ComponentProps>) {
 			onPreviewRecord,
 			compareTemplate,
 			compareLabel,
+			compareOpen,
 			onCompareOpen,
 		} = {},
 		stylePropertiesWithPseudoStates,
@@ -141,6 +142,7 @@ function TemplateEditor(props: Readonly<ComponentProps>) {
 					lockedType={templateType}
 					aiEndpoint={aiEndpoint}
 					editorLook={editorLook}
+					showCompare={compareOpen === true}
 					records={records}
 					compare={
 						compareTemplate || onCompareOpen
