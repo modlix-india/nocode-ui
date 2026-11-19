@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { getDataFromPath } from '../../context/StoreContext';
-import { OptionsRef, PickOption } from './automationTypes';
+import { AutomationDoc, Catalog, CheckReport, OptionsRef, PickOption } from './automationTypes';
 
 /**
  * The two calls the flow view makes on its own: the options a picker offers
@@ -101,4 +101,42 @@ export async function fetchFunctionDefinition(
 		headers: headers(appCode),
 	});
 	return response.data?.definition ?? undefined;
+}
+
+const catalogCache = new Map<string, Promise<Catalog | undefined>>();
+
+/**
+ * The app's catalog, for a flow whose page binds none (the AppBuilder workspace
+ * editor). Asks for every function too (`functions=all`): the server lists them
+ * only for a builder. Fetched once per app and client per page load; a failure
+ * is not cached and answers undefined.
+ */
+export function loadCatalog(appCode: string, clientCode?: string): Promise<Catalog | undefined> {
+	const key = `${appCode}:${clientCode ?? ''}`;
+	if (!catalogCache.has(key)) {
+		const params: Record<string, string> = { appCode, functions: 'all' };
+		if (clientCode) params.clientCode = clientCode;
+		const p = (async () => {
+			try {
+				const r = await axios.get('api/core/automations/catalog', { params, headers: headers() });
+				if (!r?.data) catalogCache.delete(key);
+				return r?.data as Catalog | undefined;
+			} catch {
+				catalogCache.delete(key);
+				return undefined;
+			}
+		})();
+		catalogCache.set(key, p);
+	}
+	return catalogCache.get(key)!;
+}
+
+/** The server's soundness check of a document (`POST /api/core/automations/check`). Never rejects. */
+export async function checkAutomation(doc: AutomationDoc): Promise<CheckReport | undefined> {
+	try {
+		const r = await axios.post('api/core/automations/check', doc, { headers: headers() });
+		return r?.data as CheckReport | undefined;
+	} catch {
+		return undefined;
+	}
 }

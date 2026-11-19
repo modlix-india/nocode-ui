@@ -66,6 +66,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_ANY_COMP_PROP,
 	},
 	{
+		name: 'compareOpen',
+		displayName: 'Compare Open',
+		description:
+			'Shows what changed since this template was opened, as a git style diff (what was, what changed), instead of the editor. Bind it to a flag the page sets from a Compare button next to Save.',
+		schema: SCHEMA_ANY_COMP_PROP,
+	},
+	{
 		name: 'compareLabel',
 		displayName: 'Compare Label',
 		description:
