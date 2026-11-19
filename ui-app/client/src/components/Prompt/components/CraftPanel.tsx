@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { CraftRenderer } from './CraftRenderer';
+import type { CraftContextValue } from './craftContext';
 
 interface CraftData {
 	id: string;
@@ -21,6 +22,10 @@ interface CraftPanelProps {
 	agentEndpoint: string;
 	onSend: (text: string, attachments?: any[], displayText?: string) => Promise<void>;
 	getAuthHeaders: () => Record<string, string>;
+	/** Puts text into the chat input (a flow card's "About the step" reference). */
+	onSeedInput?: (text: string) => void;
+	/** The page the chat sits on, for blocks that embed a page component. */
+	host?: CraftContextValue['host'];
 }
 
 export function CraftPanel({
@@ -32,6 +37,8 @@ export function CraftPanel({
 	agentEndpoint,
 	onSend,
 	getAuthHeaders,
+	onSeedInput,
+	host,
 }: Readonly<CraftPanelProps>) {
 	const bodyRef = useRef<HTMLDivElement>(null);
 	const craftIdRef = useRef<string | null>(null);
@@ -85,6 +92,8 @@ export function CraftPanel({
 					agentEndpoint={agentEndpoint}
 					onSend={onSend}
 					getAuthHeaders={getAuthHeaders}
+					onSeedInput={onSeedInput}
+					host={host}
 				/>
 			</div>
 			{belowFold && (

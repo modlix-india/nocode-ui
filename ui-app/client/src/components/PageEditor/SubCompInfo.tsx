@@ -6299,4 +6299,69 @@ export const SubComponentDefinitions: Record<
 			mainComponent: true,
 		},
 	],
+	AutomationFlow: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="4" fill="#F9F9F9" />
+					<rect
+						x="5"
+						y="4"
+						width="2"
+						height="22"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.6"
+					/>
+					<rect x="10" y="4" width="15" height="5" rx="1.5" fill="#7E81D6" />
+					<rect x="10" y="12" width="15" height="5" rx="1.5" fill="#007BFF" />
+					<rect x="10" y="20" width="7" height="5" rx="1.5" fill="#26A48A" />
+					<rect
+						x="19"
+						y="20"
+						width="6"
+						height="5"
+						rx="1.5"
+						fill="#96A1B4"
+						fillOpacity="0.55"
+					/>
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+		{
+			name: 'flow',
+			displayName: 'Flow',
+			description: 'The column of cards',
+			icon: 'fa-solid fa-diagram-next',
+		},
+		{ name: 'card', displayName: 'Card', description: 'One step', icon: 'fa-solid fa-square' },
+		{
+			name: 'lanes',
+			displayName: 'Lanes',
+			description: 'The paths after an IF or AT THE SAME TIME',
+			icon: 'fa-solid fa-code-branch',
+		},
+		{
+			name: 'laneLabel',
+			displayName: 'Lane Label',
+			description: 'Yes, Otherwise, Lane 1',
+			icon: 'fa-solid fa-font',
+		},
+		{
+			name: 'addMenu',
+			displayName: 'Add Menu',
+			description: 'The menu the "+" opens',
+			icon: 'fa-solid fa-plus',
+		},
+		{
+			name: 'panel',
+			displayName: 'Edit Panel',
+			description: 'The side panel for the selected card',
+			icon: 'fa-solid fa-sliders',
+		},
+	],
 };

@@ -1,6 +1,7 @@
 import { Component } from '../types/common';
 import Animator from './Animator/Animator';
 import ArrayRepeater from './ArrayRepeater/ArrayRepeater';
+import AutomationFlow from './AutomationFlow/AutomationFlow';
 import BlueprintEditor from './BlueprintEditor/BlueprintEditor';
 import Button from './Button/Button';
 import ButtonBar from './Buttonbar/ButtonBar';
@@ -86,6 +87,7 @@ import TextEditor from './TextEditor/TextEditor';
 
 const componentMap = new Map<string, Component>([
 	[BlueprintEditor.name, BlueprintEditor],
+	[AutomationFlow.name, AutomationFlow],
 	[Button.name, Button],
 	[ButtonBar.name, ButtonBar],
 	[Grid.name, Grid],

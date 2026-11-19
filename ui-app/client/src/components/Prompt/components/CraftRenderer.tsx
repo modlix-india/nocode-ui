@@ -1,20 +1,31 @@
 import type { JSX } from 'react';
 import { agentBaseUrl } from '../draftMode';
-import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useContext, Suspense } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { loadGoogleMaps } from '../../../util/googleMapsLoader';
 import { SecureImg } from '../../util/useSecureSrc';
 import { isSecuredUrl } from '../../util/secureImage';
+import { CraftContext, CraftContextValue } from './craftContext';
 
-interface CraftContextValue {
-	sessionId: string | null;
-	agentEndpoint: string;
-	onSend: (text: string, attachments?: any[], displayText?: string) => Promise<void>;
-	getAuthHeaders: () => Record<string, string>;
+// Separate chunks: the flow view and the function panel are only fetched by a
+// chat that is actually shown one.
+const FlowCraftBlock = React.lazy(
+	() => import(/* webpackChunkName: "FlowCraftBlock" */ './FlowCraftBlock'),
+);
+const KirunCraftBlock = React.lazy(
+	() => import(/* webpackChunkName: "KirunCraftBlock" */ './KirunCraftBlock'),
+);
+
+function lazyBlock(Block: React.ComponentType<any>): React.FC<any> {
+	return function LazyCraftBlock(props: any) {
+		return (
+			<Suspense fallback={<div className="_craftLoading">Loading…</div>}>
+				<Block {...props} />
+			</Suspense>
+		);
+	};
 }
-
-const CraftContext = createContext<CraftContextValue | null>(null);
 
 interface Block {
 	type: string;
@@ -948,6 +959,8 @@ const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	collapsible: CollapsibleBlock,
 	carousel: CarouselBlock,
 	map: MapBlock,
+	flow: lazyBlock(FlowCraftBlock),
+	kirun: lazyBlock(KirunCraftBlock),
 };
 
 function CraftBlockRenderer({ block, styleProperties }: { block: Block; styleProperties?: any }) {
@@ -964,17 +977,34 @@ export function CraftRenderer({
 	agentEndpoint,
 	onSend,
 	getAuthHeaders,
-}: Readonly<{
-	blocks: Block[];
-	definition: ComponentDefinition;
-	styleProperties?: any;
-	sessionId: string | null;
-	agentEndpoint: string;
-	onSend: (text: string, attachments?: any[], displayText?: string) => Promise<void>;
-	getAuthHeaders: () => Record<string, string>;
-}>) {
+	inline,
+	onOpenPanel,
+	onSeedInput,
+	host,
+}: Readonly<
+	{
+		blocks: Block[];
+		definition: ComponentDefinition;
+		styleProperties?: any;
+		sessionId: string | null;
+		agentEndpoint: string;
+		onSend: (text: string, attachments?: any[], displayText?: string) => Promise<void>;
+		getAuthHeaders: () => Record<string, string>;
+	} & Pick<CraftContextValue, 'inline' | 'onOpenPanel' | 'onSeedInput' | 'host'>
+>) {
 	return (
-		<CraftContext.Provider value={{ sessionId, agentEndpoint, onSend, getAuthHeaders }}>
+		<CraftContext.Provider
+			value={{
+				sessionId,
+				agentEndpoint,
+				onSend,
+				getAuthHeaders,
+				inline,
+				onOpenPanel,
+				onSeedInput,
+				host,
+			}}
+		>
 			<div className="_craftContent" style={styleProperties?.craftContent ?? {}}>
 				<SubHelperComponent definition={definition} subComponentName="craftContent" />
 				{blocks.map((block, i) => (
