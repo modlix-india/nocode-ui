@@ -1386,6 +1386,29 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		},
 		[setDraftText],
 	);
+
+	/**
+	 * A craft block putting a reference into the box (a flow card's
+	 * `About the step "...": `), ready for the user to finish the sentence.
+	 * Replaces what is there rather than appending: the reference is the start
+	 * of a new message, and a half-typed one about another step is not.
+	 */
+	const seedChatInput = useCallback(
+		(text: string) => {
+			setDraftText(text);
+			promptInputRef.current?.focus();
+		},
+		[setDraftText],
+	);
+	// What a craft block that embeds a page component (the KIRun editor) needs of the page.
+	const craftHost = useMemo(
+		() => ({
+			context: props.context,
+			pageDefinition: props.pageDefinition,
+			locationHistory: props.locationHistory ?? [],
+		}),
+		[props.context, props.pageDefinition, props.locationHistory],
+	);
 	const saveDraftTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -4011,6 +4034,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 															agentEndpoint={agentEndpoint}
 															onSend={handleSend}
 															getAuthHeaders={getAuthHeaders}
+															inline
+															onOpenPanel={() =>
+																setActiveCraftId(craftId)
+															}
+															onSeedInput={seedChatInput}
+															host={craftHost}
 														/>
 													</div>
 												);
@@ -4247,6 +4276,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					agentEndpoint={agentEndpoint}
 					onSend={handleSend}
 					getAuthHeaders={getAuthHeaders}
+					onSeedInput={seedChatInput}
+					host={craftHost}
 				/>
 			)}
 		</div>
