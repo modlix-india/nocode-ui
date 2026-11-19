@@ -59,7 +59,10 @@ ${PREFIX} {
 ${PREFIX} button { font: inherit; color: inherit; }
 
 ${PREFIX} ._afRoot { display: flex; gap: 20px; align-items: flex-start; min-width: 0; }
-${PREFIX} ._afFlow { flex: 1; min-width: 0; overflow-x: auto; padding: 4px 2px 8px; }
+/* The flow column is a container too: the lane rule under "narrow" then measures the
+   column, so the lanes stack when the column is narrow (beside an open side panel in a
+   narrow editor), while the panel rule still measures the whole component. */
+${PREFIX} ._afFlow { flex: 1; min-width: 0; overflow-x: auto; padding: 4px 2px 8px; container-type: inline-size; }
 ${PREFIX} ._afEmpty { color: var(--_afInkMuted); padding: 12px 0; }
 
 /* ── the rail ── */
