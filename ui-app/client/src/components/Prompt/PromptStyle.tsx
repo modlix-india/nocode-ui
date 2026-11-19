@@ -1280,6 +1280,36 @@ export default function PromptStyle({
 			border-top: 1px solid ${t('borderColorNine', '#f2f1ec')};
 		}
 
+		/* Step card surfaces use the slots that flip in a dark theme. The agent card's own
+		   background, border and check colours come from style properties whose defaults are
+		   light, so in a dark theme that sets none of them the card was white with light text;
+		   the extra class lifts these rules over those. */
+		${PREFIX} ._agentCard._stepCard,
+		${PREFIX} ._agentCard._stepCard._done {
+			background: ${t('colorSeven', '#fff')};
+			border-color: ${t('borderColorNine', '#ececec')};
+		}
+
+		${PREFIX} ._agentCard._stepCard ._agentCardCheck {
+			background: ${t('promptFontColor', '#1a1a1a')};
+			color: ${t('colorSeven', '#fff')};
+		}
+
+		${PREFIX} ._agentCard._stepCard ._agentCardTime {
+			background: ${t('surfaceColorTwo', '#f4f3ee')};
+			color: ${t('promptTertiaryFontColor', '#8c8a80')};
+			border-color: ${t('borderColorNine', '#e6e5df')};
+		}
+
+		${PREFIX} ._agentCard._stepCard ._statusDot._running,
+		${PREFIX} ._agentCard._stepCard ._statusDot._success {
+			background: ${t('promptFontColor', '#1a1a1a')};
+		}
+
+		${PREFIX} ._agentCard._stepCard ._agentCardCheck._failed {
+			background: ${t('colorTwelve', '#dc3545')};
+		}
+
 		/* Step card rows (ADZ-2065): a helper is its own indented row; a failed step is red
 		   with one sentence and one button. */
 		${PREFIX} ._agentItem._helper {
@@ -1304,7 +1334,7 @@ export default function PromptStyle({
 			padding: 5px 12px;
 			border: 1px solid ${t('borderColorNine', '#e2e1db')};
 			border-radius: 999px;
-			background: ${t('backgroundColorOne', '#fff')};
+			background: ${t('colorSeven', '#fff')};
 			color: ${t('promptFontColor', '#1a1a1a')};
 			font: inherit;
 			font-size: 12px;
