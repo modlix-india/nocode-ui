@@ -712,6 +712,47 @@ export default function TemplateEditorStyle({
 
 	${PREFIX} ._docMorePanel { position: absolute; right: 0; top: 0; bottom: 0; z-index: 20; box-shadow: -6px 0 20px rgba(0,0,0,0.1); }
 
+	/* ---- Compare (what was / what changed, as a git diff) ---- */
+	${PREFIX} ._cmpView { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+	${PREFIX} ._cmpBar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 8px 12px; border-bottom: 1px solid ${line}; background: ${panel}; }
+	${PREFIX} ._cmpTitle { font-size: 13px; font-weight: 600; color: ${ink}; }
+	${PREFIX} ._cmpSub { font-weight: 400; font-size: 12px; color: ${muted}; }
+	${PREFIX} ._cmpToggle { display: flex; gap: 6px; }
+	${PREFIX} ._cmpPlus { color: #1a7f37; font-weight: 600; }
+	${PREFIX} ._cmpMinus { color: #cf222e; font-weight: 600; }
+	${PREFIX} ._cmpBody { flex: 1; min-height: 0; overflow: auto; padding: 10px 12px; background: ${card}; }
+	${PREFIX} ._cmpFile { border: 1px solid ${border}; border-radius: 6px; margin-bottom: 12px; overflow: hidden; }
+	${PREFIX} ._cmpFileHead { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: ${panel}; border-bottom: 1px solid ${line}; font-size: 12px; }
+	${PREFIX} ._cmpColHead { display: grid; grid-template-columns: 1fr 1fr; font-size: 11px; color: ${muted}; padding: 4px 10px; border-bottom: 1px solid ${line}; }
+	${PREFIX} ._cmpHunkHead { padding: 3px 10px; font: 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: ${muted}; background: #ddf4ff; }
+	${PREFIX} ._cmpHunk + ._cmpHunk { border-top: 1px solid ${line}; }
+	${PREFIX} ._cmpTable { width: 100%; border-collapse: collapse; table-layout: fixed; font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+	${PREFIX} ._cmpTable td { vertical-align: top; padding: 0 8px; border: none; }
+	${PREFIX} ._cmpTable ._cmpNo { width: 42px; text-align: right; color: ${faint}; user-select: none; background: ${panel}; }
+	${PREFIX} ._cmpTable ._cmpCode { white-space: pre-wrap; word-break: break-all; }
+	${PREFIX} ._cmpSplit ._cmpCode { width: calc(50% - 42px); }
+	${PREFIX} ._cmpTable ._cmpDel { background: #ffebe9; }
+	${PREFIX} ._cmpTable ._cmpAdd { background: #dafbe1; }
+	${PREFIX} ._cmpTable ._cmpEmpty { background: ${panel}; }
+	${PREFIX} ._cmpTable ._cmpDel ._cmpMark { background: #ffc1ba; }
+	${PREFIX} ._cmpTable ._cmpAdd ._cmpMark { background: #9be9a8; }
+	${PREFIX} ._cmpMark { color: inherit; border-radius: 2px; }
+	${PREFIX} ._cmpSign { display: inline-block; width: 1.2em; color: ${muted}; }
+
+	/* PDF compare */
+	${PREFIX} ._pcView { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+	${PREFIX} ._pcSummary { padding: 6px 12px; font-size: 12px; color: ${muted}; border-bottom: 1px solid ${line}; }
+	${PREFIX} ._pcColHead { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 4px 12px; font-size: 12px; font-weight: 600; color: ${ink}; border-bottom: 1px solid ${line}; }
+	${PREFIX} ._pcScroll { flex: 1; min-height: 0; overflow: auto; padding: 12px; background: ${t('surfaceColorTwo', '#f5f5f5')}; }
+	${PREFIX} ._pcRow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; align-items: start; }
+	${PREFIX} ._pcRow._pcOne { grid-template-columns: minmax(0, 720px); justify-content: center; }
+	${PREFIX} ._pcPage { min-width: 0; }
+	${PREFIX} ._pcPageLabel { font-size: 11px; color: ${muted}; margin-bottom: 3px; }
+	${PREFIX} ._pcCanvas { background: #fff; border: 1px solid ${border}; box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
+	${PREFIX} ._pcNoPage { padding: 40px 0; text-align: center; color: ${faint}; border: 1px dashed ${border}; }
+	${PREFIX} ._pcNote { padding: 24px; color: ${muted}; font-size: 13px; }
+	${PREFIX} ._pcNote._pcError { color: ${danger}; }
+
 	/* Embedded schema builder (Custom variables) */
 	${PREFIX} ._schemaBuilderBox { overflow: auto; }
 	${PREFIX} ._schemaBuilderBox .comp.compSchemaBuilder { padding: 0; }

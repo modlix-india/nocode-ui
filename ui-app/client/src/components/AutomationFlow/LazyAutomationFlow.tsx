@@ -14,6 +14,7 @@ import { getTranslations } from '../util/getTranslations';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './automationFlowProperties';
+import { checkAutomation, loadCatalog } from './automationApi';
 import { AutomationDoc, AutomationRun, Catalog, CheckReport } from './automationTypes';
 import { FlowEditorPanel } from './FlowEditorPanel';
 import { FlowMode, FlowView } from './FlowView';
@@ -105,6 +106,37 @@ export default function LazyAutomationFlow(props: Readonly<ComponentProps>) {
 	const flowMode: FlowMode = mode === 'edit' || mode === 'run' ? mode : 'view';
 	const editing = flowMode === 'edit';
 
+	// A page that binds no catalog (the AppBuilder workspace) gets the app's own,
+	// fetched here from the document's app and client.
+	const [ownCatalog, setOwnCatalog] = useState<Catalog | undefined>();
+	const catalogApp = appCode || doc?.appCode;
+	useEffect(() => {
+		if (catalogPath || !catalogApp) return;
+		let live = true;
+		loadCatalog(catalogApp, doc?.clientCode).then(c => live && setOwnCatalog(c));
+		return () => {
+			live = false;
+		};
+	}, [catalogPath, catalogApp, doc?.clientCode]);
+
+	// Likewise the check: with no report bound, an edited flow is checked by the
+	// server a moment after the last change, and its cards are badged.
+	const [ownCheck, setOwnCheck] = useState<CheckReport | undefined>();
+	useEffect(() => {
+		if (checkPath || !editing || !doc) return;
+		let live = true;
+		const t = setTimeout(
+			() => checkAutomation(doc).then(r => live && setOwnCheck(r)),
+			PANEL_SETTLE_MS,
+		);
+		return () => {
+			live = false;
+			clearTimeout(t);
+		};
+	}, [checkPath, editing, doc]);
+	const shownCatalog = catalogPath ? catalog : ownCatalog;
+	const shownCheck = checkPath ? check : ownCheck;
+
 	// Typing in the side panel changes the document on every key. The store is
 	// written at once (the cards follow the typing), but On Change, which
 	// usually saves, waits for a pause instead of running per keystroke.
@@ -141,7 +173,7 @@ export default function LazyAutomationFlow(props: Readonly<ComponentProps>) {
 		editing && showEditor && selected ? (
 			<FlowEditorPanel
 				doc={doc ?? {}}
-				catalog={catalog}
+				catalog={shownCatalog}
 				nodeKey={selected}
 				appCode={appCode || doc?.appCode}
 				onChange={d => handleDocChange(d, undefined, true)}
@@ -156,9 +188,9 @@ export default function LazyAutomationFlow(props: Readonly<ComponentProps>) {
 			<HelperComponent context={context} definition={definition} />
 			<FlowView
 				doc={doc}
-				catalog={catalog}
+				catalog={shownCatalog}
 				run={flowMode === 'run' ? run : undefined}
-				check={check}
+				check={shownCheck}
 				mode={flowMode}
 				compact={!!compact}
 				selectedKey={selected}
