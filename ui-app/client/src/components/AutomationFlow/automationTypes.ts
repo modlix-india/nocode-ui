@@ -115,6 +115,8 @@ export interface CatalogAction {
 	title: string;
 	sentence: string;
 	builtIn?: boolean;
+	/** False for an app function the app does not offer to automations (a builder's catalog only). */
+	offered?: boolean;
 	category?: string;
 	params?: Array<CatalogParam>;
 	outputs?: Array<CatalogOutput>;

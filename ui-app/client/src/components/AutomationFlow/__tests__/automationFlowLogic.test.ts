@@ -434,3 +434,71 @@ describe('run state', () => {
 		).toEqual({ step1: ['Choose a template'], '': ['No END'] });
 	});
 });
+
+describe('a built-in param with fixed choices', () => {
+	it('shows the chosen notification by its label on the card', () => {
+		const catalog: any = {
+			appCode: 'leadzumptwo',
+			triggers: [{ key: 'E', title: 'E', sentence: 'something happens' }],
+			actions: [
+				{
+					key: 'core:sendNotification',
+					title: 'Send a notification',
+					sentence: 'send the notification {notification}',
+					builtIn: true,
+					params: [
+						{
+							name: 'notification',
+							label: 'Notification',
+							type: 'NOTIFICATION',
+							required: true,
+							variables: false,
+							choices: [{ label: 'Deal assigned to you', value: 'dealAssigned' }],
+						},
+					],
+				},
+			],
+		};
+		const doc: AutomationDoc = {
+			name: 'n',
+			trigger: { key: 'E' },
+			start: 'a',
+			nodes: {
+				a: {
+					type: 'ACTION',
+					action: 'core:sendNotification',
+					params: { notification: 'dealAssigned' },
+				},
+				b: {
+					type: 'ACTION',
+					action: 'core:sendNotification',
+					params: { notification: 'gone' },
+				},
+			},
+			transitions: [{ from: 'a', to: 'b' }],
+		} as any;
+		expect(cardPlainText(nodeCard(doc, catalog, 'a', []))).toBe(
+			'Send the notification Deal assigned to you',
+		);
+		expect(cardPlainText(nodeCard(doc, catalog, 'b', []))).toBe('Send the notification gone');
+	});
+});
+
+describe('the step picker groups', () => {
+	it('puts built-ins first, then the app, then other functions by namespace', () => {
+		const { actionGroups } = require('../FlowEditorPanel');
+		const g = actionGroups([
+			{ key: 'Lz.b', title: 'B', sentence: '', offered: false },
+			{ key: 'core:sendEmail', title: 'Email', sentence: '', builtIn: true },
+			{ key: 'Lz.send', title: 'Send', sentence: '', offered: true },
+			{ key: 'Aa.x', title: 'X', sentence: '', offered: false },
+			{ key: 'Lz.old', title: 'Old', sentence: '' },
+		]);
+		expect(g.map((x: any) => `${x.label}: ${x.actions.map((a: any) => a.key).join(',')}`)).toEqual([
+			'Available in every app: core:sendEmail',
+			'This app: Lz.send,Lz.old',
+			'Functions: Aa: Aa.x',
+			'Functions: Lz: Lz.b',
+		]);
+	});
+});

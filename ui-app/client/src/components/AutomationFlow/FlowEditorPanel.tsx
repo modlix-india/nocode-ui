@@ -3,6 +3,7 @@ import {
 	AutomationDoc,
 	AutomationNode,
 	Catalog,
+	CatalogAction,
 	CatalogParam,
 	ConditionGroup,
 	ConditionLeaf,
@@ -505,6 +506,28 @@ function ParamInput({
 	);
 }
 
+/**
+ * The step picker's groups: the built-in actions, the actions the app offers, then (in a
+ * builder's catalog only) every other function of the app by namespace.
+ */
+export function actionGroups(actions: CatalogAction[]): { label: string; actions: CatalogAction[] }[] {
+	const built = actions.filter(a => a.builtIn);
+	const offered = actions.filter(a => !a.builtIn && a.offered !== false);
+	const byNs = new Map<string, CatalogAction[]>();
+	for (const a of actions.filter(x => !x.builtIn && x.offered === false)) {
+		const ns = a.key.includes('.') ? a.key.slice(0, a.key.lastIndexOf('.')) : a.key;
+		byNs.set(ns, [...(byNs.get(ns) ?? []), a]);
+	}
+	const groups = [
+		{ label: 'Available in every app', actions: built },
+		{ label: 'This app', actions: offered },
+		...Array.from(byNs.entries())
+			.sort(([x], [y]) => x.localeCompare(y))
+			.map(([ns, list]) => ({ label: `Functions: ${ns}`, actions: list })),
+	];
+	return groups.filter(g => g.actions.length);
+}
+
 function ActionPanel({ doc, catalog, nodeKey, appCode, onChange }: PanelProps) {
 	const node = doc.nodes![nodeKey];
 	const act = findAction(catalog, node.action);
@@ -526,10 +549,14 @@ function ActionPanel({ doc, catalog, nodeKey, appCode, onChange }: PanelProps) {
 					}}
 				>
 					<option value="">Choose…</option>
-					{(catalog?.actions ?? []).map(a => (
-						<option key={a.key} value={a.key}>
-							{a.title}
-						</option>
+					{actionGroups(catalog?.actions ?? []).map(g => (
+						<optgroup key={g.label} label={g.label}>
+							{g.actions.map(a => (
+								<option key={a.key} value={a.key}>
+									{a.offered === false ? a.key : a.title}
+								</option>
+							))}
+						</optgroup>
 					))}
 					{node.action && !act && <option value={node.action}>{node.action}</option>}
 				</select>
