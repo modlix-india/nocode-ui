@@ -10,7 +10,7 @@ import { Block } from './blocks/blockTypes';
 import { compileBlocksToHtml } from './blocks/compileBlocksToHtml';
 import { htmlToBlocks } from './blocks/htmlToBlocks';
 import { LANGUAGE_CODES } from './commons';
-import CompareView from './editors/CompareView';
+import CompareTabs from './editors/CompareTabs';
 import PartEditor from './editors/PartEditor';
 import PreviewPane, { PreviewDevice } from './editors/PreviewPane';
 import RootSettingsPanel, { RootOptions } from './editors/RootSettingsPanel';
@@ -392,7 +392,14 @@ export default function LazyTemplateEditor({
 		);
 		return (
 			<div className="_templateEditor">
-				<CompareView sections={sections} />
+				<CompareTabs
+					isPdf={typeDef.previewFormat === 'pdf'}
+					sections={sections}
+					before={was}
+					after={t}
+					data={previewDataOf(t)}
+					headers={headers}
+				/>
 			</div>
 		);
 	}

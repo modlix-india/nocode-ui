@@ -739,6 +739,20 @@ export default function TemplateEditorStyle({
 	${PREFIX} ._cmpMark { color: inherit; border-radius: 2px; }
 	${PREFIX} ._cmpSign { display: inline-block; width: 1.2em; color: ${muted}; }
 
+	/* PDF compare */
+	${PREFIX} ._pcView { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+	${PREFIX} ._pcSummary { padding: 6px 12px; font-size: 12px; color: ${muted}; border-bottom: 1px solid ${line}; }
+	${PREFIX} ._pcColHead { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 4px 12px; font-size: 12px; font-weight: 600; color: ${ink}; border-bottom: 1px solid ${line}; }
+	${PREFIX} ._pcScroll { flex: 1; min-height: 0; overflow: auto; padding: 12px; background: ${t('surfaceColorTwo', '#f5f5f5')}; }
+	${PREFIX} ._pcRow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; align-items: start; }
+	${PREFIX} ._pcRow._pcOne { grid-template-columns: minmax(0, 720px); justify-content: center; }
+	${PREFIX} ._pcPage { min-width: 0; }
+	${PREFIX} ._pcPageLabel { font-size: 11px; color: ${muted}; margin-bottom: 3px; }
+	${PREFIX} ._pcCanvas { background: #fff; border: 1px solid ${border}; box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
+	${PREFIX} ._pcNoPage { padding: 40px 0; text-align: center; color: ${faint}; border: 1px dashed ${border}; }
+	${PREFIX} ._pcNote { padding: 24px; color: ${muted}; font-size: 13px; }
+	${PREFIX} ._pcNote._pcError { color: ${danger}; }
+
 	/* Embedded schema builder (Custom variables) */
 	${PREFIX} ._schemaBuilderBox { overflow: auto; }
 	${PREFIX} ._schemaBuilderBox .comp.compSchemaBuilder { padding: 0; }
