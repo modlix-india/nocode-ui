@@ -10,6 +10,7 @@ import { Block } from './blocks/blockTypes';
 import { compileBlocksToHtml } from './blocks/compileBlocksToHtml';
 import { htmlToBlocks } from './blocks/htmlToBlocks';
 import { LANGUAGE_CODES } from './commons';
+import CompareView from './editors/CompareView';
 import PartEditor from './editors/PartEditor';
 import PreviewPane, { PreviewDevice } from './editors/PreviewPane';
 import RootSettingsPanel, { RootOptions } from './editors/RootSettingsPanel';
@@ -55,6 +56,8 @@ interface LazyTemplateEditorProps {
 	// DOCUMENT: PDFs and emails open as the page they make (blocks, fields as chips, show only if,
 	// preview on a real record). CLASSIC (default): the editor as it was.
 	editorLook?: string;
+	// Show what changed since the template was opened (a git style diff) instead of the editor.
+	showCompare?: boolean;
 	// Records to preview with (Document look), given by the page.
 	records?: RecordSource;
 	// Another version to compare with (Document look), given by the page.
@@ -86,10 +89,16 @@ export default function LazyTemplateEditor({
 	locationHistory,
 	pageExtractor,
 	editorLook,
+	showCompare,
 	records,
 	compare,
 }: Readonly<LazyTemplateEditorProps>) {
 	const t = template ?? {};
+	// The template as it was when it opened (until another one opens): the "what was" of Compare.
+	const openedRef = useRef<{ key: string; t: any } | undefined>(undefined);
+	const openedKey = `${t.id ?? ''}|${t.name ?? ''}`;
+	if (template && openedRef.current?.key !== openedKey)
+		openedRef.current = { key: openedKey, t: template };
 	const type: TemplateTypeKey = resolveTemplateType(t, lockedType);
 	const typeDef = TEMPLATE_TYPES[type];
 	const forPdf = type === 'pdf';
@@ -371,6 +380,22 @@ export default function LazyTemplateEditor({
 	const showBlockProps = inVisualHtml && !!selectedBlock;
 	// In Visual mode with nothing selected (and no tab open), the right panel shows body/layout.
 	const showRootSettings = inVisualHtml && !selectedBlock && !rightPanel;
+
+	if (showCompare) {
+		const was = openedRef.current?.t ?? {};
+		const sections = [...(typeDef.subjectKey ? [typeDef.subjectKey] : []), activePart].map(
+			part => ({
+				label: `${part === 'subject' ? 'Subject' : 'Body'} (${activeLang})`,
+				before: getPartValue(was, activeLang, part),
+				after: getPartValue(t, activeLang, part),
+			}),
+		);
+		return (
+			<div className="_templateEditor">
+				<CompareView sections={sections} />
+			</div>
+		);
+	}
 
 	if (docLook) {
 		const morePanel =
