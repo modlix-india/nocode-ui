@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ToolSummary } from './ToolSummary';
+import { useBlockOpen } from '../thinkingShared';
 
 const THINKING_MESSAGES = [
 	'Thinking',
@@ -138,7 +139,9 @@ export function ThinkingBlock({
 	componentKey = '',
 	styles,
 }: Readonly<ThinkingBlockProps>) {
-	const [expanded, setExpanded] = useState(isActive);
+	const [localExpanded, setExpanded] = useState(isActive);
+	// With rememberThinking every thinking block shares one open/closed state.
+	const { open: expanded, toggle: toggleBlock } = useBlockOpen(localExpanded, setExpanded);
 	const [expandedTools, setExpandedTools] = useState<Set<string>>(new Set());
 	const [thinkingMsg, setThinkingMsg] = useState(
 		() => THINKING_MESSAGES[Math.floor(Math.random() * THINKING_MESSAGES.length)],
@@ -236,7 +239,7 @@ export function ThinkingBlock({
 		<div className={`_thinkingBlock ${isActive ? '_active' : '_done'}`}>
 			<button
 				className={`_thinkingHeader ${isActive ? '_activeHeader' : '_doneHeader'}`}
-				onClick={() => setExpanded(prev => !prev)}
+				onClick={toggleBlock}
 			>
 				{isActive ? (
 					<span className="_statusDot _running" />

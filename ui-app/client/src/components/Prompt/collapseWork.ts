@@ -62,11 +62,15 @@ export function formatDuration(ms: number): string {
 }
 
 /** The folded line of a finished reply, in plain words: no tool names. */
-export function workLabel(durationMs: number | undefined, steps: number): string {
+export function workLabel(
+	durationMs: number | undefined,
+	steps: number,
+	separator = ' · ',
+): string {
 	const bits: string[] = [];
 	if (durationMs !== undefined) bits.push(`Worked for ${formatDuration(durationMs)}`);
 	if (steps > 0) bits.push(`${steps} ${steps === 1 ? 'step' : 'steps'}`);
 	if (!bits.length) return 'Details';
 	if (durationMs === undefined) return `Worked through ${bits[0]}`;
-	return bits.join(' · ');
+	return bits.join(separator);
 }
