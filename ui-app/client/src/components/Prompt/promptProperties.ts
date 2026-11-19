@@ -477,6 +477,26 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		// ADZ-2065. Off by default: every other chat keeps its tool rows ("Used N tools").
+		name: 'stepCard',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Step Card',
+		description:
+			'Draw a turn\'s tool calls as the rows of ONE card (like the agent card): "Working, 1 of 3 done" with a progress bar and the elapsed time, one row per step with a plain name, a live line and its seconds, and a failed step in red with one sentence and an optional action button. The words come from the server (a `step` on the tool events and the saved turn). Needs Show Tool Calls. With Collapse Work the card folds into "Worked for 12s, 4 steps" when the turn ends, and a reload rebuilds the same rows.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		// ADZ-2065. Off by default: other chats keep each block's own open and closed state.
+		name: 'rememberThinking',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Remember Thinking Blocks',
+		description:
+			'Clicking any thinking block (the thinking box, an agent card, the step card, the folded "Worked for" row) opens or closes ALL of them together, and the choice is remembered per user through the personalization service (needs Enable Personalization). Until someone clicks, each block keeps its own default.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'thinkingText',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Thinking Text',

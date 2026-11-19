@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ToolSummary } from './ToolSummary';
+import { useBlockOpen } from '../thinkingShared';
 
 interface ToolCallInfo {
 	id: string;
@@ -246,7 +247,12 @@ export function AgentGroup({
 	styles,
 }: Readonly<AgentGroupProps>) {
 	const anyRunning = spans.some(s => s.status === 'running');
-	const [groupExpanded, setGroupExpanded] = useState(true);
+	const [localExpanded, setGroupExpanded] = useState(true);
+	// With rememberThinking every thinking block shares one open/closed state.
+	const { open: groupExpanded, toggle: toggleShared } = useBlockOpen(
+		localExpanded,
+		setGroupExpanded,
+	);
 	const [userToggledGroup, setUserToggledGroup] = useState(false);
 
 	// Tick once a second so elapsed seconds refresh while running.
@@ -270,8 +276,8 @@ export function AgentGroup({
 
 	const toggleGroup = useCallback(() => {
 		setUserToggledGroup(true);
-		setGroupExpanded(prev => !prev);
-	}, []);
+		toggleShared();
+	}, [toggleShared]);
 
 	if (!spans.length) return null;
 
