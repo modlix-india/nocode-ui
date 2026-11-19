@@ -962,6 +962,26 @@ export default function PromptStyle({
 			min-width: 0;
 		}
 
+		/* Step card (ADZ-2065): the folded row's body fills the column; while the turn runs
+		   the card stands alone with no "Thinking..." line and no indent. */
+		${PREFIX} ._workSummary._wide {
+			align-self: stretch;
+			max-width: 768px;
+			width: 100%;
+		}
+
+		${PREFIX} ._workSummary._bare ._workSummaryBody {
+			margin: 0;
+			padding-left: 0;
+			border-left: none;
+		}
+
+		${PREFIX} ._workSummary._bare {
+			align-self: stretch;
+			max-width: 768px;
+			width: 100%;
+		}
+
 		${PREFIX} ._workError {
 			font-size: 12px;
 			color: ${t('promptTertiaryFontColor', '#8b8b8b')};
@@ -1258,6 +1278,47 @@ export default function PromptStyle({
 
 		${PREFIX} ._agentCardBody {
 			border-top: 1px solid ${t('borderColorNine', '#f2f1ec')};
+		}
+
+		/* Step card rows (ADZ-2065): a helper is its own indented row; a failed step is red
+		   with one sentence and one button. */
+		${PREFIX} ._agentItem._helper {
+			padding-left: 30px;
+			background: ${t('surfaceColorOne', '#fbfbf9')};
+		}
+
+		${PREFIX} ._agentItem._error ._statusDot._error {
+			border-color: ${t('colorTwelve', '#dc3545')};
+		}
+
+		${PREFIX} ._agentItem._error ._agentDoing._stepFailed {
+			color: ${t('colorTwelve', '#dc3545')};
+		}
+
+		${PREFIX} ._agentCardCheck._failed {
+			background: ${t('colorTwelve', '#dc3545')};
+		}
+
+		${PREFIX} ._stepAction {
+			margin: 8px 0 0 17px;
+			padding: 5px 12px;
+			border: 1px solid ${t('borderColorNine', '#e2e1db')};
+			border-radius: 999px;
+			background: ${t('backgroundColorOne', '#fff')};
+			color: ${t('promptFontColor', '#1a1a1a')};
+			font: inherit;
+			font-size: 12px;
+			font-weight: 500;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._stepAction:hover:not(:disabled) {
+			background: ${t('surfaceColorTwo', '#f4f4f4')};
+		}
+
+		${PREFIX} ._stepAction:disabled {
+			opacity: 0.5;
+			cursor: default;
 		}
 
 		/* one agent inside the card */
