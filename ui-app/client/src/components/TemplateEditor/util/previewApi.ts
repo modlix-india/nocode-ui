@@ -39,6 +39,8 @@ export interface TemplateAiRequest {
 	language: string;
 	part: string;
 	templateType: string;
+	// The whole conversation so far in the AI tab (oldest first), so "undo that" or "the same for the footer" has its context.
+	history?: Array<{ role: 'user' | 'assistant'; text: string }>;
 }
 
 export interface TemplateAiResponse {

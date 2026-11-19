@@ -347,7 +347,14 @@ export default function LazyTemplateEditor({
 		try {
 			const res = await generateTemplate(
 				aiEndpoint,
-				{ prompt, template: t, language: activeLang, part: activePart, templateType: type },
+				{
+					prompt,
+					template: t,
+					language: activeLang,
+					part: activePart,
+					templateType: type,
+					history: aiHistory,
+				},
 				headers,
 			);
 			let next = t;
