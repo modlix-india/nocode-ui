@@ -29,6 +29,9 @@ import {
 	splitWork,
 } from './collapseWork';
 import { AgentGroup } from './components/AgentGroup';
+import { StepCard } from './components/StepCard';
+import { StepInfo, buildStepRows, mergeStepInfo, parseStepInfo } from './stepCard';
+import { ThinkingScope, ThinkingShared } from './thinkingShared';
 import {
 	ActionBlock,
 	applyToolOutcome,
@@ -117,6 +120,12 @@ interface ToolCall {
 	startedAt?: number;
 	endedAt?: number;
 	updates?: string[]; // accumulated tool_update messages (mini-log)
+	/** The plain words the server wrote for this step (stepCard). */
+	step?: StepInfo;
+	/** A saved turn keeps how long the tool took, since its start and end are gone. */
+	durationMs?: number;
+	/** The saved turn's own id for the tool, which a `kind: "step"` record names. */
+	toolUseId?: string;
 }
 
 interface AgentSpan {
@@ -187,7 +196,7 @@ interface PendingChoice {
 	options?: Array<{ label: string; value: string }>;
 }
 
-function mapHistoryToMessages(history: any[], pending?: PendingChoice | null): Message[] {
+export function mapHistoryToMessages(history: any[], pending?: PendingChoice | null): Message[] {
 	// Sort by turn_number ascending to guarantee chronological order
 	const sorted = [...history].sort((a, b) => (a.turn_number ?? 0) - (b.turn_number ?? 0));
 	const msgs: Message[] = [];
@@ -219,6 +228,17 @@ function mapHistoryToMessages(history: any[], pending?: PendingChoice | null): M
 							if (typeof tc.answer_from === 'number') answerFrom = tc.answer_from;
 							continue;
 						}
+						// A step record (stepCard): the plain words for a tool that was
+						// saved with the turn. It rides on the tool's own entry (`step`),
+						// or, as its own record, names the tool by `tool_use_id`.
+						if (tc?.kind === 'step') {
+							const info = parseStepInfo(tc.step ?? tc);
+							const owner = toolCalls.find(t => t.toolUseId === tc.tool_use_id);
+							if (owner) {
+								owner.step = mergeStepInfo(owner.step, info);
+								continue;
+							}
+						}
 						toolCalls.push({
 							id: `hist_tc_${i}_${toolCalls.length}`,
 							toolName: tc.tool ?? 'unknown',
@@ -226,6 +246,9 @@ function mapHistoryToMessages(history: any[], pending?: PendingChoice | null): M
 							summary: tc.summary ?? '',
 							success: tc.success,
 							isRunning: false,
+							toolUseId: tc.tool_use_id,
+							step: parseStepInfo(tc.step),
+							...(typeof tc.ms === 'number' ? { durationMs: tc.ms } : {}),
 						});
 					}
 				} catch {
@@ -466,6 +489,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				isRunning: true,
 				agentId,
 				startedAt: Date.now(),
+				step: parseStepInfo(data.step),
 			};
 			ctx.toolCalls.set(tc.id, tc);
 			// If this tool belongs to a known sub-agent span, also nest it there.
@@ -529,6 +553,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				existing.success = data.success;
 				existing.isRunning = false;
 				existing.endedAt = Date.now();
+				existing.step = mergeStepInfo(existing.step, parseStepInfo(data.step));
 				flushMessageState(ctx);
 			}
 			break;
@@ -1098,6 +1123,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			selectedProviders = [],
 			showToolCalls = true,
 			collapseWork = false,
+			stepCard = false,
+			rememberThinking = false,
 			thinkingText = DEFAULT_THINKING_TEXT,
 			errorText = DEFAULT_ERROR_TEXT,
 			enablePersonalization = true,
@@ -1484,6 +1511,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			setSidebarOpen(preferredSidebarOpenRef.current);
 	}, [overlaySessions]);
 
+	// Every thinking block's shared open/closed choice (rememberThinking): undefined until
+	// the person clicks one, or until personalization says what they chose last time.
+	const [thinkingOpen, setThinkingOpen] = useState<boolean | undefined>(undefined);
+
 	// Personalization: persist sidebar width
 	const personalizationBindingPath = enablePersonalization
 		? `${STORE_PREFIX}.personalization.${props.context.pageName}.${flattenUUID(key)}`
@@ -1504,6 +1535,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					if (data.previewSurface === 'draft' || data.previewSurface === 'live')
 						setPreviewSurface(data.previewSurface);
 					if (data.previewDevice) setPreviewDevice(data.previewDevice);
+					if (typeof data.thinkingOpen === 'boolean') setThinkingOpen(data.thinkingOpen);
 					// Only whether the pane was wanted, never which page: that is per
 					// conversation and is restored from the session scope instead.
 					if (data.previewOpen !== undefined)
@@ -1618,6 +1650,20 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			);
 		},
 		[personalizationBindingPath, props.locationHistory, pageExtractor],
+	);
+
+	const thinkingShared = useMemo<ThinkingShared | undefined>(
+		() =>
+			rememberThinking
+				? {
+						open: thinkingOpen,
+						set: (open: boolean) => {
+							setThinkingOpen(open);
+							savePreferences({ thinkingOpen: open });
+						},
+					}
+				: undefined,
+		[rememberThinking, thinkingOpen, savePreferences],
 	);
 
 	const openPreview = useCallback(() => {
@@ -3808,7 +3854,11 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						definition={props.definition}
 						subComponentName="messagesContainer"
 					/>
-					<div className="_promptMessagesInner" ref={messagesInnerRef}>
+					<ThinkingScope
+						className="_promptMessagesInner"
+						ref={messagesInnerRef}
+						shared={thinkingShared}
+					>
 						{hasEarlierMessages && (
 							<button
 								className="_loadEarlierMessages"
@@ -3835,14 +3885,27 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							const waitingOnUser = (msg.confirmationActions ?? []).some(
 								isAwaitingAnswer,
 							);
+							// Step card: the turn's tools are the rows of one card (helpers
+							// under the step that spawned them), so the parts carry neither.
+							const stepData =
+								stepCard && showToolCalls && msg.role === 'assistant'
+									? buildStepRows(msg.toolCalls ?? [], msg.agentSpans ?? [])
+									: undefined;
+							const stepRunning = !!stepData?.rows.some(r => r.status === 'running');
 							const parts =
 								msg.role === 'assistant'
 									? splitReply(
 											{
 												thinking: msg.thinking ?? '',
 												content: split ? split.work : msg.content,
-												toolCalls: orchestratorToolCalls(msg),
-												agentSpans: msg.agentSpans ?? [],
+												toolCalls: stepData
+													? []
+													: orchestratorToolCalls(msg),
+												agentSpans: stepData
+													? (msg.agentSpans ?? []).filter(sp =>
+															stepData.looseSpans.includes(sp.key),
+														)
+													: (msg.agentSpans ?? []),
 											},
 											msg.agentStarts ?? [],
 										)
@@ -3863,6 +3926,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 												isAnswer &&
 												isLive &&
 												!agentRunning &&
+												!stepRunning &&
 												(!part.content ||
 													part.toolCalls.some(tc => tc.isRunning))
 											}
@@ -3873,16 +3937,19 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 											componentKey={key ?? ''}
 											styles={styleProperties}
 										/>
-										{(folded || !isAnswer) && part.content && (
-											<ChatMessage
-												role="assistant"
-												content={part.content}
-												componentKey={key ?? ''}
-												styles={styleProperties}
-												definition={props.definition}
-												showActions={false}
-											/>
-										)}
+										{(folded || !isAnswer) &&
+											part.content &&
+											// the answer streams in after the card, not as lines beside it
+											!(stepData && folded && isLive) && (
+												<ChatMessage
+													role="assistant"
+													content={part.content}
+													componentKey={key ?? ''}
+													styles={styleProperties}
+													definition={props.definition}
+													showActions={false}
+												/>
+											)}
 										{part.agentSpans.length > 0 && (
 											<AgentGroup
 												spans={part.agentSpans}
@@ -3895,6 +3962,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 									</React.Fragment>
 								);
 							});
+							const stepCardView = stepData?.rows.length ? (
+								<StepCard
+									rows={stepData.rows}
+									expandIcon={expandIcon}
+									collapseIcon={collapseIcon}
+									onAction={message => handleSend(message)}
+									actionsDisabled={isStreaming}
+								/>
+							) : null;
 							return (
 								<React.Fragment key={msg.id}>
 									{msg.attachments?.length ? (
@@ -3918,7 +3994,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 											waiting={waitingOnUser}
 											thinkingText={thinkingText}
 											durationMs={msg.durationMs}
-											steps={msg.toolCalls?.length ?? 0}
+											steps={
+												stepData?.rows.length ||
+												(msg.toolCalls?.length ?? 0)
+											}
 											hasDetails={
 												!!split?.work.trim() ||
 												!!msg.thinking ||
@@ -3928,7 +4007,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 											}
 											expandIcon={expandIcon}
 											collapseIcon={collapseIcon}
+											liveBody={!!stepCardView}
+											hideLiveHeader={!!stepCardView}
+											wide={!!stepCardView}
+											labelSeparator={stepCardView ? ', ' : undefined}
 										>
+											{stepCardView}
 											{partsView}
 											{msg.errorDetail && (
 												<div className="_workError">
@@ -3937,7 +4021,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 											)}
 										</WorkSummary>
 									) : (
-										partsView
+										<>
+											{stepCardView}
+											{partsView}
+										</>
 									)}
 									{!(folded && isLive) && (
 										<ChatMessage
@@ -4083,7 +4170,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 									collapseIcon={collapseIcon}
 								/>
 							))}
-					</div>
+					</ThinkingScope>
 				</div>
 
 				{Array.from(crafts.values()).some(c => !c.inline) && !activeCraftId && (
