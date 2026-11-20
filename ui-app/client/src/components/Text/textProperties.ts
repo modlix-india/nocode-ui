@@ -230,6 +230,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		name: 'imageLightbox',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Open pictures large',
+		group: ComponentPropertyGroup.ADVANCED,
+		description:
+			'Markdown only. A click on a picture in the text opens it large over the page (arrows page through the pictures of this text, Escape closes it).',
+		defaultValue: false,
+	},
+	{
 		name: 'textPrefix',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Text Prefix',
