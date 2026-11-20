@@ -1,4 +1,4 @@
-import React, { CSSProperties, useId, useRef } from 'react';
+import React, { CSSProperties, useId, useRef, useState } from 'react';
 import {
 	AutomationDoc,
 	AutomationNode,
@@ -175,6 +175,67 @@ function VariableInput({
 					))}
 				</select>
 			)}
+		</span>
+	);
+}
+
+/**
+ * An OBJECT value ("Values for the template") as JSON text. A valid object is written as the
+ * object it is (never "[object Object]"); a `{{path}}` to a whole object is kept as text; text
+ * that does not parse yet stays in the box and leaves the saved value alone.
+ */
+function JsonInput({
+	value,
+	onChange,
+	label,
+}: {
+	value: any;
+	onChange: (v: any) => void;
+	label: string;
+}) {
+	const shown =
+		value === undefined || value === null
+			? ''
+			: typeof value === 'string'
+				? value
+				: JSON.stringify(value);
+	const [text, setText] = useState(shown);
+	const saved = useRef(shown);
+	if (shown !== saved.current) {
+		saved.current = shown;
+		setText(shown);
+	}
+	let invalid = false;
+	if (text.trim() !== '' && !text.trim().startsWith('{{'))
+		try {
+			JSON.parse(text);
+		} catch {
+			invalid = true;
+		}
+	return (
+		<span className="_afVarInput">
+			<input
+				className="_afInput"
+				aria-label={label}
+				aria-invalid={invalid || undefined}
+				value={text}
+				onChange={e => {
+					const t = e.target.value;
+					setText(t);
+					let next: any;
+					if (t.trim() === '') next = undefined;
+					else if (t.trim().startsWith('{{')) next = t;
+					else
+						try {
+							next = JSON.parse(t);
+						} catch {
+							return;
+						}
+					saved.current =
+						next === undefined ? '' : typeof next === 'string' ? next : JSON.stringify(next);
+					onChange(next);
+				}}
+			/>
 		</span>
 	);
 }
@@ -492,6 +553,12 @@ function ParamInput({
 					<option value="true">Yes</option>
 					<option value="false">No</option>
 				</select>
+			</Field>
+		);
+	if (param.type?.toLowerCase() === 'object')
+		return (
+			<Field label={label}>
+				<JsonInput label={param.label} value={value} onChange={onChange} />
 			</Field>
 		);
 	return (
