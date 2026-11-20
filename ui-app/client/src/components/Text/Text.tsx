@@ -50,6 +50,7 @@ function Text(props: Readonly<ComponentProps>) {
 			textPrefix,
 			luxonFormat,
 			announce,
+			imageLightbox,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -125,6 +126,7 @@ function Text(props: Readonly<ComponentProps>) {
 					componentKey={definition.key}
 					text={translatedText ?? ''}
 					styles={styleProperties}
+					imageLightbox={!!imageLightbox}
 				/>
 			</div>
 		);
