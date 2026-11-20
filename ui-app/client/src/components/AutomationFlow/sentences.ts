@@ -322,6 +322,29 @@ export interface CardText {
 	detail?: string;
 }
 
+/**
+ * The values a trigger's filter pins with "is": `trigger.threshold is 90` gives
+ * `{ threshold: 90 }`, so a sentence such as "reaches {threshold}% of its budget"
+ * reads "reaches 90% of its budget". Only a filter that must hold as a whole
+ * (a single condition or an AND group) pins anything.
+ */
+export function pinnedTriggerValues(filter: Condition | undefined): Record<string, any> {
+	const out: Record<string, any> = {};
+	const walk = (c: Condition | undefined) => {
+		if (!c) return;
+		if (isGroup(c)) {
+			if (c.operator === 'OR' || c.negate) return;
+			c.conditions?.forEach(walk);
+			return;
+		}
+		const m = /^\s*(?:\{\{\s*)?trigger\.(\w+)\s*(?:\}\})?\s*$/.exec(String(c.field ?? ''));
+		if (m && !c.negate && String(c.operator ?? 'EQUALS').toUpperCase() === 'EQUALS')
+			out[m[1]] = c.value;
+	};
+	walk(filter);
+	return out;
+}
+
 export function triggerCard(
 	doc: AutomationDoc,
 	catalog: Catalog | undefined,
@@ -329,8 +352,10 @@ export function triggerCard(
 	optionLabel?: OptionLabeller,
 ): CardText {
 	const trig: CatalogTrigger | undefined = findTrigger(catalog, doc.trigger?.key);
+	const labels: Record<string, string> = {};
+	for (const f of trig?.fields ?? []) labels[f.name] = f.label;
 	const segments: Segment[] = trig
-		? [{ text: trig.sentence }]
+		? fillSentence(trig.sentence, pinnedTriggerValues(doc.trigger?.filter), vars, labels)
 		: doc.trigger?.key
 			? [{ text: doc.trigger.key, chip: true }]
 			: [{ text: 'choose what starts this', chip: true, empty: true }];
