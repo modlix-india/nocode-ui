@@ -194,6 +194,8 @@ interface PendingChoice {
 	turn?: number;
 	question?: string;
 	options?: Array<{ label: string; value: string }>;
+	/** A question that takes several picks (present_options mode multi) reopens as one. */
+	mode?: 'single' | 'multi';
 }
 
 export function mapHistoryToMessages(history: any[], pending?: PendingChoice | null): Message[] {
@@ -274,7 +276,7 @@ export function mapHistoryToMessages(history: any[], pending?: PendingChoice | n
 		last?.role === 'assistant' &&
 		(pending.turn === undefined || pending.turn === last.turnNumber)
 	) {
-		last.suggestions = { options: pending.options, mode: 'single' };
+		last.suggestions = { options: pending.options, mode: pending.mode === 'multi' ? 'multi' : 'single' };
 	}
 	return msgs;
 }
