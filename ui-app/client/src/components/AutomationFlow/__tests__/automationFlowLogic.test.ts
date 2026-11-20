@@ -502,3 +502,48 @@ describe('the step picker groups', () => {
 		]);
 	});
 });
+
+describe('a trigger sentence with a placeholder', () => {
+	const catalog: any = {
+		appCode: 'adzumptwo',
+		triggers: [
+			{
+				key: 'ADZ_BUDGET_LIMIT',
+				title: 'Campaign reaches a share of its budget',
+				sentence: 'a campaign reaches {threshold}% of its budget',
+				fields: [{ name: 'threshold', label: 'Threshold reached (%)', type: 'INTEGER' }],
+			},
+		],
+		actions: [],
+	};
+	const docWith = (filter: any): AutomationDoc =>
+		({ name: 'n', trigger: { key: 'ADZ_BUDGET_LIMIT', filter }, start: 'end', nodes: {}, transitions: [] }) as any;
+
+	it('fills the placeholder from the value the filter pins with "is"', () => {
+		const doc = docWith({
+			operator: 'AND',
+			conditions: [{ field: 'trigger.threshold', operator: 'EQUALS', value: 90 }],
+		});
+		const card = triggerCard(doc, catalog, []);
+		expect(cardPlainText(card)).toBe('When a campaign reaches 90% of its budget');
+		expect(card.segments.some(s => s.chip && s.text === '90' && !s.empty)).toBe(true);
+	});
+
+	it('shows the blank as an empty chip with the field label when nothing pins it', () => {
+		for (const filter of [
+			undefined,
+			{
+				operator: 'AND',
+				conditions: [{ field: 'trigger.threshold', operator: 'GREATER_THAN_EQUAL', value: 90 }],
+			},
+			{
+				operator: 'OR',
+				conditions: [{ field: 'trigger.threshold', operator: 'EQUALS', value: 90 }],
+			},
+		]) {
+			const card = triggerCard(docWith(filter), catalog, []);
+			expect(cardPlainText(card)).toBe('When a campaign reaches Threshold reached (%)% of its budget');
+			expect(card.segments.some(s => s.empty)).toBe(true);
+		}
+	});
+});
