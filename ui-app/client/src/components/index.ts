@@ -72,6 +72,10 @@ import Form from './Form/Form';
 import AnalyticsHeatmap from './AnalyticsHeatmap/AnalyticsHeatmap';
 import MapPicker from './MapPicker/MapPicker';
 import SignaturePad from './SignaturePad/SignaturePad';
+import ReportWidget from './Reports/ReportWidget/ReportWidget';
+import Dashboard from './Reports/Dashboard/Dashboard';
+import ReportEditor from './Reports/ReportEditor/ReportEditor';
+import ReportLibrary from './Reports/ReportLibrary/ReportLibrary';
 
 import MarkdownEditor from './MarkdownEditor/MarkdownEditor';
 import ThemeEditor from './ThemeEditor/ThemeEditor';
@@ -152,6 +156,10 @@ const componentMap = new Map<string, Component>([
 	[AnalyticsHeatmap.name, AnalyticsHeatmap],
 	[MapPicker.name, MapPicker],
 	[SignaturePad.name, SignaturePad],
+	[ReportWidget.name, ReportWidget],
+	[Dashboard.name, Dashboard],
+	[ReportEditor.name, ReportEditor],
+	[ReportLibrary.name, ReportLibrary],
 	[FileSelector.name, FileSelector],
 	[FillerDefinitionEditor.name, FillerDefinitionEditor],
 	[FillerValueEditor.name, FillerValueEditor],

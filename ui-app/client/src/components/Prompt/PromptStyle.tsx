@@ -824,13 +824,14 @@ export default function PromptStyle({
 
 		/*
 		 * A steer: sent into a turn that is already running, and not yet
-		 * acknowledged by the agent. Faded and dashed because it is not part of
-		 * the conversation until the agent says it read it, at which point the
-		 * class comes off and it looks like any other message.
+		 * acknowledged by the agent. Dashed because it is not part of the
+		 * conversation until the agent says it read it, at which point the class
+		 * comes off and it looks like any other message. Not faded: opacity on
+		 * top of the grey note left it near-white on white, unreadable (live
+		 * 2026-11-21). The dashed border and the note carry the state.
 		 */
 		${PREFIX} ._promptMessage._user._pending {
-			opacity: 0.6;
-			border: 1px dashed ${t('fontColorThree', '#9b9b9b')};
+			border: 1px dashed ${t('promptTertiaryFontColor', '#9b9b9b')};
 			background: transparent;
 		}
 
@@ -838,7 +839,7 @@ export default function PromptStyle({
 			display: block;
 			margin-top: 4px;
 			font-size: 12px;
-			color: ${t('fontColorThree', '#9b9b9b')};
+			color: ${t('promptSecondaryFontColor', '#6b6b6b')};
 			white-space: normal;
 		}
 

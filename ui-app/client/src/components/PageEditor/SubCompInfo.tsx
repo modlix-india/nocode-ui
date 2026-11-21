@@ -6204,6 +6204,42 @@ export const SubComponentDefinitions: Record<
 		},
 	],
 
+	ReportWidget: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-chart-column',
+			mainComponent: true,
+		},
+	],
+	Dashboard: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-table-cells-large',
+			mainComponent: true,
+		},
+	],
+	ReportEditor: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-pen-ruler',
+			mainComponent: true,
+		},
+	],
+	ReportLibrary: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-book',
+			mainComponent: true,
+		},
+	],
 	SignaturePad: [
 		{
 			name: '',
