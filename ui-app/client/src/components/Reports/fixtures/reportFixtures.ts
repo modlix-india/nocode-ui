@@ -503,4 +503,7 @@ export const fixtureTransport: ReportTransport = {
 	async saveDoc(name, doc) {
 		docs.set(name, JSON.parse(JSON.stringify(doc)));
 	},
+	async deleteDoc(name) {
+		docs.delete(name);
+	},
 };

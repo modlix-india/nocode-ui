@@ -63,11 +63,11 @@ test('a KPI widget runs, shows the number in the catalog locale and "Updated"', 
 			/>,
 		),
 	);
-	expect(host.querySelector('[aria-busy="true"]')).not.toBeNull();
+	expect(document.body.querySelector('[aria-busy="true"]')).not.toBeNull();
 	await settle();
-	expect(host.querySelector('._rpKpiValue')?.textContent).toMatch(/^\d/);
-	expect(host.textContent).toContain('Updated');
-	expect(host.querySelector('._rpTitle')?.textContent).toBe('Total bookings');
+	expect(document.body.querySelector('._rpKpiValue')?.textContent).toMatch(/^\d/);
+	expect(document.body.textContent).toContain('Updated');
+	expect(document.body.querySelector('._rpTitle')?.textContent).toBe('Total bookings');
 });
 
 test('the type picker greys out views that do not fit, and switching does not run again', async () => {
@@ -87,16 +87,18 @@ test('the type picker greys out views that do not fit, and switching does not ru
 	);
 	await settle();
 	const runs = spy.mock.calls.length;
-	act(() => (host.querySelector('[aria-label="Chart type"]') as HTMLButtonElement).click());
-	const kpiBtn = [...host.querySelectorAll('._rpType')].find(
+	act(() =>
+		(document.body.querySelector('[aria-label="Chart type"]') as HTMLButtonElement).click(),
+	);
+	const kpiBtn = [...document.body.querySelectorAll('._rpType')].find(
 		b => b.textContent === 'Number',
 	) as HTMLButtonElement;
 	expect(kpiBtn.className).toContain('_off');
 	act(() => kpiBtn.click());
-	expect(host.querySelector('._rpReason')?.textContent).toBe(
+	expect(document.body.querySelector('._rpReason')?.textContent).toBe(
 		'Number needs a single number: remove the group by',
 	);
-	const table = [...host.querySelectorAll('._rpType')].find(
+	const table = [...document.body.querySelectorAll('._rpType')].find(
 		b => b.textContent === 'Table',
 	) as HTMLButtonElement;
 	act(() => table.click());
@@ -120,13 +122,15 @@ test('not editable: a type switch lasts for the session and shows the new view',
 		),
 	);
 	await settle();
-	act(() => (host.querySelector('[aria-label="Chart type"]') as HTMLButtonElement).click());
-	const table = [...host.querySelectorAll('._rpType')].find(
+	act(() =>
+		(document.body.querySelector('[aria-label="Chart type"]') as HTMLButtonElement).click(),
+	);
+	const table = [...document.body.querySelectorAll('._rpType')].find(
 		b => b.textContent === 'Table',
 	) as HTMLButtonElement;
 	act(() => table.click());
-	expect(host.querySelector('._rpTable')).not.toBeNull();
-	expect(host.querySelectorAll('._rpTable tbody tr').length).toBeGreaterThan(0);
+	expect(document.body.querySelector('._rpTable')).not.toBeNull();
+	expect(document.body.querySelectorAll('._rpTable tbody tr').length).toBeGreaterThan(0);
 });
 
 test('a runner error shows the message and Try again', async () => {
@@ -142,7 +146,7 @@ test('a runner error shows the message and Try again', async () => {
 		),
 	);
 	await settle();
-	expect(host.querySelector('[role="alert"]')?.textContent).toContain('Try again');
+	expect(document.body.querySelector('[role="alert"]')?.textContent).toContain('Try again');
 });
 
 test('the dashboard seeds the app defaults on a first visit and saves them', async () => {
@@ -159,7 +163,7 @@ test('the dashboard seeds the app defaults on a first visit and saves them', asy
 		),
 	);
 	await settle();
-	const titles = [...host.querySelectorAll('._rpTitle')].map(e => e.textContent);
+	const titles = [...document.body.querySelectorAll('._rpTitle')].map(e => e.textContent);
 	expect(titles).toEqual(
 		expect.arrayContaining([
 			'Total bookings',
@@ -168,8 +172,8 @@ test('the dashboard seeds the app defaults on a first visit and saves them', asy
 			'Customer acquisition',
 		]),
 	);
-	expect(host.textContent).toContain('Reset to defaults');
-	expect(host.querySelector('select')).not.toBeNull();
+	expect(document.body.textContent).toContain('Reset to defaults');
+	expect(document.body.querySelector('select')).not.toBeNull();
 	await settle(2500);
 	expect(save).toHaveBeenCalledWith(
 		'reports_viewtest',
@@ -178,11 +182,11 @@ test('the dashboard seeds the app defaults on a first visit and saves them', asy
 		}),
 	);
 	// The library lists every saved widget.
-	const lib = [...host.querySelectorAll('button')].find(b =>
+	const lib = [...document.body.querySelectorAll('button')].find(b =>
 		b.textContent?.includes('Library'),
 	) as HTMLButtonElement;
 	act(() => lib.click());
-	expect(host.querySelectorAll('._rpLibRow').length).toBe(4);
+	expect(document.body.querySelectorAll('._rpLibRow').length).toBe(4);
 	save.mockRestore();
 });
 
@@ -199,18 +203,18 @@ test('the editor validates with a dry run, previews, and saves', async () => {
 		),
 	);
 	await settle(700);
-	const save = [...host.querySelectorAll('button')].find(
+	const save = [...document.body.querySelectorAll('button')].find(
 		b => b.textContent === 'Save',
 	) as HTMLButtonElement;
 	expect(save.disabled).toBe(true);
-	const name = host.querySelector('input._rpInput') as HTMLInputElement;
+	const name = document.body.querySelector('input._rpInput') as HTMLInputElement;
 	await act(async () => {
 		const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!;
 		setter.call(name, 'My count');
 		name.dispatchEvent(new Event('input', { bubbles: true }));
 	});
 	await settle(700);
-	expect(host.querySelector('._rpEditorPreview ._rpKpiValue')).not.toBeNull();
+	expect(document.body.querySelector('._rpEditorPreview ._rpKpiValue')).not.toBeNull();
 	expect(save.disabled).toBe(false);
 	await act(async () => save.click());
 	expect(onSave).toHaveBeenCalledWith(
@@ -264,8 +268,8 @@ describe('the runner leaves null values out of the output', () => {
 			),
 		);
 		await settle();
-		expect(host.querySelector('._rpKpiValue')?.textContent).toBe('-');
-		expect(host.querySelector('[role="alert"]')).toBeNull();
+		expect(document.body.querySelector('._rpKpiValue')?.textContent).toBe('-');
+		expect(document.body.querySelector('[role="alert"]')).toBeNull();
 	});
 
 	test('a table shows a missing cell blank and the picker follows the runner fits', async () => {
@@ -294,15 +298,17 @@ describe('the runner leaves null values out of the output', () => {
 			),
 		);
 		await settle();
-		const cells = [...host.querySelectorAll('._rpTable tbody tr')].map(tr =>
+		const cells = [...document.body.querySelectorAll('._rpTable tbody tr')].map(tr =>
 			[...tr.querySelectorAll('td')].map(td => td.textContent),
 		);
 		expect(cells).toEqual([
 			['Asha', '3'],
 			['Ravi', ''],
 		]);
-		act(() => (host.querySelector('[aria-label="Chart type"]') as HTMLButtonElement).click());
-		const pie = [...host.querySelectorAll('._rpType')].find(
+		act(() =>
+			(document.body.querySelector('[aria-label="Chart type"]') as HTMLButtonElement).click(),
+		);
+		const pie = [...document.body.querySelectorAll('._rpType')].find(
 			b => b.textContent === 'Pie',
 		) as HTMLButtonElement;
 		expect(pie.className).toContain('_off');

@@ -29,17 +29,19 @@ export default function LazyReportLibrary(props: Readonly<ComponentProps>) {
 	);
 	const ns = properties.appNamespace as string | undefined;
 	const transport = useTransport(properties.useFixtures);
+	const group = String(properties.group || properties.name || '').trim() || 'dashboard';
 	return (
 		<div className="comp compReportLibrary" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={context} definition={definition} />
 			<DashboardView
-				key={properties.name ?? ''}
+				key={group}
 				transport={transport}
 				catalogFunction={
 					(properties.catalogFunction as string) || defaultCatalogFunction(ns)
 				}
 				runFunction={(properties.runFunction as string) || defaultRunFunction(ns)}
-				name={(properties.name as string) || 'dashboard'}
+				name={group}
+				appNamespace={ns}
 				editable={properties.editable !== false}
 				mode="library"
 				lockMode

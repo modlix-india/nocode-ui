@@ -315,6 +315,9 @@ export interface ReportColumn {
 	hidden?: boolean;
 	/** Set by the UI on `<m>_cmp` / `<m>_delta_pct` columns: shown in tables, never drawn as a measure. */
 	role?: 'compare';
+	/** The runner's tags on compare columns: the measure compared / changed. */
+	compareOf?: string;
+	deltaOf?: string;
 }
 
 export interface ReportPeriod {
@@ -338,6 +341,8 @@ export interface ReportSuccess {
 	fits?: Record<string, { ok: boolean; reason?: string }>;
 	/** With `spec.compare`: the period compared with. */
 	comparePeriod?: ReportPeriod;
+	/** A function source that pages: its row count, when the function gives one. */
+	paging?: { total?: number; page?: number; size?: number; param?: string };
 	/** A records page (CONTRACT 8.1). */
 	total?: number;
 	page?: number;
@@ -438,6 +443,15 @@ export interface CatalogDefault {
 	refreshMin?: number;
 	/** The KPI tile opens this (CONTRACT 8.0); wins over the segment's. */
 	countLink?: CatalogLink;
+	/** The app group this default seeds (CONTRACT 9); missing = "dashboard". */
+	group?: string;
+}
+
+/** An app report group (CONTRACT 9). */
+export interface CatalogGroup {
+	label?: string;
+	order?: number;
+	authorityAny?: string[];
 }
 
 export interface ReportCatalog {
@@ -453,6 +467,8 @@ export interface ReportCatalog {
 	hierarchies?: Record<string, CatalogHierarchy>;
 	sources: Record<string, CatalogSource>;
 	defaults?: CatalogDefault[];
+	/** App report groups (CONTRACT 9), already trimmed to the caller. */
+	groups?: Record<string, CatalogGroup>;
 }
 
 /** One saved widget in the personalization document (CONTRACT section 5). */

@@ -169,6 +169,12 @@ export function reportCss(prefix: string): string {
 	${P} ._rpDash { display: flex; flex-direction: column; gap: 12px; background: var(--rp-canvas); min-width: 0; }
 	${P} ._rpBar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; }
 	${P} ._rpBar ._rpSpacer { flex: 1; }
+	${P} ._rpGroups { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; border-bottom: 1px solid var(--rp-border); }
+	${P} ._rpTabs { display: flex; gap: 2px; min-width: 0; flex: 1; overflow-x: auto; scrollbar-width: thin; }
+	${P} ._rpTab { flex: none; font: inherit; color: var(--rp-muted); background: transparent; border: none; border-bottom: 2px solid transparent; padding: 8px 12px; cursor: pointer; white-space: nowrap; }
+	${P} ._rpTab:hover { color: var(--rp-text); }
+	${P} ._rpTab[aria-selected="true"] { color: var(--rp-text); border-bottom-color: var(--rp-accent); font-weight: 600; }
+	${P} ._rpGroupTools { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 6px; margin-left: auto; }
 	${P} ._rpGrid { position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-auto-rows: var(--rp-row, 72px); gap: var(--rp-gap, 12px); }
 	${P} ._rpTile { position: relative; min-width: 0; min-height: 0; }
 	${P} ._rpTile._dragging { z-index: 20; opacity: 0.92; }

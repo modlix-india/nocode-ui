@@ -94,7 +94,11 @@ export const SHAPE_RULES: Record<ViewType, Rule> = {
 	TABLE: { reason: '' },
 	LIST: { reason: '' },
 	HEATMAP: { groupBy: [2], measures: [1], reason: TWO_DIMS_ONE_MEASURE },
-	TREEMAP: { groupBy: [1, 2], measures: [1], reason: 'needs one or two group bys and one measure' },
+	TREEMAP: {
+		groupBy: [1, 2],
+		measures: [1],
+		reason: 'needs one or two group bys and one measure',
+	},
 	WATERFALL: { groupBy: [1], measures: [1], reason: 'needs one group by and one measure' },
 };
 

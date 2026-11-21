@@ -103,6 +103,9 @@ export interface ReportWidgetViewProps {
 	onRemoveNew?: () => void;
 	onEdit?: () => void;
 	onDuplicate?: () => void;
+	/** Copy / Move to another report group (CONTRACT 9); shown only when given. */
+	onCopyToGroup?: () => void;
+	onMoveToGroup?: () => void;
 	onRemove?: () => void;
 	onDelete?: () => void;
 	onSpecChange?: (spec: ReportSpec) => void;
@@ -320,7 +323,9 @@ export function ReportWidgetView(props: Readonly<ReportWidgetViewProps>) {
 	}, [state.out, more?.rows, compareLabel]);
 	// More pages while the last page read came back full (or the runner's total says so).
 	const loadedRows = (state.out?.rows.length ?? 0) + (more?.rows.length ?? 0);
-	const total = Number.isFinite(state.out?.total) ? Number(state.out!.total) : undefined;
+	// The runner gives a paging function's row count in `paging.total` (or a top level total).
+	const rawTotal = state.out?.paging?.total ?? state.out?.total;
+	const total = Number.isFinite(rawTotal) ? Number(rawTotal) : undefined;
 	const hasMore =
 		!!paging &&
 		!!state.out &&
@@ -703,6 +708,20 @@ export function ReportWidgetView(props: Readonly<ReportWidgetViewProps>) {
 									icon="fa-copy"
 									label="Duplicate"
 									onClick={() => (setPop(undefined), props.onDuplicate!())}
+								/>
+							) : null}
+							{props.onCopyToGroup ? (
+								<MenuItem
+									icon="fa-clone"
+									label="Copy to group"
+									onClick={() => (setPop(undefined), props.onCopyToGroup!())}
+								/>
+							) : null}
+							{props.onMoveToGroup ? (
+								<MenuItem
+									icon="fa-share-from-square"
+									label="Move to group"
+									onClick={() => (setPop(undefined), props.onMoveToGroup!())}
 								/>
 							) : null}
 							<MenuItem

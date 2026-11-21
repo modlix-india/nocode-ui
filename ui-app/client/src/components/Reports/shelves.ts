@@ -77,7 +77,9 @@ function uniqueAs(base: string, taken: Set<string>): string {
 /** A result key for a measure: `count`, `sum_agreementValue`, ... */
 export function measureKey(fn: MeasureFn, field: string | undefined, taken: Set<string>) {
 	return uniqueAs(
-		fn === 'COUNT' ? 'count' : `${fn.toLowerCase()}_${field && field !== COUNT_FIELD ? field : ''}`,
+		fn === 'COUNT'
+			? 'count'
+			: `${fn.toLowerCase()}_${field && field !== COUNT_FIELD ? field : ''}`,
 		taken,
 	);
 }
@@ -137,7 +139,10 @@ export function addToShelf(
 	if (!accepts(shelf, item))
 		return {
 			ok: false,
-			reason: shelf === 'color' ? 'Color takes a dimension' : `${SHELF_LABELS[shelf]} takes a measure`,
+			reason:
+				shelf === 'color'
+					? 'Color takes a dimension'
+					: `${SHELF_LABELS[shelf]} takes a measure`,
 		};
 	const next: Shelves = { ...sh, [shelf]: [...sh[shelf]] };
 	if (shelf === 'color' || shelf === 'size' || shelf === 'label') next[shelf] = [item];
@@ -179,7 +184,11 @@ export function replaceOnShelf(
 	return { ...sh, [shelf]: sh[shelf].map((e, i) => (i === index ? item : e)) };
 }
 
-function dimItem(spec: ReportSpec, catalog: ReportCatalog | undefined, g: ReportGroupBy): ShelfItem {
+function dimItem(
+	spec: ReportSpec,
+	catalog: ReportCatalog | undefined,
+	g: ReportGroupBy,
+): ShelfItem {
 	const f = catalog?.sources?.[spec.source]?.fields?.[g.field];
 	const date = !!g.bucket || f?.kind === 'DATE';
 	return {
@@ -245,7 +254,11 @@ export function shelvesToSpec(sh: Shelves, base: ReportSpec): ReportSpec {
 	next.groupBy = dims.map(d => {
 		const as = d.as && !takenDims.has(d.as) ? d.as : uniqueAs(d.field, takenDims);
 		takenDims.add(as);
-		return { field: d.field, as, ...(d.kind === 'DATE' ? { bucket: d.bucket ?? 'MONTH' } : {}) };
+		return {
+			field: d.field,
+			as,
+			...(d.kind === 'DATE' ? { bucket: d.bucket ?? 'MONTH' } : {}),
+		};
 	});
 	if (!next.groupBy.length) delete next.groupBy;
 

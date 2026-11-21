@@ -130,8 +130,9 @@ function ReportChart(
 				if (ds?._trend || ds?._ghost) return;
 				let raw: any;
 				try {
-					raw = chart.getDatasetMeta(el.datasetIndex)?.controller?.getContext?.(el.index)
-						?.raw;
+					raw = chart
+						.getDatasetMeta(el.datasetIndex)
+						?.controller?.getContext?.(el.index)?.raw;
 				} catch {
 					raw = undefined;
 				}

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
-import { reconcile } from './dashboardModel';
+import { normalizeDoc, reconcile } from './dashboardModel';
 import { docName, ReportTransport } from './reportApi';
 import { DashboardDoc, ReportCatalog } from './reportTypes';
 
@@ -11,13 +11,22 @@ import { DashboardDoc, ReportCatalog } from './reportTypes';
  * defaults) as soon as both are in; saved 2 s after the last change, like
  * components/util/personalization.ts, and flushed when the page is hidden or left.
  * A document that failed to load is never saved over: a fresh seed would wipe the user's.
+ *
+ * Report groups (CONTRACT 9): one document per group, `reports_<groupId>`. The P1a dashboard
+ * was `reports_main`; the `dashboard` group takes it over once: when `reports_dashboard` is
+ * absent and `reports_main` exists, the first load copies it (saved as `reports_dashboard`;
+ * an existing `reports_dashboard` is never overwritten and `reports_main` is never deleted).
  */
+
+/** The P1a document the `dashboard` group copies once (CONTRACT 9). */
+export const LEGACY_DOC = 'reports_main';
+export const MIGRATES_TO = 'reports_dashboard';
 
 export const SAVE_DEBOUNCE_MS = 2000;
 
 export type DocStatus = 'loading' | 'ready' | 'error';
 
-interface Entry {
+export interface Entry {
 	status: DocStatus;
 	raw?: any;
 	doc?: DashboardDoc;
@@ -29,6 +38,10 @@ interface Entry {
 	dirty: boolean;
 	version: number;
 	listeners: Set<() => void>;
+	/** Copied from `reports_main` on this load: saved even when reconcile changed nothing. */
+	migrated?: boolean;
+	/** The group was deleted: never saved again. */
+	dropped?: boolean;
 }
 
 const entries = new Map<ReportTransport, Map<string, Entry>>();
@@ -42,7 +55,7 @@ function load(e: Entry) {
 	e.status = 'loading';
 	e.error = undefined;
 	notify(e);
-	e.transport.loadDoc(e.name).then(
+	loadWithMigration(e).then(
 		raw => {
 			e.raw = raw ?? {};
 			// Stay "loading" until a catalog reconciles it.
@@ -54,6 +67,20 @@ function load(e: Entry) {
 			notify(e);
 		},
 	);
+}
+
+/**
+ * Reads the document; for `reports_dashboard` that is absent, `reports_main` when that one
+ * holds a dashboard. A failed read of `reports_main` fails the load (retried), so a fresh seed
+ * never takes the place of a dashboard that could not be read.
+ */
+async function loadWithMigration(e: Entry): Promise<any> {
+	const raw = await e.transport.loadDoc(e.name);
+	if (e.name !== MIGRATES_TO || normalizeDoc(raw)) return raw;
+	const legacy = await e.transport.loadDoc(LEGACY_DOC);
+	if (!normalizeDoc(legacy)) return raw;
+	e.migrated = true;
+	return legacy;
 }
 
 export function entryFor(transport: ReportTransport, dashboardName: string | undefined): Entry {
@@ -72,7 +99,7 @@ export function entryFor(transport: ReportTransport, dashboardName: string | und
 async function save(e: Entry) {
 	if (e.timer) clearTimeout(e.timer);
 	e.timer = undefined;
-	if (!e.dirty || !e.doc || e.status !== 'ready') return;
+	if (!e.dirty || !e.doc || e.status !== 'ready' || e.dropped) return;
 	e.dirty = false;
 	try {
 		await e.transport.saveDoc(e.name, e.doc);
@@ -95,12 +122,65 @@ export function applyCatalog(e: Entry, catalog: ReportCatalog | undefined) {
 	e.doc = r.doc;
 	e.firstVisit = r.firstVisit;
 	e.status = 'ready';
-	if (r.changed) schedule(e);
+	if (r.changed || e.migrated) schedule(e);
 	notify(e);
 }
 
+/**
+ * The document of a group that may not be open on this page (Copy / Move to group, the
+ * editor's "Save to group"), loaded and reconciled with `catalog` (that group's view of it).
+ */
+export function readyDoc(
+	transport: ReportTransport,
+	dashboardName: string,
+	catalog: ReportCatalog | undefined,
+): Promise<Entry> {
+	const e = entryFor(transport, dashboardName);
+	return new Promise<Entry>((resolve, reject) => {
+		const check = () => {
+			if (e.status === 'error') {
+				e.listeners.delete(check);
+				reject(new Error(e.error ?? 'That group could not be loaded.'));
+				return true;
+			}
+			applyCatalog(e, catalog);
+			if (e.status === 'ready' && e.doc) {
+				e.listeners.delete(check);
+				resolve(e);
+				return true;
+			}
+			return false;
+		};
+		if (check()) return;
+		e.listeners.add(check);
+	});
+}
+
+/**
+ * A deleted group: its pending save is cancelled, the entry is forgotten (a group made later
+ * starts clean) and the stored document is deleted. A document that was never stored is fine.
+ */
+export async function dropDoc(transport: ReportTransport, dashboardName: string) {
+	const name = docName(dashboardName);
+	const byName = entries.get(transport);
+	const e = byName?.get(name);
+	if (e) {
+		if (e.timer) clearTimeout(e.timer);
+		e.timer = undefined;
+		e.dirty = false;
+		e.dropped = true;
+		byName!.delete(name);
+		notify(e);
+	}
+	try {
+		await transport.deleteDoc?.(name);
+	} catch {
+		// Never stored (the group was never opened): nothing to delete.
+	}
+}
+
 export function updateEntry(e: Entry, fn: (doc: DashboardDoc) => DashboardDoc) {
-	if (!e.doc || e.status !== 'ready') return;
+	if (!e.doc || e.status !== 'ready' || e.dropped) return;
 	const next = fn(e.doc);
 	if (next === e.doc) return;
 	e.doc = next;

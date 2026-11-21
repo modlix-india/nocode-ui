@@ -10,9 +10,11 @@ import { processComponentStylePseudoClasses } from '../../../util/styleProcessor
 import { HelperComponent } from '../../HelperComponents/HelperComponent';
 import useDefinition from '../../util/useDefinition';
 import { addWidget } from '../dashboardModel';
-import { useDashboardDoc } from '../dashboardStore';
+import { readyDoc, updateEntry, useDashboardDoc } from '../dashboardStore';
+import { catalogForGroup, labelError } from '../groupsModel';
+import { useReportGroups } from '../groupsStore';
 import { usePageEvents } from '../pageEvents';
-import { defaultCatalogFunction, defaultRunFunction } from '../reportApi';
+import { defaultCatalogFunction, defaultRunFunction, namespaceOf } from '../reportApi';
 import { useCatalog, useTransport } from '../ui/hooks';
 import { ReportEditorView } from '../ui/ReportEditorView';
 import { propertiesDefinition, stylePropertiesDefinition } from './reportEditorProperties';
@@ -39,11 +41,17 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 	const catalogFunction = (properties.catalogFunction as string) || defaultCatalogFunction(ns);
 	const transport = useTransport(properties.useFixtures);
 	const cat = useCatalog(transport, catalogFunction);
+	// `group` (CONTRACT 9); `dashboardName` is the P1a name of the same thing.
+	const initialGroup =
+		String(properties.group || properties.dashboardName || '').trim() || 'dashboard';
 	const docState = useDashboardDoc(
 		transport,
-		(properties.dashboardName as string) || 'dashboard',
-		cat.catalog,
+		initialGroup,
+		catalogForGroup(cat.catalog, initialGroup),
 	);
+	const groups = useReportGroups(transport, ns || namespaceOf(runFunction), cat.catalog);
+	const [target, setTarget] = useState(initialGroup);
+	const [newLabel, setNewLabel] = useState('');
 	const event = usePageEvents(props);
 	const [toDashboard, setToDashboard] = useState<boolean | undefined>(undefined);
 	const [message, setMessage] = useState<{ text: string; error?: boolean } | undefined>(
@@ -54,6 +62,51 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 		? getPathFromLocation(definition.bindingPath, locationHistory, pageExtractor)
 		: undefined;
 	const addIt = toDashboard ?? properties.addToDashboard !== false;
+	const groupOptions = groups.all.some(g => g.id === initialGroup)
+		? groups.all
+		: [{ id: initialGroup, label: initialGroup }, ...groups.all];
+	const labelOfGroup = (id: string) => groupOptions.find(g => g.id === id)?.label ?? id;
+
+	/** Saves into the picked group (made first when it is a new one); '' when saved. */
+	const saveTo = async (v: {
+		name: string;
+		spec: any;
+		refreshMin?: number;
+	}): Promise<{ error: string; id?: string; group?: string }> => {
+		if (!transport) return { error: 'Not ready yet.' };
+		let group = target;
+		if (target === NEW_GROUP) {
+			const err = labelError(newLabel, groups.user, groups.app);
+			if (err) return { error: err };
+			const made = await groups.create(newLabel);
+			if (!made.ok || !made.id) return { error: made.ok ? 'The group was not made.' : made.error };
+			group = made.id;
+			setTarget(made.id);
+			setNewLabel('');
+		}
+		let error = '';
+		let id: string | undefined;
+		try {
+			const entry = await readyDoc(transport, group, catalogForGroup(cat.catalog, group));
+			updateEntry(entry, d => {
+				const r = addWidget(
+					d,
+					{ name: v.name, spec: v.spec, refreshMin: v.refreshMin },
+					{ toDashboard: addIt },
+				);
+				if (!r.ok) {
+					error = r.error;
+					return d;
+				}
+				id = r.id;
+				return r.doc;
+			});
+		} catch (e: any) {
+			error = e?.message ?? 'That group could not be loaded.';
+		}
+		if (!error && !id) error = 'Could not save the widget.';
+		return { error, id, group };
+	};
 
 	let body: React.ReactNode;
 	if (cat.error || docState.status === 'error')
@@ -84,37 +137,56 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 				runFunction={runFunction}
 				saveLabel="Save widget"
 				extra={
-					<label className="_rpCheck">
-						<input
-							type="checkbox"
-							checked={addIt}
-							onChange={e => setToDashboard(e.target.checked)}
-						/>
-						Add to my dashboard
-					</label>
+					<>
+						<label className="_rpLabel">
+							Save to group
+							<select
+								className="_rpSelect"
+								value={target}
+								onChange={e => setTarget(e.target.value)}
+							>
+								{groupOptions.map(g => (
+									<option key={g.id} value={g.id}>
+										{g.label}
+									</option>
+								))}
+								{groups.status === 'ready' ? (
+									<option value={NEW_GROUP}>New group</option>
+								) : null}
+							</select>
+						</label>
+						{target === NEW_GROUP ? (
+							<label className="_rpLabel">
+								New group name
+								<input
+									className="_rpInput"
+									maxLength={40}
+									value={newLabel}
+									onChange={e => setNewLabel(e.target.value)}
+								/>
+							</label>
+						) : null}
+						<label className="_rpCheck">
+							<input
+								type="checkbox"
+								checked={addIt}
+								onChange={e => setToDashboard(e.target.checked)}
+							/>
+							Add to my dashboard
+						</label>
+					</>
 				}
-				onSave={v => {
-					let saved: { id: string } | undefined;
-					let error = '';
-					docState.update(d => {
-						const r = addWidget(
-							d,
-							{ name: v.name, spec: v.spec, refreshMin: v.refreshMin },
-							{ toDashboard: addIt },
-						);
-						if (!r.ok) {
-							error = r.error;
-							return d;
-						}
-						saved = { id: r.id! };
-						return r.doc;
-					});
-					if (error || !saved) {
-						setMessage({ text: error || 'Could not save the widget.', error: true });
+				onSave={async v => {
+					const newName = target === NEW_GROUP ? newLabel.trim() : '';
+					const r = await saveTo(v);
+					if (r.error || !r.id) {
+						setMessage({ text: r.error || 'Could not save the widget.', error: true });
 						return;
 					}
+					const saved = { id: r.id };
+					const where = newName || labelOfGroup(r.group!);
 					setMessage({
-						text: `Saved "${v.name}"${addIt ? ' to your dashboard' : ' to your library'}.`,
+						text: `Saved "${v.name}" to ${where}${addIt ? '' : ' (library only)'}.`,
 					});
 					if (path)
 						setData(
@@ -144,3 +216,5 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 		</div>
 	);
 }
+
+const NEW_GROUP = '__new__';

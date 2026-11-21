@@ -22,6 +22,8 @@ export interface ReportTransport {
 	loadDoc(name: string): Promise<any>;
 	/** Writes a personalization document. */
 	saveDoc(name: string, doc: any): Promise<void>;
+	/** Deletes a personalization document (a deleted report group's). */
+	deleteDoc?(name: string): Promise<void>;
 	/** Downloads a file the platform made (an exported PDF) with the user's token. */
 	fetchFile?(url: string): Promise<Blob>;
 }
@@ -110,6 +112,11 @@ export const serverTransport: ReportTransport = {
 	},
 	async saveDoc(name, doc) {
 		await axios.post(`api/ui/personalization/${appCode()}/${name}`, doc, {
+			headers: authHeaders(),
+		});
+	},
+	async deleteDoc(name) {
+		await axios.delete(`api/ui/personalization/${appCode()}/${name}`, {
 			headers: authHeaders(),
 		});
 	},

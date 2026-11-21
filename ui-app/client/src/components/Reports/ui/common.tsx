@@ -168,20 +168,20 @@ export function DataTable({
 					{rows.map((r, i) => {
 						const href = rowHref && navigate ? rowHref(r) : undefined;
 						return (
-						<tr
-							key={i}
-							className={href ? '_rpLinkRow' : undefined}
-							{...(href && navigate ? linkProps(href, navigate) : {})}
-						>
-							{cols.map(c => (
-								<td
-									key={c.key}
-									className={c.kind === 'MEASURE' ? '_num' : undefined}
-								>
-									{blankIfMissing(r, c) ? '' : formatCell(r, c, fmt)}
-								</td>
-							))}
-						</tr>
+							<tr
+								key={i}
+								className={href ? '_rpLinkRow' : undefined}
+								{...(href && navigate ? linkProps(href, navigate) : {})}
+							>
+								{cols.map(c => (
+									<td
+										key={c.key}
+										className={c.kind === 'MEASURE' ? '_num' : undefined}
+									>
+										{blankIfMissing(r, c) ? '' : formatCell(r, c, fmt)}
+									</td>
+								))}
+							</tr>
 						);
 					})}
 				</tbody>

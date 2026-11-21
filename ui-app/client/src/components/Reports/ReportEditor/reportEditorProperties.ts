@@ -23,11 +23,19 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'group',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Report Group',
+		description:
+			'The report group new widgets go into first; the user can pick another group, or make a new one, in Save to group. Empty: the Dashboard Name, else dashboard.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'dashboardName',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Dashboard Name',
 		description:
-			'The saved dashboard (reports_<name>) new widgets go into; use the same name as the Dashboard component that shows them.',
+			'Older name of Report Group (used when Report Group is empty): the saved dashboard (reports_<name>) new widgets go into; use the same name as the Dashboard component that shows them.',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'dashboard',
 	},

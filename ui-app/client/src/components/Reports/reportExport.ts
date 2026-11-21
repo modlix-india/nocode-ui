@@ -162,7 +162,9 @@ export function pdfDocument(
 		...(opts?.subtitle ? { subtitle: opts.subtitle } : {}),
 		generatedAt: (opts?.now ?? new Date()).toISOString(),
 		...(opts?.locale ? { locale: opts.locale } : {}),
-		items: items.slice(0, PDF_CAPS.items).map(i => ({ ...i, rows: i.rows.slice(0, PDF_CAPS.rows) })),
+		items: items
+			.slice(0, PDF_CAPS.items)
+			.map(i => ({ ...i, rows: i.rows.slice(0, PDF_CAPS.rows) })),
 	};
 	let size = JSON.stringify(document).length;
 	// Too big: drop chart images from the end until it fits; the tables stay.
@@ -246,11 +248,25 @@ export async function exportPdf(
 	if (!pdfFunction) return 'PDF export is not set up for this app.';
 	try {
 		const data = await transport.call(pdfFunction, { document });
-		const target = pdfTarget(eventResults(data));
+		let results: any = eventResults(data);
+		// The app wrapper may hand the core's answer one level down.
+		if (results && results.ok === undefined && results.result?.ok !== undefined)
+			results = results.result;
+		if (results?.ok === false)
+			return results.error?.code === 'TOO_LARGE'
+				? 'This is too much for one PDF.'
+				: results.error?.message || 'The PDF could not be made.';
+		const target = pdfTarget(results);
 		if (!target) return 'The PDF did not come back.';
-		const name = target.fileName && /\.pdf$/i.test(target.fileName) ? target.fileName : fileName;
+		const name =
+			target.fileName && /\.pdf$/i.test(target.fileName) ? target.fileName : fileName;
 		if (target.kind === 'base64') {
 			downloadBlob(base64Blob(target.data, 'application/pdf'), name);
+			return '';
+		}
+		const inline = /^data:([^;,]*)(;base64)?,(.*)$/s.exec(target.url);
+		if (inline && inline[2]) {
+			downloadBlob(base64Blob(inline[3], inline[1] || 'application/pdf'), name);
 			return '';
 		}
 		if (/^data:/.test(target.url) || !transport.fetchFile) {
@@ -354,7 +370,10 @@ export function parseReportFile(
 		return { ok: false, error: 'This is not a reports file.' };
 	if (raw.v !== 1) return { ok: false, error: 'This reports file is from a newer version.' };
 	if (String(raw.app ?? '').toLowerCase() !== String(app ?? '').toLowerCase())
-		return { ok: false, error: `This file is for another app (${String(raw.app ?? 'unknown')}).` };
+		return {
+			ok: false,
+			error: `This file is for another app (${String(raw.app ?? 'unknown')}).`,
+		};
 	const widgets: Record<string, ReportFileWidget> = {};
 	for (const [id, w] of Object.entries<any>(raw.widgets ?? {})) {
 		if (!w || typeof w !== 'object' || !isSpecLike(w.spec)) continue;
@@ -387,7 +406,11 @@ export async function checkImport(
 	const out: ImportVerdict[] = [];
 	for (const [id, w] of Object.entries(file.widgets)) {
 		const r = await dryRun(w.spec);
-		out.push(r.ok ? { id, name: w.name, ok: true } : { id, name: w.name, ok: false, reason: reasonOf(r.error) });
+		out.push(
+			r.ok
+				? { id, name: w.name, ok: true }
+				: { id, name: w.name, ok: false, reason: reasonOf(r.error) },
+		);
 	}
 	return out;
 }

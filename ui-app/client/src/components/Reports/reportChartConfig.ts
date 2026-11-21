@@ -797,7 +797,12 @@ export function ghostDatasets(
 	return out;
 }
 
-type Fmt = (col: ReportColumn | undefined, v: any, row?: Record<string, any>, compactAxis?: boolean) => string;
+type Fmt = (
+	col: ReportColumn | undefined,
+	v: any,
+	row?: Record<string, any>,
+	compactAxis?: boolean,
+) => string;
 
 /** HEATMAP (chartjs-chart-matrix 3.1): X by the first group by, Y by the second, shade by value. */
 function heatmapConfig(
@@ -861,14 +866,21 @@ function heatmapConfig(
 					})),
 					backgroundColor: (ctx: any) => {
 						const v = Math.abs(toNumber(ctx?.raw?.v) ?? 0);
-						return withAlpha(base, 0.1 + 0.9 * (v / max));
+						// Square root: one huge cell must not wash every other cell out.
+						return withAlpha(base, 0.1 + 0.9 * Math.sqrt(v / max));
 					},
 					borderColor: theme.surface,
 					borderWidth: 1,
 					width: ({ chart }: any) =>
-						Math.max(1, (chart?.chartArea?.width ?? 0) / Math.max(1, p.xKeys.length) - 2),
+						Math.max(
+							1,
+							(chart?.chartArea?.width ?? 0) / Math.max(1, p.xKeys.length) - 2,
+						),
 					height: ({ chart }: any) =>
-						Math.max(1, (chart?.chartArea?.height ?? 0) / Math.max(1, p.sKeys.length) - 2),
+						Math.max(
+							1,
+							(chart?.chartArea?.height ?? 0) / Math.max(1, p.sKeys.length) - 2,
+						),
 					_column: m,
 					_rows: rows,
 					_perRowSeries: !!series,
@@ -880,7 +892,12 @@ function heatmapConfig(
 	};
 }
 
-/** TREEMAP (chartjs-chart-treemap 5.0): areas by the measure, nested by the second group by. */
+/**
+ * TREEMAP (chartjs-chart-treemap 4.2): areas by the measure, nested by the second group by.
+ * 4.2 reads the rows from `tree` and replaces `data` with its laid out rectangles; `tree` is
+ * passed on every config so a new run (react-chartjs-2 assigns onto the old dataset) lays out
+ * the new rows, never the first ones.
+ */
 function treemapConfig(
 	out: ReportSuccess,
 	axes: Axes,
@@ -932,6 +949,7 @@ function treemapConfig(
 			datasets: [
 				{
 					label: m.label ?? m.key,
+					tree,
 					data: tree,
 					key: '__v',
 					groups: series ? ['__g0', '__g1'] : ['__g0'],

@@ -5,6 +5,7 @@ import {
 	addDefault,
 	addToDashboard,
 	addWidget,
+	copyWidgetTo,
 	defaultsNotInLibrary,
 	deleteWidget,
 	DocResult,
@@ -17,7 +18,9 @@ import {
 	resolveWidget,
 	withLayout,
 } from '../dashboardModel';
-import { useDashboardDoc } from '../dashboardStore';
+import { readyDoc, updateEntry, useDashboardDoc } from '../dashboardStore';
+import { catalogForGroup, GroupInfo } from '../groupsModel';
+import { useReportGroups } from '../groupsStore';
 import {
 	defaultPdfFunction,
 	errorText,
@@ -87,6 +90,16 @@ export interface DashboardViewProps {
 	appNamespace?: string;
 }
 
+/** Copy / Move to group: the widget and the choice so far. */
+interface TransferState {
+	id: string;
+	name: string;
+	move: boolean;
+	target?: string;
+	busy?: boolean;
+	error?: string;
+}
+
 interface ImportState {
 	file: ReportFile;
 	verdicts?: ImportVerdict[];
@@ -106,7 +119,8 @@ const HUGE = { width: 1e7, height: 1e7 };
 export function DashboardView(props: Readonly<DashboardViewProps>) {
 	const { transport, runFunction, editable } = props;
 	const cat = useCatalog(transport, props.catalogFunction);
-	const catalog = cat.catalog;
+	// This group's view of the catalog: only the defaults it seeds (CONTRACT 9).
+	const catalog = catalogForGroup(cat.catalog, props.name);
 	const docState = useDashboardDoc(transport, props.name, catalog);
 	const doc = docState.doc;
 	const [mode, setMode] = useState<'dashboard' | 'library'>(props.mode ?? 'dashboard');
@@ -120,12 +134,17 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 	const [cross, setCross] = useState<SessionFilter[]>([]);
 	const [importing, setImporting] = useState<ImportState | undefined>(undefined);
 	const [busy, setBusy] = useState(false);
+	const [transfer, setTransfer] = useState<TransferState | undefined>(undefined);
 	const exportApis = useRef(new Map<string, WidgetExportApi>());
 	const exportRefs = useRef(new Map<string, (api: WidgetExportApi | null) => void>());
 	const fileRef = useRef<HTMLInputElement>(null);
 	const rootRef = useRef<HTMLDivElement>(null);
 	const app = props.appNamespace || namespaceOf(runFunction);
 	const pdfFunction = props.pdfFunction || defaultPdfFunction(props.appNamespace, runFunction);
+	const groups = useReportGroups(transport, app, cat.catalog);
+	/** The groups a widget can go to from here. */
+	const otherGroups: GroupInfo[] =
+		groups.status === 'ready' ? groups.all.filter(g => g.id !== props.name) : [];
 	/** One stable callback per widget id, so a widget registers its export part once. */
 	const exportRefFor = (id: string) => {
 		let f = exportRefs.current.get(id);
@@ -309,6 +328,16 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 				onDuplicate={
 					editable ? () => apply(d => duplicateWidget(d, item.id, catalog)) : undefined
 				}
+				onCopyToGroup={
+					editable && otherGroups.length
+						? () => setTransfer({ id: item.id, name: r.name, move: false })
+						: undefined
+				}
+				onMoveToGroup={
+					editable && otherGroups.length
+						? () => setTransfer({ id: item.id, name: r.name, move: true })
+						: undefined
+				}
 				onRemove={editable ? () => apply(d => removeFromDashboard(d, item.id)) : undefined}
 				onDelete={editable ? () => apply(d => deleteWidget(d, item.id)) : undefined}
 				onSpecChange={
@@ -362,6 +391,42 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 	};
 
 	const ordered = sortLayout(layout);
+
+	const runTransfer = async () => {
+		const t = transfer;
+		const target = otherGroups.find(g => g.id === t?.target);
+		if (!t || !target || !transport) return;
+		setTransfer({ ...t, busy: true, error: undefined });
+		let error = '';
+		let placed: 'dashboard' | 'library' | undefined;
+		try {
+			const entry = await readyDoc(
+				transport,
+				target.id,
+				catalogForGroup(cat.catalog, target.id),
+			);
+			updateEntry(entry, d => {
+				const r = copyWidgetTo(doc, t.id, catalog, d);
+				if (!r.ok) {
+					error = r.error;
+					return d;
+				}
+				placed = r.placed;
+				return r.doc;
+			});
+			if (!error && !placed) error = 'That group could not be changed.';
+		} catch (e: any) {
+			error = e?.message ?? 'That group could not be loaded.';
+		}
+		if (error) return setTransfer({ ...t, busy: false, error });
+		if (t.move) apply(d => deleteWidget(d, t.id));
+		setTransfer(undefined);
+		setNotice(
+			`${t.move ? 'Moved' : 'Copied'} "${t.name}" to ${target.label}${
+				placed === 'library' ? ' (in its library: its dashboard is full)' : ''
+			}.`,
+		);
+	};
 
 	const exportDashboardPdf = async () => {
 		if (!transport) return;
@@ -602,7 +667,10 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 				) : null}
 			</div>
 			{notice ? (
-				<div className={/^Imported/.test(notice) ? '_rpMuted' : '_rpError'} role="alert">
+				<div
+					className={/^(Imported|Copied|Moved)/.test(notice) ? '_rpMuted' : '_rpError'}
+					role="alert"
+				>
 					{notice}
 				</div>
 			) : null}
@@ -634,6 +702,11 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 					editable={editable}
 					apply={apply}
 					onEdit={(id, value) => setEditing({ id, value })}
+					onTransfer={
+						editable && otherGroups.length
+							? (id, name) => setTransfer({ id, name, move: false })
+							: undefined
+					}
 				/>
 			) : phone ? (
 				<div className="_rpColumn">
@@ -823,6 +896,88 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 					</div>
 				</Dialog>
 			) : null}
+			{transfer ? (
+				<Dialog
+					kind="modal"
+					label={transfer.move ? 'Move to group' : 'Copy to group'}
+					onClose={() => setTransfer(undefined)}
+				>
+					<div className="_rpDrawerHead">
+						<span>{transfer.move ? 'Move to group' : 'Copy to group'}</span>
+						<button
+							type="button"
+							className="_rpIconBtn"
+							aria-label="Close"
+							title="Close"
+							onClick={() => setTransfer(undefined)}
+						>
+							<Icon name="fa-xmark" />
+						</button>
+					</div>
+					<div className="_rpDrawerBody">
+						<div className="_rpMuted">{transfer.name}</div>
+						<div className="_rpRow" role="radiogroup" aria-label="Copy or move">
+							<label className="_rpCheck">
+								<input
+									type="radio"
+									name="rpTransferKind"
+									checked={!transfer.move}
+									onChange={() => setTransfer(s => (s ? { ...s, move: false } : s))}
+								/>
+								Copy (keep it here too)
+							</label>
+							<label className="_rpCheck">
+								<input
+									type="radio"
+									name="rpTransferKind"
+									checked={transfer.move}
+									onChange={() => setTransfer(s => (s ? { ...s, move: true } : s))}
+								/>
+								Move (take it off here)
+							</label>
+						</div>
+						<div className="_rpGroupTitle">To group</div>
+						<div role="radiogroup" aria-label="To group">
+							{otherGroups.map(g => (
+								<label key={g.id} className="_rpCheck _rpLibRow">
+									<input
+										type="radio"
+										name="rpTransferTarget"
+										checked={transfer.target === g.id}
+										onChange={() =>
+											setTransfer(s => (s ? { ...s, target: g.id } : s))
+										}
+									/>
+									{g.label}
+								</label>
+							))}
+						</div>
+						{transfer.error ? (
+							<div className="_rpError" role="alert">
+								{transfer.error}
+							</div>
+						) : null}
+					</div>
+					<div className="_rpDrawerFoot">
+						<button
+							type="button"
+							className="_rpBtn"
+							onClick={() => setTransfer(undefined)}
+						>
+							Cancel
+						</button>
+						<button
+							type="button"
+							className="_rpBtn _primary"
+							disabled={!transfer.target || transfer.busy}
+							onClick={() => void runTransfer()}
+						>
+							{transfer.busy ? <Icon name="fa-spinner fa-spin" /> : null}
+							{transfer.move ? 'Move' : 'Copy'}
+						</button>
+					</div>
+				</Dialog>
+			) : null}
 			{editing ? (
 				<Dialog
 					kind="modal"
@@ -913,12 +1068,15 @@ export function LibraryList({
 	editable,
 	apply,
 	onEdit,
+	onTransfer,
 }: Readonly<{
 	doc: DashboardDoc;
 	catalog: ReportCatalog;
 	editable?: boolean;
 	apply: (fn: (d: DashboardDoc) => DocResult | DashboardDoc) => void;
 	onEdit: (id: string, v: EditorValue) => void;
+	/** Copy or move to another group (only when there is one). */
+	onTransfer?: (id: string, name: string) => void;
 }>) {
 	const ids = Object.keys(doc.widgets);
 	const defaults = defaultsNotInLibrary(doc, catalog);
@@ -987,6 +1145,15 @@ export function LibraryList({
 								>
 									Duplicate
 								</button>
+								{onTransfer ? (
+									<button
+										type="button"
+										className="_rpBtn"
+										onClick={() => onTransfer(id, r.name)}
+									>
+										Copy or move
+									</button>
+								) : null}
 								<button
 									type="button"
 									className="_rpBtn"

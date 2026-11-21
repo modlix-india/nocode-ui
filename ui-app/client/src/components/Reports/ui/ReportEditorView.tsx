@@ -463,11 +463,11 @@ export function ReportEditorView({
 									/>
 									{menu?.kind === 'filter' && menu.index === i ? (
 										<Pop
-										anchor={menuAnchor.current}
-										popRef={menuRef}
-										role="dialog"
-										label="Filter"
-										style={{ minWidth: 280 }}
+											anchor={menuAnchor.current}
+											popRef={menuRef}
+											role="dialog"
+											label="Filter"
+											style={{ minWidth: 280 }}
 										>
 											<FilterRow
 												value={f}
@@ -487,10 +487,10 @@ export function ReportEditorView({
 																	),
 														},
 														`filter${i}`,
-														);
-														}}
-														/>
-														</Pop>
+													);
+												}}
+											/>
+										</Pop>
 									) : null}
 								</span>
 							))
@@ -526,7 +526,11 @@ export function ReportEditorView({
 									{menu?.kind === 'pill' &&
 									menu.shelf === sh &&
 									menu.index === i ? (
-										<Pop anchor={menuAnchor.current} popRef={menuRef} role="menu">
+										<Pop
+											anchor={menuAnchor.current}
+											popRef={menuRef}
+											role="menu"
+										>
 											<PillEditor
 												item={it}
 												field={fieldMap.get(it.field)}
@@ -553,9 +557,9 @@ export function ReportEditorView({
 												>
 													<Icon name="fa-arrow-right" /> Move to{' '}
 													{SHELF_LABELS[t]}
-													</button>
-													))}
-													</Pop>
+												</button>
+											))}
+										</Pop>
 									) : null}
 								</span>
 							))}
@@ -700,7 +704,11 @@ export function ReportEditorView({
 												{fieldLabelOf(n)}
 											</button>
 											{menu?.kind === 'field' && menu.field === n ? (
-												<Pop anchor={menuAnchor.current} popRef={menuRef} role="menu">
+												<Pop
+													anchor={menuAnchor.current}
+													popRef={menuRef}
+													role="menu"
+												>
 													<div
 														className="_rpMuted"
 														style={{ padding: '4px 10px' }}
@@ -725,9 +733,9 @@ export function ReportEditorView({
 															}
 														>
 															{SHELF_LABELS[sh]}
-															</button>
-															))}
-															</Pop>
+														</button>
+													))}
+												</Pop>
 											) : null}
 										</div>
 									))}

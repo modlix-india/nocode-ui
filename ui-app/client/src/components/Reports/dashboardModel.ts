@@ -425,3 +425,38 @@ export function withLayout(doc: DashboardDoc, layout: LayoutItem[]): DashboardDo
 export function orderedIds(doc: DashboardDoc): string[] {
 	return sortLayout(doc.layout).map(l => l.id);
 }
+
+/** Where a widget copied to another group landed. */
+export type CopyResult =
+	| { ok: true; doc: DashboardDoc; id: string; placed: 'dashboard' | 'library' }
+	| { ok: false; error: string };
+
+/**
+ * Copy / Move to group (CONTRACT 9): the widget as it shows now (an unedited default's current
+ * spec) becomes the user's own widget in `target`, under the same name; on that group's
+ * dashboard when it is on this one and that one has room, else in that group's library. The
+ * target's caps apply. Moving = this, then `deleteWidget` in the source.
+ */
+export function copyWidgetTo(
+	source: DashboardDoc,
+	id: string,
+	sourceCatalog: ReportCatalog | undefined,
+	target: DashboardDoc,
+): CopyResult {
+	const r = resolveWidget(source, id, sourceCatalog);
+	if (!r) return { ok: false, error: CAP_MESSAGES.gone };
+	if (Object.keys(target.widgets).length >= DASHBOARD_CAPS.saved)
+		return {
+			ok: false,
+			error: `That group already keeps ${DASHBOARD_CAPS.saved} saved widgets. Delete one there first.`,
+		};
+	const tile = source.layout.find(l => l.id === id);
+	const toDashboard = !!tile && target.layout.length < DASHBOARD_CAPS.onDashboard;
+	const added = addWidget(
+		target,
+		{ name: r.name, spec: cloneSpec(r.spec), refreshMin: r.refreshMin },
+		{ toDashboard, w: tile?.w, h: tile?.h },
+	);
+	if (!added.ok) return added;
+	return { ok: true, doc: added.doc, id: added.id!, placed: toDashboard ? 'dashboard' : 'library' };
+}

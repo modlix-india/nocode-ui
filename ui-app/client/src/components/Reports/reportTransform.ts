@@ -217,7 +217,12 @@ export const DELTA_SUFFIX = '_delta_pct';
  */
 export function normalizeCompare(out: ReportSuccess, compareLabel?: string): ReportSuccess {
 	const base = out.columns.filter(
-		c => c.kind === 'MEASURE' && !c.key.endsWith(CMP_SUFFIX) && !c.key.endsWith(DELTA_SUFFIX),
+		c =>
+			c.kind === 'MEASURE' &&
+			!c.compareOf &&
+			!c.deltaOf &&
+			!c.key.endsWith(CMP_SUFFIX) &&
+			!c.key.endsWith(DELTA_SUFFIX),
 	);
 	const byKey = new Map(out.columns.map(c => [c.key, c]));
 	const has = (k: string) => out.rows.some(r => r[k] !== undefined) || byKey.has(k);
@@ -244,13 +249,17 @@ export function normalizeCompare(out: ReportSuccess, compareLabel?: string): Rep
 				});
 		}
 	}
+	// Columns the runner tagged count whatever their key.
+	for (const c of out.columns) if (c.compareOf || c.deltaOf) marked.add(c.key);
 	if (!marked.size) return out;
 	const columns = out.columns.map(c =>
 		marked.has(c.key) && c.role !== 'compare'
 			? {
 					...c,
 					role: 'compare' as const,
-					...(c.key.endsWith(DELTA_SUFFIX) ? { format: c.format ?? 'PERCENT' } : {}),
+					...(c.deltaOf || c.key.endsWith(DELTA_SUFFIX)
+						? { format: c.format ?? 'PERCENT' }
+						: {}),
 				}
 			: c,
 	);
@@ -264,6 +273,9 @@ export function normalizeCompare(out: ReportSuccess, compareLabel?: string): Rep
 			const cc = all.find(e => e.key === k);
 			if (cc) ordered.push(cc);
 		}
+		for (const cc of all)
+			if ((cc.compareOf === c.key || cc.deltaOf === c.key) && !ordered.includes(cc))
+				ordered.push(cc);
 	}
 	for (const c of all) if (c.role === 'compare' && !ordered.includes(c)) ordered.push(c);
 	return { ...out, columns: ordered };

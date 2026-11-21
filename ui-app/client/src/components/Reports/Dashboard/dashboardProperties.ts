@@ -22,13 +22,39 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'group',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Report Group',
+		description:
+			"The report group this dashboard opens on: an app group from the catalog (default dashboard) or one of the user's own groups (u_ ids). Each group keeps its own widgets in the personalization document reports_<group>. Empty: the Dashboard Name, else dashboard.",
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'name',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Dashboard Name',
 		description:
-			"Names the user's saved dashboard (personalization document reports_<name>). Pages that show the same dashboard or its library use the same name.",
+			"Older name of Report Group (used when Report Group is empty): the user's saved dashboard, personalization document reports_<name>. Pages that show the same dashboard or its library use the same name.",
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'dashboard',
+	},
+	{
+		name: 'groups',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Group Tabs',
+		description:
+			'Tabs to switch report groups in place: none (no tabs), all (the app groups, then the user groups), or group ids separated by commas.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'none',
+	},
+	{
+		name: 'showGroupManager',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Group Manager',
+		description:
+			"New group, Rename and Delete (with a confirm) for the user's own report groups, at most 10 per app. Deleting a group deletes its widgets.",
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
 	},
 	{
 		name: 'editable',
@@ -56,6 +82,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'title',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Title',
+		description:
+			'Shown above the dashboard. Empty with a Report Group set and no tabs: the group label.',
 		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},

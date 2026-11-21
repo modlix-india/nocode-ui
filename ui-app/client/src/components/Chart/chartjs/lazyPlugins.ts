@@ -14,7 +14,7 @@ import type { Plugin } from 'chart.js';
  *   annotations, so other charts are unchanged.
  * - Zoom and pan (chartjs-plugin-zoom 2.2, with hammerjs for pinch) is handed to the one chart
  *   that wants it, like data labels.
- * - Heatmap (chartjs-chart-matrix 3.1) and treemap (chartjs-chart-treemap 5.0) are new chart
+ * - Heatmap (chartjs-chart-matrix 3.1) and treemap (chartjs-chart-treemap 4.2) are new chart
  *   types: registering a controller only adds the type, other charts are unchanged.
  */
 

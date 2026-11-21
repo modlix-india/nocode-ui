@@ -1,11 +1,5 @@
 import type React from 'react';
-import {
-	CatalogLink,
-	ReportCatalog,
-	ReportFilter,
-	ReportPeriod,
-	ReportSpec,
-} from './reportTypes';
+import { CatalogLink, ReportCatalog, ReportFilter, ReportPeriod, ReportSpec } from './reportTypes';
 
 /**
  * Click-through (CONTRACT 8.0): row links, "View all", KPI count links. A link is an app relative

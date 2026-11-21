@@ -78,7 +78,13 @@ describe('PDF document (CONTRACT 8.2)', () => {
 	};
 
 	test('an item: formatted rows, at most 200, numbers right aligned', () => {
-		const item = pdfItem('Sales', 'This quarter', out, { locale: 'en-IN' }, 'data:image/png;base64,AA');
+		const item = pdfItem(
+			'Sales',
+			'This quarter',
+			out,
+			{ locale: 'en-IN' },
+			'data:image/png;base64,AA',
+		);
 		expect(item.rows.length).toBe(PDF_CAPS.rows);
 		expect(item.columns).toEqual([
 			{ key: 'rm', label: 'RM' },
@@ -115,8 +121,66 @@ describe('PDF document (CONTRACT 8.2)', () => {
 			kind: 'url',
 			url: 'data:application/pdf;base64,JVBER',
 		});
-		expect(pdfTarget({ pdf: 'JVBERi0xLjQK' })).toEqual({ kind: 'base64', data: 'JVBERi0xLjQK' });
+		expect(pdfTarget({ pdf: 'JVBERi0xLjQK' })).toEqual({
+			kind: 'base64',
+			data: 'JVBERi0xLjQK',
+		});
 		expect(pdfTarget({ nothing: 1 })).toBeUndefined();
+	});
+
+	test('exportPdf: the core answer (data URL) becomes a download named as the runner says; refusals read plainly', async () => {
+		const blobs: Array<[Blob, string]> = [];
+		const create = jest.fn((b: Blob) => (blobs.push([b, '']), 'blob:x'));
+		(URL as any).createObjectURL = create;
+		(URL as any).revokeObjectURL = jest.fn();
+		const clicks: string[] = [];
+		const orig = HTMLAnchorElement.prototype.click;
+		HTMLAnchorElement.prototype.click = function (this: HTMLAnchorElement) {
+			clicks.push(this.download);
+		};
+		try {
+			const answer = (result: any) => ({
+				call: async () => [{ name: 'output', result }],
+				loadDoc: async () => ({}),
+				saveDoc: async () => {},
+			});
+			const d = pdfDocument('X', [pdfItem('a', '', out, {})]);
+			if (!d.ok) throw new Error('no document');
+			const ok = {
+				ok: true,
+				fileName: 'Sales 2026-11-21.pdf',
+				contentType: 'application/pdf',
+				data: 'data:application/pdf;base64,JVBERi0xLjQK',
+			};
+			expect(await exportPdf(answer(ok), 'CxZump.reportPdf', d.document, 'x.pdf')).toBe('');
+			expect(
+				await exportPdf(answer({ result: ok }), 'CxZump.reportPdf', d.document, 'x.pdf'),
+			).toBe('');
+			expect(clicks).toEqual(['Sales 2026-11-21.pdf', 'Sales 2026-11-21.pdf']);
+			expect(blobs[0][0].type).toBe('application/pdf');
+			expect(blobs[0][0].size).toBe(9);
+			expect(
+				await exportPdf(
+					answer({ ok: false, error: { code: 'TOO_LARGE', message: 'over 8 MB' } }),
+					'CxZump.reportPdf',
+					d.document,
+					'x.pdf',
+				),
+			).toBe('This is too much for one PDF.');
+			expect(
+				await exportPdf(
+					answer({
+						ok: false,
+						error: { code: 'PDF_FAILED', message: 'Renderer is down' },
+					}),
+					'CxZump.reportPdf',
+					d.document,
+					'x.pdf',
+				),
+			).toBe('Renderer is down');
+		} finally {
+			HTMLAnchorElement.prototype.click = orig;
+		}
 	});
 
 	test('exportPdf calls <ns>.reportPdf with the document and reports a missing PDF', async () => {
@@ -156,23 +220,28 @@ describe('widget / dashboard file (CONTRACT 8.2)', () => {
 	});
 
 	test('import refuses a wrong kind, another app, or no widgets', () => {
-		expect(parseReportFile('nope', 'CxZump')).toEqual({ ok: false, error: 'This is not a reports file.' });
+		expect(parseReportFile('nope', 'CxZump')).toEqual({
+			ok: false,
+			error: 'This is not a reports file.',
+		});
 		expect(parseReportFile(JSON.stringify({ ...file, kind: 'x' }), 'CxZump').ok).toBe(false);
 		const other = parseReportFile(JSON.stringify(file), 'LeadZump');
 		expect(other.ok).toBe(false);
 		expect(!other.ok && other.error).toMatch(/another app/);
-		expect(parseReportFile(JSON.stringify({ ...file, widgets: { x: { name: 'bad' } } }), 'CxZump').ok).toBe(false);
+		expect(
+			parseReportFile(JSON.stringify({ ...file, widgets: { x: { name: 'bad' } } }), 'CxZump')
+				.ok,
+		).toBe(false);
 		expect(parseReportFile(JSON.stringify(file), 'cxzump').ok).toBe(true);
 	});
 
 	test('each spec is dry run; failures are kept with the reason under new ids', async () => {
 		const parsed = parseReportFile(JSON.stringify(file), 'CxZump');
 		if (!parsed.ok) throw new Error(parsed.error);
-		const dry = jest.fn(
-			async (s: ReportSpec): Promise<ReportOutput> =>
-				s.source === 'gone'
-					? { ok: false, error: { code: 'UNKNOWN_SOURCE', message: 'Unknown source gone' } }
-					: { ok: true, columns: [], rows: [] },
+		const dry = jest.fn(async (s: ReportSpec): Promise<ReportOutput> =>
+			s.source === 'gone'
+				? { ok: false, error: { code: 'UNKNOWN_SOURCE', message: 'Unknown source gone' } }
+				: { ok: true, columns: [], rows: [] },
 		);
 		const verdicts = await checkImport(parsed.file, dry, e => e.message ?? e.code);
 		expect(verdicts).toEqual([

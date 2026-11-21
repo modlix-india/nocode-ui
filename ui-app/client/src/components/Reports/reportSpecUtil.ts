@@ -209,7 +209,10 @@ export function applyDrill(spec: ReportSpec, steps: DrillStep[]): ReportSpec {
 			next.groupBy = (next.groupBy ?? []).map(g =>
 				g.as === st.as ? { field: st.next!, as: g.as } : g,
 			);
-			next.filters = [...(next.filters ?? []), { field: st.field, op: 'EQ', values: [st.value] }];
+			next.filters = [
+				...(next.filters ?? []),
+				{ field: st.field, op: 'EQ', values: [st.value] },
+			];
 			continue;
 		}
 		if (!st.level) continue;
@@ -314,7 +317,7 @@ export function effectiveSpec(
 		if (!values?.length) continue;
 		// A function source takes a quick filter as a parameter it allows, one value only.
 		if (isFunction) {
-			if (src?.allowedParams?.includes(field) && values.length === 1)
+			if (allowedParams(src).includes(field) && values.length === 1)
 				next.params = { ...(next.params ?? {}), [field]: values[0] };
 			else skipped.push(fieldLabel(opts.catalog, field));
 			continue;
@@ -437,5 +440,18 @@ export function compareBlocker(
 	const periods = (spec.filters ?? []).filter(f => f.period);
 	if (!periods.length) return 'Set a date range to compare';
 	if (periods.some(f => f.period === 'ALL_TIME')) return 'All time cannot be compared';
+	// The runner compares one period (BAD_PERIOD otherwise).
+	if (periods.length > 1) return 'Compare needs a single date range';
 	return undefined;
+}
+
+/**
+ * The parameters a function source lets a spec (or a dashboard filter) set: `allowedParams`,
+ * else the keys of the catalog's `params` (CONTRACT 7: function-source `params` = allowed params).
+ */
+export function allowedParams(src: CatalogSource | undefined): string[] {
+	if (Array.isArray(src?.allowedParams)) return src!.allowedParams;
+	const p = src?.params;
+	if (Array.isArray(p)) return p.map(String);
+	return p && typeof p === 'object' ? Object.keys(p) : [];
 }

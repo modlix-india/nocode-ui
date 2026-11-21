@@ -22,11 +22,19 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'group',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Report Group',
+		description:
+			'The report group whose widgets this library lists (each group has its own library). Empty: the Dashboard Name, else dashboard.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'name',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Dashboard Name',
 		description:
-			"Names the user's saved dashboard (personalization document reports_<name>). Pages that show the same dashboard or its library use the same name.",
+			"Older name of Report Group (used when Report Group is empty): the user's saved dashboard, personalization document reports_<name>. Pages that show the same dashboard or its library use the same name.",
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'dashboard',
 	},

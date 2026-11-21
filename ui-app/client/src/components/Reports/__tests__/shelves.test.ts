@@ -26,7 +26,9 @@ describe('shelves -> spec (CONTRACT 8.3)', () => {
 		sh = (addToShelf(sh, 'rows', item('agreementValue')) as any).shelves;
 		const s = shelvesToSpec(sh, base);
 		expect(s.groupBy).toEqual([{ field: 'assignedUserId', as: 'assignedUserId' }]);
-		expect(s.measures).toEqual([{ fn: 'SUM', field: 'agreementValue', as: 'sum_agreementValue' }]);
+		expect(s.measures).toEqual([
+			{ fn: 'SUM', field: 'agreementValue', as: 'sum_agreementValue' },
+		]);
 		expect(s.view.x).toBe('assignedUserId');
 		expect(s.view.y).toBeUndefined();
 		expect(s.view.style).toBeUndefined();
@@ -59,15 +61,26 @@ describe('shelves -> spec (CONTRACT 8.3)', () => {
 
 	test('shelves refuse what they cannot hold and the caps', () => {
 		const sh = emptyShelves();
-		expect(addToShelf(sh, 'color', item('agreementValue'))).toEqual({ ok: false, reason: 'Color takes a dimension' });
-		expect(addToShelf(sh, 'size', item('productId'))).toEqual({ ok: false, reason: 'Size takes a measure' });
+		expect(addToShelf(sh, 'color', item('agreementValue'))).toEqual({
+			ok: false,
+			reason: 'Color takes a dimension',
+		});
+		expect(addToShelf(sh, 'size', item('productId'))).toEqual({
+			ok: false,
+			reason: 'Size takes a measure',
+		});
 		let two = (addToShelf(sh, 'columns', item('productId')) as any).shelves;
 		two = (addToShelf(two, 'color', item('stageGroup')) as any).shelves;
-		expect(addToShelf(two, 'rows', item('status'))).toEqual({ ok: false, reason: 'At most 2 dimensions' });
+		expect(addToShelf(two, 'rows', item('status'))).toEqual({
+			ok: false,
+			reason: 'At most 2 dimensions',
+		});
 		let three = sh;
 		for (const f of ['agreementValue', 'paidAmount', COUNT_FIELD])
 			three = (addToShelf(three, 'rows', itemOfField(f, F[f])) as any).shelves;
-		expect(addToShelf(three, 'rows', { kind: 'MEASURE', field: 'paidAmount', fn: 'AVG' })).toEqual({
+		expect(
+			addToShelf(three, 'rows', { kind: 'MEASURE', field: 'paidAmount', fn: 'AVG' }),
+		).toEqual({
 			ok: false,
 			reason: 'At most 3 measures',
 		});
@@ -120,7 +133,11 @@ describe('spec -> shelves -> spec keeps the spec', () => {
 		expect(shelvesToSpec(moved.shelves, sales).view.y).toEqual(['bookings']);
 		const added = addToShelf(sh, 'rows', item('paidAmount'));
 		if (!added.ok) throw new Error(added.reason);
-		expect(shelvesToSpec(added.shelves, sales).view.y).toEqual(['bookings', 'value', 'sum_paidAmount']);
+		expect(shelvesToSpec(added.shelves, sales).view.y).toEqual([
+			'bookings',
+			'value',
+			'sum_paidAmount',
+		]);
 	});
 });
 
