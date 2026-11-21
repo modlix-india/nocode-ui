@@ -229,6 +229,10 @@ export function validate(
 
 	if (!validation?.length) return [];
 	return validation
+		// A validation written in the wrong shape (no `property` wrapper) resolves to an
+		// empty entry; Object.entries on it threw inside the field's render, and the error
+		// boundary dropped every field in the grid (live 2026-11-21). Skip it instead.
+		.filter((e: any) => typeof e === 'object' && e !== null)
 		.map((e: any) => {
 			let vals: { [key: string]: any } = {};
 

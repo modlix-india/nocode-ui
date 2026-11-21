@@ -241,6 +241,16 @@ function CommonInputText(props: CommonInputType) {
 		'aria-activedescendant': ariaActiveDescendant || undefined,
 	};
 
+	// A floating label rests inside an empty field, exactly where the placeholder is drawn,
+	// so both printed on top of each other ("Doe" over "Last name", live 2026-11-21). The
+	// placeholder shows once the label has risen: on focus or with the dropdown open. Fields
+	// with no label or a label above the box (noFloat) keep their placeholder at all times.
+	const labelRestsInside =
+		!noFloat && !!label && !focus && !showDropdown && !value?.toString()?.length;
+	const shownPlaceholder = labelRestsInside
+		? undefined
+		: getTranslations(placeholder, translations);
+
 	const inputControl =
 		inputType === 'Text' ? (
 			<input
@@ -251,7 +261,7 @@ function CommonInputText(props: CommonInputType) {
 				type={isPassword && !showPassword ? 'password' : valueType ? valueType : 'text'}
 				value={value}
 				onChange={handleChangeEvent}
-				placeholder={getTranslations(placeholder, translations)}
+				placeholder={shownPlaceholder}
 				onFocus={handleFocusEvent}
 				onBlur={handleBlurEvent}
 				onKeyUp={
@@ -284,7 +294,7 @@ function CommonInputText(props: CommonInputType) {
 				}`}
 				value={value}
 				onChange={handleChangeEvent}
-				placeholder={getTranslations(placeholder, translations)}
+				placeholder={shownPlaceholder}
 				onFocus={handleFocusEvent}
 				onBlur={showEditRequest ? () => setFocus(false) : event => handleBlurEvent(event)}
 				onKeyUp={
