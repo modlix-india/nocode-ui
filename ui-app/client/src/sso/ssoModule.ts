@@ -437,26 +437,25 @@ async function redeemSocialState(
 
 	if (isOk(login.status)) return bankSession(login.body);
 
-	// 409 means the platform recognised this identity and it already owns a client, it just
-	// cannot reach this app. Registering would hand somebody who has a company a second one,
-	// and since the browser retries on every arrival that is a new client per sign-in attempt,
-	// which is how one dev account collected six of them in an hour. The platform's own text
-	// says what to do instead; it is the side that knows which check refused, and it is
-	// localised.
-	if (login.status === 409) {
-		stashSocialMessage(
-			login.body?.message ??
-				'This account already belongs to an organisation. Please request access to this application.',
-		);
-		return false;
-	}
+	// 409 means the platform recognised this identity and it already owns a client under this
+	// site, it just cannot reach this app yet. `socialRegister` handles that case itself: it
+	// registers the organisation the owner already has on this app and signs them in, and never
+	// makes a second client for them (one dev account once collected six of them in an hour,
+	// when registration still did). So a 409 goes on to registration like a 403 does, and only
+	// if registration refuses too is the sign-in's own text shown: it is the side that knows
+	// which check refused, and it is localised.
+	const ownsAnOrganisation = login.status === 409;
+	const organisationMessage = ownsAnOrganisation
+		? (login.body?.message ??
+			'This account already belongs to an organisation. Please request access to this application.')
+		: undefined;
 
 	// 403 is the platform's answer for both "no such user anywhere"
 	// (USER_CREDENTIALS_MISMATCHED) and "this client has no registration on this app"
 	// (NO_REGISTRATION_AVAILABLE). The texts are localised, so the status is all there is to go
 	// on, and signing them up is the right next step either way. Anything else is a real
 	// failure and must not be retried as a registration.
-	if (login.status !== 403) return false;
+	if (login.status !== 403 && !ownsAnOrganisation) return false;
 
 	const firstName = params.get('firstName') ?? '';
 	const lastName = params.get('lastName') ?? '';
@@ -495,7 +494,8 @@ async function redeemSocialState(
 		// check refused, and it is localised. The fallback covers a response that carried no
 		// message at all.
 		stashSocialMessage(
-			register.body?.message ??
+			organisationMessage ??
+				register.body?.message ??
 				'This email is already registered. Please sign in with your password, or reset your password.',
 		);
 		return false;
@@ -586,7 +586,9 @@ export async function consumeSocialArrival(): Promise<boolean> {
 		// lands on the sign-in page again with no idea what happened (QA-0326).
 		if (params.get(PARAM_SOCIAL_ERROR)) {
 			scrubParams(SOCIAL_ARRIVAL_PARAMS);
-			stashSocialMessage('Sign-in was cancelled or could not be completed. Please try again.');
+			stashSocialMessage(
+				'Sign-in was cancelled or could not be completed. Please try again.',
+			);
 		}
 		return false;
 	}
