@@ -29,6 +29,7 @@ import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	UrlDetailsExtractor,
+	setData,
 } from '../../context/StoreContext';
 import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -46,6 +47,9 @@ import { gradientPlugin } from './chartjs/gradientPlugin';
 import { SymlogScale } from './chartjs/symlogScale';
 import { getDataFromPath } from '../../context/StoreContext';
 import type { CountryFeature, GeoBuild } from './chartjs/geo';
+import { useChartPlugins } from './chartjs/lazyPlugins';
+import { applyChartOptIns, clickPayload, wantedPlugins } from './chartjs/chartOptIn';
+import { runEvent } from '../util/runEvent';
 
 // Register Chart.js components, controllers and plugins
 ChartJS.register(
@@ -107,13 +111,14 @@ export default function LazyChart(props: Readonly<ComponentProps>) {
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
-	// Binding path listener for selection binding (currently unused but preserved for future use)
+	// Binding path listener for selection binding. The chart only writes to it (onDataClick
+	// below); nothing on the chart follows a value set from outside yet.
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
 			props.context.pageName,
 			() => {
-				// Selection binding - can be used for click interactions
+				// Selection binding - written by onDataClick
 			},
 			bindingPathPath,
 		);
@@ -248,6 +253,73 @@ export default function LazyChart(props: Readonly<ComponentProps>) {
 		};
 	}, [chartJsOptions, properties.disableLegendInteraction]);
 
+	// Opt-in extras (onDataClick, data labels, reference lines). None set: `options` as it is,
+	// no plugin chunk loaded, nothing on the chart changes.
+	const wanted = wantedPlugins(properties);
+	const { plugins: extraPlugins, ready: pluginsReady } = useChartPlugins(wanted);
+	const latestClick = useRef({ bindingPathPath, properties, chartJsData });
+	latestClick.current = { bindingPathPath, properties, chartJsData };
+	const onDataClick = properties.onDataClick;
+	const handleClick = React.useCallback(
+		(event: any, elements: any[], chart: any) => {
+			const cur = latestClick.current;
+			const ev = cur.properties.onDataClick;
+			if (!ev) return;
+			let hit = elements;
+			try {
+				const exact = chart?.getElementsAtEventForMode?.(
+					event?.native ?? event,
+					'nearest',
+					{ intersect: true },
+					false,
+				);
+				if (exact?.length) hit = exact;
+			} catch {
+				// Fall back to what chart.js reported as active.
+			}
+			const payload = clickPayload(hit, cur.chartJsData, cur.properties.data);
+			if (!payload) return;
+			if (cur.bindingPathPath) setData(cur.bindingPathPath, payload, context.pageName);
+			const fn = props.pageDefinition?.eventFunctions?.[ev];
+			if (fn)
+				(async () =>
+					await runEvent(
+						fn,
+						definition.key,
+						context.pageName,
+						locationHistory,
+						props.pageDefinition,
+					))();
+		},
+		[context.pageName, definition.key, locationHistory, props.pageDefinition],
+	);
+	const finalOptions = useMemo(() => {
+		if (!wanted.dataLabels && !wanted.annotation && !onDataClick) return options;
+		const scheme = String(properties.colorScheme ?? '_primary');
+		const name = scheme.length > 1 ? scheme[1].toUpperCase() + scheme.slice(2) : 'Primary';
+		const palette: string[] = [];
+		for (let i = 1; i <= 12; i++)
+			palette.push(getDataFromPath(`Theme.chart${name}DataColor${i}`, []));
+		return applyChartOptIns(
+			options,
+			properties,
+			{
+				palette,
+				axisColor: getDataFromPath(`Theme.chart${name}XAxisColor`, []),
+				textColor: resolvedStyles?.comp?.color,
+			},
+			handleClick,
+		);
+	}, [
+		options,
+		properties,
+		wanted.dataLabels,
+		wanted.annotation,
+		onDataClick,
+		handleClick,
+		resolvedStyles,
+	]);
+
 	return (
 		<div
 			className="comp compChart"
@@ -257,8 +329,14 @@ export default function LazyChart(props: Readonly<ComponentProps>) {
 			}}
 		>
 			<HelperComponent context={props.context} definition={definition} />
-			{isGeo && !geo ? null : (
-				<Chart ref={chartRef} type={chartJsType} data={chartJsData} options={options} />
+			{(isGeo && !geo) || !pluginsReady ? null : (
+				<Chart
+					ref={chartRef}
+					type={chartJsType}
+					data={chartJsData}
+					options={finalOptions}
+					plugins={extraPlugins}
+				/>
 			)}
 		</div>
 	);
