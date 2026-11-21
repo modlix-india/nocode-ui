@@ -122,6 +122,19 @@ export function AppStyle() {
 
 	${COMMON_CHECKBOX_CSS}
 
+	/* A floating label resting inside an empty, unfocused field (TextBox, TextArea,
+	   Dropdown, PhoneNumber, Calendar, ColorPicker: all CommonInputText). Themes give
+	   <field>MarginLabel and <field>FontLabel for the label ABOVE the box (pulled left to
+	   the box edge, a gap below, caption type), and the catalog applies them in every
+	   state, so a resting label sat jammed in the box's top-left corner in caption type
+	   (live 2026-11-21). At rest it reads like the value: no offset, the value's font.
+	   Once it rises (focus, a value, noFloat) the theme's own geometry applies again.
+	   The repeated .comp outranks the deepest catalog selector (Calendar, six classes). */
+	.comp.comp.comp:not(._isActive):not(._noLabel) > label._label:not(._noFloat) {
+		margin: 0;
+		font: inherit;
+	}
+
 	._ROWLAYOUT, ._SINGLECOLUMNLAYOUT, ._ROWCOLUMNLAYOUT {
 		display: flex;
 		flex-direction: column;

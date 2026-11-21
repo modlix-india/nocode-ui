@@ -30,6 +30,8 @@ import { Dropdown, DropdownOption, DropdownOptions } from './components/Dropdown
 import { COUNTRY_LIST } from './components/listOfCountries';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 import { makeTempPath } from '../../context/TempStore';
+import { localeRegion } from '../util/localeRegion';
+import { toCountryCodes } from './countryCodes';
 
 interface mapType {
 	[key: string]: any;
@@ -81,8 +83,8 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			maxChars,
 			onFocus,
 			onBlur,
-			countries,
-			topCountries,
+			countries: rawCountries,
+			topCountries: rawTopCountries,
 			orderBy,
 			format,
 			storeFormatted,
@@ -108,6 +110,13 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		pageExtractor,
 		urlExtractor,
 	);
+	// Country lists match on the ISO code ("IN"). A name written instead ("India", the App Builder agent wrote
+	// that on 2026-11-21) matched nothing and the field fell back to the list's first country (+93). Accept a
+	// name or a code, any case. Keyed on the joined text so the effects below see a stable array.
+	const countriesKey = Array.isArray(rawCountries) ? rawCountries.join('|') : '';
+	const topCountriesKey = Array.isArray(rawTopCountries) ? rawTopCountries.join('|') : '';
+	const countries = useMemo(() => toCountryCodes(rawCountries), [countriesKey]);
+	const topCountries = useMemo(() => toCountryCodes(rawTopCountries), [topCountriesKey]);
 	const [value, setValue] = React.useState<string>('');
 	const [countryCode, setCountryCode] = React.useState<string>('');
 
@@ -387,7 +396,12 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 					(country: DropdownOption) => country.C === topCountries[0],
 				);
 			} else {
-				defaultCountry = tempList[0];
+				// No top country: the visitor's own region (en-IN gives IN) when it is in
+				// the list. The alphabetical first, Afghanistan, was every form's default
+				// (live 2026-11-21).
+				defaultCountry =
+					tempList.find((country: DropdownOption) => country.C === localeRegion()) ??
+					tempList[0];
 			}
 
 			if (defaultCountry) {
