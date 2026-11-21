@@ -161,29 +161,50 @@ describe('social arrival', () => {
 		expect(calls[1].body.businessClient).toBe(expected);
 	});
 
-	// The duplicate-client loop, from the browser's side: sign-in refused, so the browser
-	// registered, which made another client, which made the next sign-in refuse again. A 409
-	// says the platform recognised this identity and it already owns a client, so registering
-	// is the one thing not to do.
-	it('does not register when the identity already owns a client', async () => {
-		const refusal =
-			'This account already belongs to an organisation. Please request access to this application instead of signing up again.';
+	// A 409 says the identity already owns an organisation under this site that cannot reach
+	// this app yet. socialRegister joins that organisation to the app (it never makes a second
+	// client for an owner), so the browser goes on to it and banks the session it answers with.
+	it('joins an owner who already has an organisation through registration', async () => {
 		const calls = mockFetch({
+			'authenticate/social': { status: 409, body: { message: 'owns one' } },
+			'clients/socialRegister': {
+				status: 200,
+				body: { created: true, userId: 9, authentication: SESSION },
+			},
+		});
+		const mod = loadModule();
+		setLocation(ARRIVAL);
+
+		await expect(mod.consumeSocialArrival()).resolves.toBe(true);
+
+		expect(calls).toHaveLength(2);
+		expect(calls[1].url).toContain('clients/socialRegister');
+		expect(calls[1].body).toMatchObject({ userName: EMAIL, socialRegisterState: STATE });
+		expect(localStorage.getItem('AuthToken')).toBe(JSON.stringify(SESSION.accessToken));
+		expect(mod.takeSocialArrivalMessage()).toBeNull();
+	});
+
+	// The app takes no registrations (or not from this organisation): the sign-in's 409 text says
+	// what to do, which is more use than registration's own refusal.
+	it("shows the sign-in's organisation message when registration refuses after a 409", async () => {
+		const refusal = 'Your account already belongs to an organisation.';
+		mockFetch({
 			'authenticate/social': { status: 409, body: { message: refusal } },
+			'clients/socialRegister': { status: 400, body: { message: 'Signing up is not open.' } },
 		});
 		const mod = loadModule();
 		setLocation(ARRIVAL);
 
 		await expect(mod.consumeSocialArrival()).resolves.toBe(false);
-
-		expect(calls).toHaveLength(1);
-		expect(calls[0].url).toContain('authenticate/social');
 		expect(mod.takeSocialArrivalMessage()).toBe(refusal);
 		expect(localStorage.getItem('AuthToken')).toBeNull();
 	});
 
 	it('still says something when a 409 carried no message', async () => {
-		mockFetch({ 'authenticate/social': { status: 409, body: {} } });
+		mockFetch({
+			'authenticate/social': { status: 409, body: {} },
+			'clients/socialRegister': { status: 409, body: {} },
+		});
 		const mod = loadModule();
 		setLocation(ARRIVAL);
 
