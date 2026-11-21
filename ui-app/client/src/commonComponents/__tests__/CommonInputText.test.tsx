@@ -84,3 +84,30 @@ describe('CommonInputText role ARIA (opt-in)', () => {
 		expect(input().getAttribute('aria-expanded')).toBe('false');
 	});
 });
+
+// A floating label rests inside an empty field exactly where the placeholder is drawn, so both
+// printed on top of each other ("Doe" over "Last name", 2026-11-21).
+describe('CommonInputText placeholder under a floating label', () => {
+	const empty = { ...base, value: '', label: 'Last name', placeholder: 'Doe' };
+
+	it('hides the placeholder while a floating label rests inside an empty field', () => {
+		act(() => root.render(<CommonInputText {...empty} />));
+		expect(input().hasAttribute('placeholder')).toBe(false);
+	});
+
+	it('shows the placeholder once the field is focused and the label has risen', () => {
+		act(() => root.render(<CommonInputText {...empty} />));
+		act(() => input().focus());
+		expect(input().getAttribute('placeholder')).toBe('Doe');
+	});
+
+	it('keeps the placeholder with the label above the box (noFloat)', () => {
+		act(() => root.render(<CommonInputText {...empty} noFloat={true} />));
+		expect(input().getAttribute('placeholder')).toBe('Doe');
+	});
+
+	it('keeps the placeholder on a field with no label', () => {
+		act(() => root.render(<CommonInputText {...empty} label={undefined} />));
+		expect(input().getAttribute('placeholder')).toBe('Doe');
+	});
+});
