@@ -487,6 +487,33 @@ export const stylePropertiesForTheme: Array<StylePropertyDefinition> = [
 		sel: '.comp.compText._textMarkdown<textColor> ._markdown ._links:visited',
 		np: true,
 	},
+	// Lists, quotes and tables do not render through `._p`, so the paragraph color never
+	// reaches them and they fall back to the browser's black (dark text on a dark theme).
+	// No default value on purpose: nothing changes until a theme sets one.
+	{
+		gn: 'MD Font',
+		dn: 'MD List Color',
+		n: 'mDListColor<textColor>',
+		cp: 'color',
+		sel: '.comp.compText._textMarkdown<textColor> ._markdown ._ul, .comp.compText._textMarkdown<textColor> ._markdown ._ol',
+		np: true,
+	},
+	{
+		gn: 'MD Font',
+		dn: 'MD Block Quote Color',
+		n: 'mDBlockQuoteColor<textColor>',
+		cp: 'color',
+		sel: '.comp.compText._textMarkdown<textColor> ._markdown ._blockQuotes',
+		np: true,
+	},
+	{
+		gn: 'MD Font',
+		dn: 'MD Table Color',
+		n: 'mDTableColor<textColor>',
+		cp: 'color',
+		sel: '.comp.compText._textMarkdown<textColor> ._markdown ._th, .comp.compText._textMarkdown<textColor> ._markdown ._td',
+		np: true,
+	},
 	{
 		gn: 'MD Decoration',
 		dn: 'MD Heading1 Text Decoration Color',
