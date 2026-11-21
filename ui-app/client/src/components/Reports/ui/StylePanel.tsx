@@ -29,6 +29,7 @@ const CARTESIAN = new Set<ViewType>([
 	'STACKED_AREA',
 	'COMBO',
 	'SCATTER',
+	'WATERFALL',
 ]);
 const LINES = new Set<ViewType>([
 	'LINE',
@@ -72,7 +73,8 @@ export function StylePanel({
 	const palette = themePalette(style.palette);
 	const cartesian = CARTESIAN.has(type);
 	const radial = type === 'PIE' || type === 'DOUGHNUT';
-	const chart = cartesian || radial || type === 'GAUGE';
+	const chart =
+		cartesian || radial || type === 'GAUGE' || type === 'HEATMAP' || type === 'TREEMAP';
 	const colorTargets = series?.length ? series : measures;
 	const lines = style.referenceLines ?? [];
 	const setLine = (i: number, patch: Partial<ReferenceLine>) =>

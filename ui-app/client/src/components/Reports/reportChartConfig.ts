@@ -1,5 +1,5 @@
 import { formatMeasure, labelOf, toNumber, FormatOptions, currencyOf } from './reportFormat';
-import { Axes, chartAxes, trendLine } from './reportTransform';
+import { Axes, chartAxes, CMP_SUFFIX, OTHER_KEY, trendLine } from './reportTransform';
 import { ReportColumn, ReportStyle, ReportSuccess, ReportView, ViewType } from './reportTypes';
 
 /**
@@ -22,11 +22,19 @@ export interface ChartTheme {
 }
 
 export interface ReportChartConfig {
-	type: 'bar' | 'line' | 'pie' | 'doughnut' | 'scatter';
+	type: 'bar' | 'line' | 'pie' | 'doughnut' | 'scatter' | 'matrix' | 'treemap';
 	data: { labels: string[]; datasets: any[] };
 	options: any;
-	/** Which lazy plugins the config needs (Chart/chartjs/lazyPlugins.ts). */
-	needs: { dataLabels: boolean; annotation: boolean };
+	/** Which lazy plugins and chart types the config needs (Chart/chartjs/lazyPlugins.ts). */
+	needs: ChartNeeds;
+}
+
+export interface ChartNeeds {
+	dataLabels: boolean;
+	annotation: boolean;
+	zoom?: boolean;
+	matrix?: boolean;
+	treemap?: boolean;
 }
 
 export interface ChartBuildOptions {
@@ -35,6 +43,10 @@ export interface ChartBuildOptions {
 	currency?: string;
 	/** Smaller fonts, thinner marks (density compact, or a small tile). */
 	compact?: boolean;
+	/** Zoom and pan on the X axis (time charts, chartjs-plugin-zoom). */
+	zoom?: boolean;
+	/** The run compared periods: draw `<m>_cmp` as a ghost series named with this label. */
+	compareLabel?: string;
 }
 
 export function withAlpha(color: string, alpha: number): string {
@@ -169,6 +181,7 @@ const BAR_FAMILY = new Set<ViewType>([
 	'LOLLIPOP',
 	'FUNNEL',
 	'COMBO',
+	'WATERFALL',
 ]);
 const LINE_FAMILY = new Set<ViewType>(['LINE', 'SMOOTH_LINE', 'STEP_LINE', 'AREA', 'STACKED_AREA']);
 
@@ -210,7 +223,12 @@ export function dataLabelOptions(
 		clamp: true,
 		font: { size: 11, weight: 600 },
 		formatter: (v: any, ctx: any) => {
-			const raw = v && typeof v === 'object' && 'y' in v ? v.y : v;
+			// A floating bar (waterfall) is [start, end]: its label is the change.
+			const raw = Array.isArray(v)
+				? (toNumber(v[1]) ?? 0) - (toNumber(v[0]) ?? 0)
+				: v && typeof v === 'object' && 'y' in v
+					? v.y
+					: v;
 			return raw === null || raw === undefined ? '' : format(raw, ctx);
 		},
 	};
@@ -293,6 +311,10 @@ export function buildChartConfig(
 		);
 
 	const radial = t === 'PIE' || t === 'DOUGHNUT' || t === 'GAUGE';
+	if ((t === 'HEATMAP' || t === 'TREEMAP') && x && ys.length)
+		return t === 'HEATMAP'
+			? heatmapConfig(out, axes, style, theme, compact, fmt)
+			: treemapConfig(out, axes, style, theme, compact, fmt);
 	let type: ReportChartConfig['type'] = 'bar';
 	if (LINE_FAMILY.has(t)) type = 'line';
 	else if (t === 'PIE') type = 'pie';
@@ -301,7 +323,7 @@ export function buildChartConfig(
 
 	let labels: string[] = [];
 	let datasets: any[] = [];
-	const needs = {
+	const needs: ChartNeeds = {
 		dataLabels: !!style.dataLabels && style.dataLabels !== 'off',
 		annotation: false,
 	};
@@ -432,6 +454,37 @@ export function buildChartConfig(
 				_xKeys: p.xKeys,
 			};
 		});
+	} else if (t === 'WATERFALL') {
+		const m = ys[0];
+		let acc = 0;
+		const ranges: Array<[number, number]> = [];
+		const colors: string[] = [];
+		const up = colorFor(theme, style, 'increase', 0, 2);
+		const down = colorFor(theme, style, 'decrease', 1, 2);
+		for (const r of rows) {
+			const v = num(r[m.key]) ?? 0;
+			ranges.push([acc, acc + v]);
+			colors.push(v < 0 ? down : up);
+			acc += v;
+		}
+		const totalRow = { [x!.key]: OTHER_KEY, [`${x!.key}_label`]: 'Total', [m.key]: acc };
+		ranges.push([0, acc]);
+		colors.push(theme.muted || up);
+		labels = [...rows.map(r => labelOf(r, x!.key)), 'Total'];
+		datasets = [
+			{
+				...barDataset(up, compact),
+				label: m.label ?? m.key,
+				data: ranges,
+				backgroundColor: colors,
+				borderColor: colors,
+				borderSkipped: false,
+				_column: m,
+				_rows: [...rows, totalRow],
+				_xKeys: [...rows.map(r => r[x!.key]), OTHER_KEY],
+				_waterfall: true,
+			},
+		];
 	} else {
 		let rs = rows;
 		if (t === 'FUNNEL')
@@ -493,6 +546,9 @@ export function buildChartConfig(
 		}
 	}
 
+	if (opts?.compareLabel && !radial && t !== 'SCATTER' && t !== 'WATERFALL')
+		datasets.push(...ghostDatasets(datasets, series, opts.compareLabel, labels.length));
+
 	if (style.trendLine && !radial && t !== 'SCATTER' && datasets[0]) {
 		const first = datasets[0];
 		datasets.push({
@@ -528,7 +584,8 @@ export function buildChartConfig(
 			label: (ctx: any) => {
 				const ds = ctx.dataset ?? {};
 				const row = ds._rows?.[ctx.dataIndex];
-				const raw = t === 'SCATTER' ? ctx.raw?.y : ctx.raw;
+				let raw = t === 'SCATTER' ? ctx.raw?.y : ctx.raw;
+				if (Array.isArray(raw)) raw = (toNumber(raw[1]) ?? 0) - (toNumber(raw[0]) ?? 0);
 				const v = fmt(ds._column, raw, row);
 				if (t === 'STACKED_BAR_100' && ds._rawColumn && row)
 					return `${ds.label}: ${v} (${fmt(ds._rawColumn, row[ds._rawColumn.key], row)})`;
@@ -681,7 +738,236 @@ export function buildChartConfig(
 		}
 	}
 
+	if (opts?.zoom && !radial && t !== 'SCATTER' && labels.length > 2) {
+		needs.zoom = true;
+		options.plugins.zoom = zoomOptions(horizontal ? 'y' : 'x');
+	}
+
 	return { type, data: { labels, datasets }, options, needs };
+}
+
+/**
+ * Zoom and pan along the category axis (chartjs-plugin-zoom 2.2): Ctrl + wheel or pinch zooms;
+ * pan starts off and is switched on once zoomed (ReportChart), so a finger on a phone still
+ * scrolls the page over an unzoomed chart.
+ */
+export function zoomOptions(mode: 'x' | 'y') {
+	return {
+		limits: { [mode]: { minRange: 2 } },
+		pan: { enabled: false, mode },
+		zoom: {
+			wheel: { enabled: true, modifierKey: 'ctrl' },
+			pinch: { enabled: true },
+			mode,
+		},
+	};
+}
+
+/**
+ * Compare (CONTRACT 8.3): one ghost series per drawn measure that has `<m>_cmp` values, in a
+ * faded version of the measure's colour (dashed for lines), named "<measure> (<period>)".
+ * A pivot (one dataset per series value) gets none: twice the series would not read.
+ */
+export function ghostDatasets(
+	datasets: any[],
+	series: ReportColumn | undefined,
+	compareLabel: string,
+	n: number,
+): any[] {
+	if (series && datasets.some(d => d._seriesKey !== undefined)) return [];
+	const out: any[] = [];
+	for (const d of datasets) {
+		if (d._marker || d._trend || d._ghost || !d._column || !Array.isArray(d._rows)) continue;
+		const ck = d._column.key + CMP_SUFFIX;
+		if (!d._rows.some((r: any) => r?.[ck] !== undefined)) continue;
+		const color = Array.isArray(d.borderColor) ? d.borderColor[0] : d.borderColor;
+		const line = d.type === 'line';
+		out.push({
+			...d,
+			label: `${d.label} (${compareLabel.toLowerCase()})`,
+			data: d._rows.slice(0, n).map((r: any) => num(r?.[ck])),
+			backgroundColor: line ? withAlpha(color, 0.12) : withAlpha(color, 0.3),
+			borderColor: withAlpha(color, line ? 0.55 : 0.5),
+			...(line ? { borderDash: [5, 4], pointRadius: 0, fill: false } : {}),
+			_column: { ...d._column, key: ck },
+			_ghost: true,
+			datalabels: { display: false },
+		});
+	}
+	return out;
+}
+
+type Fmt = (col: ReportColumn | undefined, v: any, row?: Record<string, any>, compactAxis?: boolean) => string;
+
+/** HEATMAP (chartjs-chart-matrix 3.1): X by the first group by, Y by the second, shade by value. */
+function heatmapConfig(
+	out: ReportSuccess,
+	axes: Axes,
+	style: ReportStyle,
+	theme: ChartTheme,
+	compact: boolean,
+	fmt: Fmt,
+): ReportChartConfig {
+	const { x, ys, series } = axes;
+	const m = ys[0];
+	const rows = out.rows ?? [];
+	const ycol = series ?? x!;
+	const p = pivot(rows, x!, ycol);
+	const max = Math.max(0, ...rows.map(r => Math.abs(num(r[m.key]) ?? 0))) || 1;
+	const base = colorFor(theme, style, m.key, 0);
+	const font = { size: compact ? 10 : 12 };
+	const options = baseOptions(theme, false, compact);
+	options.interaction = { mode: 'nearest', intersect: true };
+	options.plugins.legend.display = false;
+	options.plugins.datalabels = { display: false };
+	options.plugins.tooltip = {
+		callbacks: {
+			title: (items: any[]) => {
+				const r = items?.[0]?.dataset?._rows?.[items[0].dataIndex];
+				return r ? `${labelOf(r, x!.key)} / ${labelOf(r, ycol.key)}` : '';
+			},
+			label: (ctx: any) => {
+				const r = ctx.dataset?._rows?.[ctx.dataIndex];
+				return `${m.label ?? m.key}: ${fmt(m, ctx.raw?.v, r)}`;
+			},
+		},
+	};
+	const cat = (labels: string[]) => ({
+		type: 'category',
+		labels,
+		offset: true,
+		grid: { display: false },
+		border: { display: false },
+		ticks: {
+			color: theme.muted,
+			font,
+			callback(this: any, v: any) {
+				return shortLabel(this?.getLabelForValue ? this.getLabelForValue(v) : v);
+			},
+		},
+	});
+	options.scales = { x: cat(p.labels), y: cat(p.sLabels) };
+	return {
+		type: 'matrix',
+		data: {
+			labels: p.labels,
+			datasets: [
+				{
+					label: m.label ?? m.key,
+					data: rows.map(r => ({
+						x: labelOf(r, x!.key),
+						y: labelOf(r, ycol.key),
+						v: num(r[m.key]),
+					})),
+					backgroundColor: (ctx: any) => {
+						const v = Math.abs(toNumber(ctx?.raw?.v) ?? 0);
+						return withAlpha(base, 0.1 + 0.9 * (v / max));
+					},
+					borderColor: theme.surface,
+					borderWidth: 1,
+					width: ({ chart }: any) =>
+						Math.max(1, (chart?.chartArea?.width ?? 0) / Math.max(1, p.xKeys.length) - 2),
+					height: ({ chart }: any) =>
+						Math.max(1, (chart?.chartArea?.height ?? 0) / Math.max(1, p.sKeys.length) - 2),
+					_column: m,
+					_rows: rows,
+					_perRowSeries: !!series,
+				},
+			],
+		},
+		options,
+		needs: { dataLabels: false, annotation: false, matrix: true },
+	};
+}
+
+/** TREEMAP (chartjs-chart-treemap 5.0): areas by the measure, nested by the second group by. */
+function treemapConfig(
+	out: ReportSuccess,
+	axes: Axes,
+	style: ReportStyle,
+	theme: ChartTheme,
+	compact: boolean,
+	fmt: Fmt,
+): ReportChartConfig {
+	const { x, ys, series } = axes;
+	const m = ys[0];
+	const rows = out.rows ?? [];
+	const tree: Array<Record<string, any>> = rows.map(r => ({
+		...r,
+		__g0: labelOf(r, x!.key),
+		...(series ? { __g1: labelOf(r, series.key) } : {}),
+		__v: Math.max(0, num(r[m.key]) ?? 0),
+	}));
+	const tops = [...new Set(tree.map(r => r.__g0))];
+	const topIndex = new Map(tops.map((g, i) => [g, i]));
+	const keyOf = new Map(tree.map(r => [r.__g0, String(r[x!.key])]));
+	const colorOf = (g: string) =>
+		colorFor(theme, style, keyOf.get(g), topIndex.get(g) ?? 0, tops.length);
+	const leafOf = (raw: any): any => {
+		const d = raw?._data ?? {};
+		return Array.isArray(d.children) && d.children.length ? d.children[0] : d;
+	};
+	const groupOf = (raw: any): string => {
+		const leaf = leafOf(raw);
+		return String(leaf?.__g0 ?? raw?.g ?? '');
+	};
+	const options = baseOptions(theme, true, compact);
+	options.plugins.legend.display = false;
+	options.plugins.datalabels = { display: false };
+	options.plugins.tooltip = {
+		callbacks: {
+			title: () => '',
+			label: (ctx: any) => {
+				const raw = ctx.raw ?? {};
+				const leaf = leafOf(raw);
+				const name = raw.g ?? leaf?.__g1 ?? leaf?.__g0 ?? '';
+				return `${name}: ${fmt(m, raw.v, leaf)}`;
+			},
+		},
+	};
+	return {
+		type: 'treemap',
+		data: {
+			labels: [],
+			datasets: [
+				{
+					label: m.label ?? m.key,
+					data: tree,
+					key: '__v',
+					groups: series ? ['__g0', '__g1'] : ['__g0'],
+					spacing: 1,
+					borderWidth: 1,
+					borderColor: theme.surface,
+					backgroundColor: (ctx: any) => {
+						if (ctx?.type !== 'data') return 'transparent';
+						const c = colorOf(groupOf(ctx.raw));
+						return series && ctx.raw?.l === 0 ? withAlpha(c, 0.35) : c;
+					},
+					labels: {
+						display: true,
+						color: theme.surface,
+						font: { size: compact ? 10 : 12 },
+						overflow: 'fit',
+						formatter: (ctx: any) => {
+							const raw = ctx?.raw ?? {};
+							return [String(raw.g ?? ''), fmt(m, raw.v, leafOf(raw), true)];
+						},
+					},
+					captions: {
+						display: !!series,
+						color: theme.text,
+						font: { size: compact ? 10 : 12, weight: 600 },
+					},
+					_column: m,
+					_rows: tree,
+					_treemap: true,
+					_leafOf: leafOf,
+				},
+			],
+		},
+		options,
+		needs: { dataLabels: false, annotation: false, treemap: true },
+	};
 }
 
 function baseOptions(theme: ChartTheme, radial: boolean, compact: boolean): any {

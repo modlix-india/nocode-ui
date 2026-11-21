@@ -25,13 +25,26 @@ export const FIXTURE_CATALOG: ReportCatalog = {
 	fyStartMonth: 4,
 	ai: false,
 	quickFilters: ['productId', 'assignedUserId'],
+	hierarchies: {
+		location: { label: 'Location', levels: ['productId', 'unitId'] },
+		stage: { label: 'Stage', levels: ['stageGroup', 'status'] },
+	},
 	sources: {
 		cases: {
 			kind: 'STORAGE',
 			storage: 'cxCase',
 			label: 'Cases',
 			scope: 'REQUIRED',
+			link: { path: '/caseView/{_id}' },
+			moreLink: { path: '/cases', label: 'View all' },
+			records: {
+				fields: ['caseNumber', 'customerName', 'productId', 'stageGroup', 'openedAt'],
+				sort: [{ by: 'openedAt', dir: 'DESC' }],
+				link: { path: '/caseView/{_id}' },
+			},
 			fields: {
+				unitId: { kind: 'DIMENSION', label: 'Unit' },
+				status: { kind: 'DIMENSION', label: 'Status' },
 				productId: {
 					kind: 'DIMENSION',
 					label: 'Project',
@@ -59,7 +72,13 @@ export const FIXTURE_CATALOG: ReportCatalog = {
 				customerEmail: { kind: 'DIMENSION', label: 'Email', pii: true },
 			},
 			segments: {
-				bookings: { label: 'Bookings', condition: BOOKINGS_CONDITION },
+				bookings: {
+					label: 'Bookings',
+					condition: BOOKINGS_CONDITION,
+					countLink: {
+						path: '/cases?dash=BOOKING&product={filter.productId}&from={period.from}&to={period.to}',
+					},
+				},
 				eois: { label: 'EOIs', condition: { field: 'milestones', value: 'EOI' } },
 			},
 		},
@@ -70,6 +89,14 @@ export const FIXTURE_CATALOG: ReportCatalog = {
 			resultPath: 'result',
 			columns: {},
 			authority: 'Authorities.CXZUMP.Report_READ',
+		},
+		myTasks: {
+			kind: 'FUNCTION',
+			label: 'My tasks',
+			function: 'CxZump.taskList',
+			link: { path: '/caseView/{caseId}' },
+			paging: { param: 'page', size: 20 },
+			allowedParams: ['page'],
 		},
 	},
 	defaults: [
@@ -154,6 +181,15 @@ const LABELS: Record<string, Array<[string, string]>> = {
 		['p3', 'Lake View'],
 		['p4', 'Garden Court'],
 	],
+	unitId: [
+		['u-a1', 'A-101'],
+		['u-a2', 'A-102'],
+		['u-b1', 'B-201'],
+	],
+	status: [
+		['OPEN', 'Open'],
+		['ON_HOLD', 'On hold'],
+	],
 	stageGroup: [
 		['ENQUIRY', 'Enquiry'],
 		['BOOKING', 'Booking'],
@@ -216,7 +252,9 @@ export function fixtureRun(spec: ReportSpec, dryRun = false): ReportOutput {
 	const cat = FIXTURE_CATALOG;
 	const src = cat.sources[spec?.source];
 	if (!src) return fail('UNKNOWN_SOURCE', `Unknown source ${spec?.source}`, 'source');
-	if (src.kind === 'FUNCTION') return moneySummary();
+	if (src.kind === 'FUNCTION')
+		return spec.source === 'myTasks' ? myTasks(Number(spec.params?.page ?? 0)) : moneySummary();
+	if (spec.records) return records(spec, dryRun);
 	if (spec.segment && !src.segments?.[spec.segment])
 		return fail('UNKNOWN_SEGMENT', `Unknown segment ${spec.segment}`, 'segment');
 	const measures = spec.measures ?? [];
@@ -336,14 +374,85 @@ export function fixtureRun(spec: ReportSpec, dryRun = false): ReportOutput {
 		rows = rows.sort((a, b) => (Number(a[s.by]) - Number(b[s.by])) * dir);
 	}
 	if (spec.limit) rows = rows.slice(0, spec.limit);
+	let comparePeriod: { from: string; to: string; label: string } | undefined;
+	if (spec.compare) {
+		const periods = (spec.filters ?? []).filter(f => f.period);
+		if (!periods.length || periods.some(f => f.period === 'ALL_TIME'))
+			return fail('BAD_PERIOD', 'Compare needs a date range that is not All time', 'compare');
+		comparePeriod = { from: '2026-07-01', to: '2026-09-30', label: 'Previous period' };
+		rows = rows.map(r => {
+			const next = { ...r };
+			for (const m of measures) {
+				const v = Number(r[m.as]);
+				const cmp = Math.round(v * (0.7 + noise(String(v)) * 0.6));
+				next[`${m.as}_cmp`] = cmp;
+				next[`${m.as}_delta_pct`] = cmp ? (100 * (v - cmp)) / cmp : null;
+			}
+			return next;
+		});
+	}
 	return {
 		ok: true,
 		columns,
 		rows,
+		...(comparePeriod ? { comparePeriod } : {}),
 		truncated: false,
 		period: { from: '2026-10-01', to: '2026-12-31', label: 'This quarter' },
 		refreshedAt: new Date().toISOString(),
 		cached: false,
+	};
+}
+
+/** A records page (CONTRACT 8.1): 230 made up cases. */
+function records(spec: ReportSpec, dryRun: boolean): ReportOutput {
+	const src = FIXTURE_CATALOG.sources[spec.source];
+	if (!src.records) return fail('RECORDS_NOT_ALLOWED', 'This source has no records', 'records');
+	const total = 230;
+	const size = Math.min(spec.records!.export ? 5000 : 100, spec.records!.size || 100);
+	const page = spec.records!.page || 0;
+	const columns: ReportColumn[] = [
+		{ key: '_id', hidden: true },
+		{ key: 'caseNumber', label: 'Case', kind: 'DIMENSION' },
+		{ key: 'customerName', label: 'Customer', kind: 'DIMENSION' },
+		{ key: 'productId', label: 'Project', kind: 'DIMENSION' },
+		{ key: 'productId_label', hidden: true },
+		{ key: 'openedAt', label: 'Opened on', kind: 'DATE' },
+	];
+	if (dryRun) return { ok: true, columns, rows: [], total, page, size };
+	const rows = [];
+	for (let i = page * size; i < Math.min(total, (page + 1) * size); i++) {
+		const p = LABELS.productId[i % LABELS.productId.length];
+		rows.push({
+			_id: `c${i + 1}`,
+			caseNumber: `CX-${1000 + i}`,
+			customerName: `Customer ${i + 1}`,
+			productId: p[0],
+			productId_label: p[1],
+			openedAt: `2026-10-${String((i % 28) + 1).padStart(2, '0')}`,
+		});
+	}
+	return { ok: true, columns, rows, total, page, size };
+}
+
+/** My tasks, 45 of them, 20 a page (a paging function source). */
+function myTasks(page: number): ReportOutput {
+	const rows = [];
+	for (let i = page * 20; i < Math.min(45, (page + 1) * 20); i++)
+		rows.push({
+			_id: `t${i + 1}`,
+			title: `Task ${i + 1}`,
+			// Every fifth task is on no case: no link.
+			...(i % 5 === 4 ? {} : { caseId: `c${i + 1}` }),
+		});
+	return {
+		ok: true,
+		columns: [
+			{ key: '_id', hidden: true, kind: 'DIMENSION' },
+			{ key: 'title', label: 'Task', kind: 'DIMENSION' },
+			{ key: 'caseId', label: 'Case', kind: 'DIMENSION' },
+		],
+		rows,
+		refreshedAt: new Date().toISOString(),
 	};
 }
 
@@ -373,6 +482,19 @@ export const fixtureTransport: ReportTransport = {
 		await new Promise(r => setTimeout(r, 150));
 		if (/reportCatalog$/.test(fn))
 			return [{ name: 'output', result: { result: FIXTURE_CATALOG } }];
+		// A stand-in for <ns>.reportPdf until the core's Report.Pdf answers (CONTRACT 8.2).
+		if (/reportPdf$/.test(fn))
+			return [
+				{
+					name: 'output',
+					result: {
+						fileData: {
+							fileName: 'report.pdf',
+							url: 'data:application/pdf;base64,JVBERi0xLjQK',
+						},
+					},
+				},
+			];
 		return [{ name: 'output', result: { result: fixtureRun(args?.spec, !!args?.dryRun) } }];
 	},
 	async loadDoc(name) {

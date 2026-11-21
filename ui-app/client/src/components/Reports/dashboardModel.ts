@@ -126,6 +126,9 @@ export function normalizeDoc(raw: any): DashboardDoc | undefined {
 			refreshMin: Number.isFinite(w.refreshMin) ? w.refreshMin : 0,
 			...(w.defaultId ? { defaultId: String(w.defaultId) } : {}),
 			...(w.edited ? { edited: true } : {}),
+			...(typeof w.importError === 'string' && w.importError
+				? { importError: w.importError }
+				: {}),
 		};
 	}
 	const seen = new Set<string>();
@@ -300,6 +303,8 @@ export function editWidget(
 			if (patch.spec !== undefined) next.spec = cloneSpec(patch.spec);
 			if (patch.name !== undefined) next.name = patch.name;
 		}
+		// Edited after an import that was refused: the user's fix gets a fresh run.
+		if (patch.spec !== undefined) delete next.importError;
 	}
 	return { ok: true, doc: { ...doc, widgets: { ...doc.widgets, [id]: next } }, id };
 }

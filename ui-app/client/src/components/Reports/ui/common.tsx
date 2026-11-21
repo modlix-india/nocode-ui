@@ -7,27 +7,47 @@ import {
 	toNumber,
 	formatMeasure,
 } from '../reportFormat';
+import { linkProps, Navigator } from '../reportLinks';
 import { ReportColumn, ReportSuccess } from '../reportTypes';
+import { Pop } from './portal';
 
-/** Closes a popover on a press outside it or Escape. */
-export function useDismiss(open: boolean, close: () => void) {
+/**
+ * Closes a popover on a press outside it or Escape. `inside` are more elements that count as
+ * the popover (its portal: a popover renders under document.body, away from its button).
+ * Escape is taken in the capture phase and marked handled, so a drawer or modal behind the
+ * popover stays open (useEscape skips a handled key).
+ */
+export function useDismiss(
+	open: boolean,
+	close: () => void,
+	...inside: Array<React.RefObject<HTMLElement | null>>
+) {
 	const ref = useRef<HTMLDivElement>(null);
 	const closeRef = useRef(close);
 	closeRef.current = close;
+	const insideRef = useRef(inside);
+	insideRef.current = inside;
 	useEffect(() => {
 		if (!open) return;
+		// A press in another portaled popover counts as inside: it is a menu opened from this
+		// one (a value picker inside a filter menu).
+		const isInside = (n: Node) =>
+			[ref, ...insideRef.current].some(r => !!r.current && r.current.contains(n)) ||
+			!!(n as Element)?.closest?.('._rpPopFixed');
 		const onDown = (e: PointerEvent) => {
-			if (ref.current && !ref.current.contains(e.target as Node)) closeRef.current();
+			if (ref.current && !isInside(e.target as Node)) closeRef.current();
 		};
 		const onKey = (e: KeyboardEvent) => {
-			if (e.key === 'Escape') closeRef.current();
+			if (e.key !== 'Escape' || e.defaultPrevented) return;
+			e.preventDefault();
+			closeRef.current();
 		};
 		const t = setTimeout(() => document.addEventListener('pointerdown', onDown, true), 0);
-		document.addEventListener('keydown', onKey);
+		document.addEventListener('keydown', onKey, true);
 		return () => {
 			clearTimeout(t);
 			document.removeEventListener('pointerdown', onDown, true);
-			document.removeEventListener('keydown', onKey);
+			document.removeEventListener('keydown', onKey, true);
 		};
 	}, [open]);
 	return ref;
@@ -78,13 +98,25 @@ export function blankIfMissing(row: Record<string, any>, c: ReportColumn): boole
 	return (v === undefined || v === null) && (l === undefined || l === null);
 }
 
-/** The result rows as a table: visible columns, sortable, numbers right aligned. */
+/**
+ * The result rows as a table: visible columns, sortable, numbers right aligned. With `rowHref`
+ * a row that has a link opens it on click or Enter (CONTRACT 8.0).
+ */
 export function DataTable({
 	out,
 	fmt,
 	compact,
 	maxRows,
-}: Readonly<{ out: ReportSuccess; fmt: FormatOptions; compact?: boolean; maxRows?: number }>) {
+	rowHref,
+	navigate,
+}: Readonly<{
+	out: ReportSuccess;
+	fmt: FormatOptions;
+	compact?: boolean;
+	maxRows?: number;
+	rowHref?: (row: Record<string, any>) => string | undefined;
+	navigate?: Navigator;
+}>) {
 	const cols = useMemo(() => visibleColumns(out), [out]);
 	const [sort, setSort] = useState<{ key: string; dir: 1 | -1 } | undefined>(undefined);
 	const rows = useMemo(() => {
@@ -133,8 +165,14 @@ export function DataTable({
 					</tr>
 				</thead>
 				<tbody>
-					{rows.map((r, i) => (
-						<tr key={i}>
+					{rows.map((r, i) => {
+						const href = rowHref && navigate ? rowHref(r) : undefined;
+						return (
+						<tr
+							key={i}
+							className={href ? '_rpLinkRow' : undefined}
+							{...(href && navigate ? linkProps(href, navigate) : {})}
+						>
 							{cols.map(c => (
 								<td
 									key={c.key}
@@ -144,7 +182,8 @@ export function DataTable({
 								</td>
 							))}
 						</tr>
-					))}
+						);
+					})}
 				</tbody>
 			</table>
 			{out.truncated ? (
@@ -282,7 +321,8 @@ export function MultiPick({
 	const [open, setOpen] = useState(false);
 	const [options, setOptions] = useState<PickOption[] | undefined>(undefined);
 	const [failed, setFailed] = useState(false);
-	const ref = useDismiss(open, () => setOpen(false));
+	const popRef = useRef<HTMLDivElement>(null);
+	const ref = useDismiss(open, () => setOpen(false), popRef);
 	useEffect(() => {
 		if (!open || options) return;
 		let alive = true;
@@ -316,7 +356,7 @@ export function MultiPick({
 				</button>
 			</label>
 			{open ? (
-				<div className="_rpPop" role="listbox" aria-multiselectable="true">
+				<Pop anchor={ref.current} popRef={popRef} role="listbox">
 					{values.length ? (
 						<button type="button" className="_rpMenuItem" onClick={() => onChange([])}>
 							Clear
@@ -355,7 +395,7 @@ export function MultiPick({
 							</label>
 						))}
 					</div>
-				</div>
+				</Pop>
 			) : null}
 		</div>
 	);

@@ -1,12 +1,38 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { startPointerDrag } from '../../../functions/usePointerDrag';
 import { errorText, ReportTransport, runReport } from '../reportApi';
 import { labelOf } from '../reportFormat';
-import { bySize, cloneSpec, reportSources, valuesSpec } from '../reportSpecUtil';
+import { bySize, cloneSpec, compareBlocker, reportSources, valuesSpec } from '../reportSpecUtil';
 import { checkView, shapeOf, suggestView } from '../shapeRules';
+import {
+	accepts,
+	addToShelf,
+	COUNT_FIELD,
+	filterOfField,
+	historyInit,
+	historyKey,
+	historyPush,
+	historyRedo,
+	historyUndo,
+	isMeasure,
+	itemOfField,
+	moveOnShelves,
+	removeFromShelf,
+	replaceOnShelf,
+	SHELF_LABELS,
+	SHELF_ORDER,
+	ShelfItem,
+	ShelfName,
+	Shelves,
+	shelvesToSpec,
+	specToShelves,
+} from '../shelves';
 import {
 	BUCKET_LABELS,
 	Bucket,
 	CatalogField,
+	COMPARE_LABELS,
+	CompareTo,
 	FILTER_OP_LABELS,
 	FILTER_OPS,
 	FilterOp,
@@ -26,13 +52,18 @@ import {
 	ViewType,
 } from '../reportTypes';
 import { ChartTypePicker } from './ChartTypePicker';
-import { IconButton, MultiPick, PickOption } from './common';
+import { Icon, IconButton, MultiPick, PickOption, useDismiss } from './common';
 import { ReportWidgetView } from './ReportWidgetView';
+import { Pop } from './portal';
+import { StylePanel } from './StylePanel';
 
 /**
- * The P1a report editor: a plain field form over the spec (the shelves editor replaces it in
- * P1b). Every change validates through `reportRun` with `dryRun`; a spec that passes is then
- * previewed with a real run. Save hands back the name, spec and refresh interval.
+ * The report editor (CONTRACT 8.3): a field list (Dimensions / Dates / Measures, search), the
+ * shelves Columns, Rows, Color, Size, Label and Filters (drag a field on with the shared pointer
+ * drag, or tap it and pick a shelf: the way on a phone and by keyboard), and the type picker and
+ * style panel beside a live preview. Every change edits the spec (shelves.ts maps them), is
+ * checked with a `reportRun` dry run and then previewed. Undo / redo (Ctrl or Cmd + Z, with
+ * Shift to redo) cover the editing session. Save, Save as new, Discard.
  */
 
 export interface EditorValue {
@@ -43,6 +74,7 @@ export interface EditorValue {
 
 const BUCKETS: Bucket[] = ['DAY', 'WEEK', 'MONTH', 'QUARTER', 'YEAR'];
 const NO_VALUE_OPS = new Set<FilterOp>(['IS_NULL', 'NOT_NULL']);
+const HUGE = { width: 1e7, height: 1e7 };
 
 /** A source's fields, by label (catalog field order is not kept, so never rely on it). */
 function fieldsOf(catalog: ReportCatalog | undefined, source: string) {
@@ -95,12 +127,36 @@ export function tidySpec(spec: ReportSpec, catalog?: ReportCatalog): ReportSpec 
 	return next;
 }
 
+type Menu =
+	| { kind: 'field'; field: string }
+	| { kind: 'pill'; shelf: Exclude<ShelfName, 'filters'>; index: number }
+	| { kind: 'filter'; index: number };
+
+interface DragState {
+	label: string;
+	x: number;
+	y: number;
+	over?: ShelfName;
+}
+
+type DragPayload =
+	| { kind: 'field'; field: string; label: string }
+	| { kind: 'pill'; shelf: Exclude<ShelfName, 'filters'>; index: number; label: string };
+
+function shelfAt(x: number, y: number): ShelfName | undefined {
+	if (typeof document === 'undefined' || !document.elementFromPoint) return undefined;
+	const el = document.elementFromPoint(x, y) as HTMLElement | null;
+	const name = el?.closest?.('[data-shelf]')?.getAttribute('data-shelf');
+	return (SHELF_ORDER as string[]).includes(name ?? '') ? (name as ShelfName) : undefined;
+}
+
 export function ReportEditorView({
 	transport,
 	catalog,
 	runFunction,
 	initial,
 	onSave,
+	onSaveAsNew,
 	onCancel,
 	saveLabel,
 	extra,
@@ -110,35 +166,73 @@ export function ReportEditorView({
 	runFunction: string;
 	initial?: EditorValue;
 	onSave: (v: EditorValue) => void | Promise<void>;
+	/** Shows "Save as new": the edited widget stays as it was, a copy is saved. */
+	onSaveAsNew?: (v: EditorValue) => void | Promise<void>;
+	/** Discard closes through this; without it Discard puts the editor back to the start. */
 	onCancel?: () => void;
 	saveLabel?: string;
 	/** More controls next to Save (the standalone editor's "Add to my dashboard"). */
 	extra?: React.ReactNode;
 }>) {
-	const [spec, setSpecRaw] = useState<ReportSpec>(
-		() => cloneSpec(initial?.spec) ?? newSpec(catalog),
+	const start = useMemo<EditorValue>(
+		() => ({
+			name: initial?.name ?? '',
+			spec: cloneSpec(initial?.spec) ?? newSpec(catalog),
+			refreshMin: initial?.refreshMin ?? 0,
+		}),
+		// The editing session starts once; later props do not reset it.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[],
 	);
-	const [name, setName] = useState(initial?.name ?? '');
-	const [refreshMin, setRefreshMin] = useState(initial?.refreshMin ?? 0);
+	const [hist, setHist] = useState(() => historyInit(start));
+	const { name, spec, refreshMin } = hist.present;
 	const [check, setCheck] = useState<{
 		status: 'idle' | 'checking' | 'ok' | 'error';
 		error?: ReportErrorBody;
 		spec?: ReportSpec;
 	}>({ status: 'idle' });
 	const [saving, setSaving] = useState(false);
+	const [search, setSearch] = useState('');
+	const [menu, setMenu] = useState<Menu | undefined>(undefined);
+	const [hint, setHint] = useState('');
+	const [drag, setDrag] = useState<DragState | undefined>(undefined);
+	const dragOver = useRef<ShelfName | undefined>(undefined);
+	const justDragged = useRef(false);
+	const menuRef = useDismiss(!!menu, () => setMenu(undefined));
+	/** The field or pill a menu opened from (menus are in a portal, placed by it). */
+	const menuAnchor = useRef<HTMLElement | null>(null);
 
 	useEffect(() => {
-		if (!initial && catalog && !spec.source) setSpecRaw(newSpec(catalog));
+		if (!initial && catalog && !spec.source)
+			setHist(historyInit({ ...hist.present, spec: newSpec(catalog) }));
 	}, [catalog]);
 
-	const setSpec = (fn: (s: ReportSpec) => ReportSpec) =>
-		setSpecRaw(s => tidySpec(fn(cloneSpec(s)), catalog));
+	const commit = useCallback(
+		(patch: Partial<EditorValue>, group?: string) =>
+			setHist(h => historyPush(h, { ...h.present, ...patch }, group)),
+		[],
+	);
+	const setSpec = useCallback(
+		(fn: (s: ReportSpec) => ReportSpec, group?: string) =>
+			setHist(h =>
+				historyPush(
+					h,
+					{ ...h.present, spec: tidySpec(fn(cloneSpec(h.present.spec)), catalog) },
+					group,
+				),
+			),
+		[catalog],
+	);
+	const undo = () => setHist(h => historyUndo(h));
+	const redo = () => setHist(h => historyRedo(h));
+
 	const source = catalog?.sources?.[spec.source];
 	const isFunction = source?.kind === 'FUNCTION';
 	const fields = fieldsOf(catalog, spec.source);
-	const dims = fields.filter(([, f]) => f.kind !== 'MEASURE' && !f.pii);
-	const dates = fields.filter(([, f]) => f.kind === 'DATE');
+	const fieldMap = useMemo(() => new Map(fields), [fields]);
 	const shape = shapeOf(spec, catalog);
+	const shelves = useMemo(() => specToShelves(spec, catalog), [spec, catalog]);
+	const setShelves = (sh: Shelves, group?: string) => setSpec(s => shelvesToSpec(sh, s), group);
 
 	// Validate (dry run) a moment after the last change; preview only a spec that passes.
 	const seq = useRef(0);
@@ -167,12 +261,134 @@ export function ReportEditorView({
 		[catalog, transport, runFunction],
 	);
 
-	const takenAs = () =>
-		new Set([...(spec.measures ?? []).map(m => m.as), ...(spec.derived ?? []).map(d => d.as)]);
-	const fieldOptions = (fn: MeasureFn): Array<[string, CatalogField]> =>
-		fn === 'COUNT_DISTINCT'
-			? dims
-			: fields.filter(([, f]) => f.kind === 'MEASURE' && (!f.fns || f.fns.includes(fn)));
+	const fieldLabelOf = (field: string) =>
+		field === COUNT_FIELD ? 'Number of records' : (fieldMap.get(field)?.label ?? field);
+	const itemLabel = (i: ShelfItem) => {
+		const base = fieldLabelOf(i.field);
+		if (isMeasure(i)) {
+			const seg = i.segment ? ` (${source?.segments?.[i.segment]?.label ?? i.segment})` : '';
+			if (i.field === COUNT_FIELD || i.fn === 'COUNT') return `Count${seg}`;
+			return `${MEASURE_FN_LABELS[i.fn ?? 'SUM']} of ${base}${seg}`;
+		}
+		if (i.kind === 'DATE')
+			return `${base} by ${BUCKET_LABELS[i.bucket ?? 'MONTH'].toLowerCase()}`;
+		return base;
+	};
+	const filterLabel = (f: ReportFilter) => {
+		const base = fieldLabelOf(f.field);
+		if (f.period)
+			return f.period === 'CUSTOM'
+				? `${base}: ${f.from ?? '?'} to ${f.to ?? '?'}`
+				: `${base}: ${PERIOD_LABELS[f.period]}`;
+		const op = FILTER_OP_LABELS[f.op ?? 'IN'];
+		if (NO_VALUE_OPS.has(f.op ?? 'IN')) return `${base} ${op}`;
+		const n = f.values?.length ?? 0;
+		return `${base} ${op} ${n === 1 ? String(f.values![0]) : n ? `${n} values` : '...'}`;
+	};
+
+	/** Puts a field (or a moved pill) on a shelf; a refusal shows its reason. */
+	const drop = (
+		payload:
+			| { kind: 'field'; field: string }
+			| { kind: 'pill'; shelf: Exclude<ShelfName, 'filters'>; index: number },
+		to: ShelfName,
+	) => {
+		setMenu(undefined);
+		if (to === 'filters') {
+			const field =
+				payload.kind === 'field'
+					? payload.field
+					: shelves[payload.shelf][payload.index]?.field;
+			if (!field || field === COUNT_FIELD) return setHint('Filters take a field');
+			if (shelves.filters.length >= SPEC_CAPS.filters)
+				return setHint(`At most ${SPEC_CAPS.filters} filters`);
+			setHint('');
+			return setShelves({
+				...shelves,
+				filters: [...shelves.filters, filterOfField(field, fieldMap.get(field))],
+			});
+		}
+		const r =
+			payload.kind === 'field'
+				? addToShelf(shelves, to, itemOfField(payload.field, fieldMap.get(payload.field)))
+				: moveOnShelves(shelves, payload, to);
+		if (!r.ok) return setHint(r.reason);
+		setHint('');
+		setShelves(r.shelves);
+	};
+
+	const beginDrag = (e: React.PointerEvent<HTMLElement>, payload: DragPayload) => {
+		// A finger taps (a touch drag would fight the page scroll); mouse and pen drag.
+		if (e.pointerType === 'touch' || e.button !== 0) return;
+		const el = e.currentTarget;
+		const rect = el.getBoundingClientRect();
+		const sx = e.clientX;
+		const sy = e.clientY;
+		startPointerDrag(el, e.nativeEvent, {
+			inset: -1e6,
+			viewport: () => HUGE,
+			onStart: () => setMenu(undefined),
+			onMove: o => {
+				const x = sx + (HUGE.width - o.right - rect.width - rect.left);
+				const y = sy + (HUGE.height - o.bottom - rect.height - rect.top);
+				const over = shelfAt(x, y);
+				dragOver.current = over;
+				setDrag({ label: payload.label, x, y, over });
+			},
+			onEnd: () => {
+				const to = dragOver.current;
+				dragOver.current = undefined;
+				setDrag(undefined);
+				justDragged.current = true;
+				setTimeout(() => (justDragged.current = false), 0);
+				if (to) drop(payload, to);
+				else if (payload.kind === 'pill')
+					// Dragged off the shelves: gone, as in Tableau.
+					setShelves(removeFromShelf(shelves, payload.shelf, payload.index));
+			},
+		});
+	};
+
+	const onKeyDown = (e: React.KeyboardEvent) => {
+		const t = e.target as HTMLElement;
+		if (
+			t?.tagName === 'TEXTAREA' ||
+			(t?.tagName === 'INPUT' && (t as HTMLInputElement).type !== 'checkbox')
+		)
+			return;
+		const k = historyKey(e);
+		if (!k) return;
+		e.preventDefault();
+		if (k === 'undo') undo();
+		else redo();
+	};
+
+	const q = search.trim().toLowerCase();
+	const visible = fields.filter(
+		([n, f]) => !f.pii && (!q || (f.label ?? n).toLowerCase().includes(q)),
+	);
+	const groups: Array<[string, Array<[string, CatalogField | undefined]>]> = [
+		['Dimensions', visible.filter(([, f]) => f.kind === 'DIMENSION')],
+		['Dates', visible.filter(([, f]) => f.kind === 'DATE')],
+		[
+			'Measures',
+			[
+				...(!q || 'number of records'.includes(q)
+					? [[COUNT_FIELD, undefined] as [string, CatalogField | undefined]]
+					: []),
+				...visible.filter(([, f]) => f.kind === 'MEASURE'),
+			],
+		],
+	];
+	const fieldIcon = (f: CatalogField | undefined) =>
+		!f
+			? 'fa-hashtag'
+			: f.kind === 'DATE'
+				? 'fa-calendar'
+				: f.kind === 'MEASURE'
+					? 'fa-hashtag'
+					: 'fa-font';
+
 	const valueKeys = [
 		...(spec.measures ?? []).map(m => m.as),
 		...(spec.derived ?? []).map(d => d.as),
@@ -181,24 +397,186 @@ export function ReportEditorView({
 		const m = spec.measures?.find(e => e.as === k);
 		if (!m) return k;
 		if (m.fn === 'COUNT') return 'Count';
-		return `${MEASURE_FN_LABELS[m.fn]} of ${fields.find(([n]) => n === m.field)?.[1].label ?? m.field}`;
+		return `${MEASURE_FN_LABELS[m.fn]} of ${fieldLabelOf(m.field ?? '')}`;
+	};
+	const takenAs = () => new Set(valueKeys);
+	const blocker = compareBlocker(spec, catalog);
+	const canSave = !!name.trim() && check.status === 'ok' && !saving;
+	const value = (): EditorValue => ({
+		name: name.trim(),
+		spec: { ...spec, view: { ...spec.view, title: spec.view.title ?? undefined } },
+		refreshMin,
+	});
+	const doSave = async (fn: (v: EditorValue) => void | Promise<void>) => {
+		setSaving(true);
+		try {
+			await fn(value());
+		} finally {
+			setSaving(false);
+		}
+	};
+	const measuresInResult = [
+		...(spec.measures ?? []).map(m => ({ key: m.as, label: keyLabel(m.as) })),
+		...(spec.derived ?? []).map(d => ({ key: d.as, label: d.as })),
+	];
+
+	const shelfRow = (sh: ShelfName) => {
+		const items = sh === 'filters' ? shelves.filters : shelves[sh];
+		return (
+			<div
+				key={sh}
+				className={`_rpShelf${drag?.over === sh ? ' _over' : ''}`}
+				data-shelf={sh}
+				role="group"
+				aria-label={SHELF_LABELS[sh]}
+			>
+				<span className="_rpShelfName">{SHELF_LABELS[sh]}</span>
+				<div className="_rpShelfItems">
+					{!items.length ? (
+						<span className="_rpShelfHint">
+							{sh === 'color'
+								? 'Drop a dimension'
+								: sh === 'size' || sh === 'label'
+									? 'Drop a measure'
+									: 'Drop a field'}
+						</span>
+					) : null}
+					{sh === 'filters'
+						? shelves.filters.map((f, i) => (
+								<span key={i} className="_rpPill">
+									<button
+										type="button"
+										aria-haspopup="dialog"
+										onClick={e => {
+											menuAnchor.current = e.currentTarget;
+											setMenu({ kind: 'filter', index: i });
+										}}
+									>
+										{filterLabel(f)}
+									</button>
+									<IconButton
+										icon="fa-xmark"
+										label={`Remove ${filterLabel(f)}`}
+										onClick={() =>
+											setShelves(removeFromShelf(shelves, 'filters', i))
+										}
+									/>
+									{menu?.kind === 'filter' && menu.index === i ? (
+										<Pop
+										anchor={menuAnchor.current}
+										popRef={menuRef}
+										role="dialog"
+										label="Filter"
+										style={{ minWidth: 280 }}
+										>
+											<FilterRow
+												value={f}
+												fields={fields}
+												loadValues={loadValues}
+												onChange={v => {
+													if (!v) setMenu(undefined);
+													setShelves(
+														{
+															...shelves,
+															filters: v
+																? shelves.filters.map((e, j) =>
+																		j === i ? v : e,
+																	)
+																: shelves.filters.filter(
+																		(_, j) => j !== i,
+																	),
+														},
+														`filter${i}`,
+														);
+														}}
+														/>
+														</Pop>
+									) : null}
+								</span>
+							))
+						: shelves[sh].map((it, i) => (
+								<span
+									key={`${it.field}${i}`}
+									className={`_rpPill${isMeasure(it) ? ' _measure' : ''}`}
+								>
+									<button
+										type="button"
+										aria-haspopup="menu"
+										onPointerDown={e =>
+											beginDrag(e, {
+												kind: 'pill',
+												shelf: sh,
+												index: i,
+												label: itemLabel(it),
+											})
+										}
+										onClick={e => {
+											if (justDragged.current) return;
+											menuAnchor.current = e.currentTarget;
+											setMenu({ kind: 'pill', shelf: sh, index: i });
+										}}
+									>
+										{itemLabel(it)}
+									</button>
+									<IconButton
+										icon="fa-xmark"
+										label={`Remove ${itemLabel(it)}`}
+										onClick={() => setShelves(removeFromShelf(shelves, sh, i))}
+									/>
+									{menu?.kind === 'pill' &&
+									menu.shelf === sh &&
+									menu.index === i ? (
+										<Pop anchor={menuAnchor.current} popRef={menuRef} role="menu">
+											<PillEditor
+												item={it}
+												field={fieldMap.get(it.field)}
+												segments={source?.segments}
+												onChange={n =>
+													setShelves(replaceOnShelf(shelves, sh, i, n))
+												}
+											/>
+											<div className="_rpMenuSep" />
+											{SHELF_ORDER.filter(
+												t => t !== sh && t !== 'filters' && accepts(t, it),
+											).map(t => (
+												<button
+													key={t}
+													type="button"
+													role="menuitem"
+													className="_rpMenuItem"
+													onClick={() =>
+														drop(
+															{ kind: 'pill', shelf: sh, index: i },
+															t,
+														)
+													}
+												>
+													<Icon name="fa-arrow-right" /> Move to{' '}
+													{SHELF_LABELS[t]}
+													</button>
+													))}
+													</Pop>
+									) : null}
+								</span>
+							))}
+				</div>
+			</div>
+		);
 	};
 
-	const canSave = !!name.trim() && check.status === 'ok' && !saving;
-
 	return (
-		<div className="_rpEditor">
-			<div className="_rpEditorForm">
-				<label className="_rpLabel">
+		<div className="_rpEditor _shelves" onKeyDown={onKeyDown}>
+			<div className="_rpLine" style={{ gridColumn: '1 / -1' }}>
+				<label className="_rpLabel" style={{ flex: '2 1 220px' }}>
 					Name
 					<input
 						className="_rpInput"
 						value={name}
 						placeholder="Bookings by RM"
-						onChange={e => setName(e.target.value)}
+						onChange={e => commit({ name: e.target.value }, 'name')}
 					/>
 				</label>
-				<label className="_rpLabel">
+				<label className="_rpLabel" style={{ flex: '1 1 160px' }}>
 					Data
 					<select
 						className="_rpSelect"
@@ -210,7 +588,7 @@ export function ReportEditorView({
 								delete next.measures;
 								next.view = { type: 'TABLE' };
 							}
-							setSpecRaw(next);
+							commit({ spec: next });
 						}}
 					>
 						{reportSources(catalog).map(([k, s]) => (
@@ -220,8 +598,43 @@ export function ReportEditorView({
 						))}
 					</select>
 				</label>
+				{!isFunction && source?.segments && Object.keys(source.segments).length ? (
+					<label className="_rpLabel" style={{ flex: '1 1 160px' }}>
+						Which records
+						<select
+							className="_rpSelect"
+							value={spec.segment ?? ''}
+							onChange={e =>
+								setSpec(s => ({ ...s, segment: e.target.value || undefined }))
+							}
+						>
+							<option value="">All {source.label?.toLowerCase() ?? 'records'}</option>
+							{Object.entries(source.segments).map(([k, sg]) => (
+								<option key={k} value={k}>
+									{sg.label ?? k}
+								</option>
+							))}
+						</select>
+					</label>
+				) : null}
+				<div className="_rpHistory" role="toolbar" aria-label="History">
+					<IconButton
+						icon="fa-rotate-left"
+						label="Undo (Ctrl+Z)"
+						disabled={!hist.past.length}
+						onClick={undo}
+					/>
+					<IconButton
+						icon="fa-rotate-right"
+						label="Redo (Ctrl+Shift+Z)"
+						disabled={!hist.future.length}
+						onClick={redo}
+					/>
+				</div>
+			</div>
 
-				{isFunction ? (
+			{isFunction ? (
+				<div className="_rpEditorForm" style={{ gridColumn: 'span 2' }}>
 					<label className="_rpLabel">
 						Parameters (JSON)
 						<textarea
@@ -235,377 +648,136 @@ export function ReportEditorView({
 										: undefined;
 									setSpec(s => ({ ...s, params: v }));
 								} catch {
-									// Left as typed; the dry run below keeps the last valid parameters.
+									setHint('Parameters must be JSON');
 								}
 							}}
 						/>
 					</label>
-				) : (
-					<>
-						{source?.segments && Object.keys(source.segments).length ? (
-							<label className="_rpLabel">
-								Which records
-								<select
-									className="_rpSelect"
-									value={spec.segment ?? ''}
-									onChange={e =>
-										setSpec(s => ({
-											...s,
-											segment: e.target.value || undefined,
-										}))
-									}
-								>
-									<option value="">
-										All {source.label?.toLowerCase() ?? 'records'}
-									</option>
-									{Object.entries(source.segments).map(([k, sg]) => (
-										<option key={k} value={k}>
-											{sg.label ?? k}
-										</option>
-									))}
-								</select>
-							</label>
-						) : null}
-
-						<div className="_rpGroup">
-							<div className="_rpGroupTitle">Measures</div>
-							{(spec.measures ?? []).map((m, i) => (
-								<div key={i} className="_rpLine">
-									<select
-										className="_rpSelect"
-										aria-label="Function"
-										value={m.fn}
-										onChange={e =>
-											setSpec(s => {
-												const fn = e.target.value as MeasureFn;
-												const opts = fieldOptions(fn);
-												const field =
-													fn === 'COUNT'
-														? undefined
-														: opts.some(([n]) => n === m.field)
-															? m.field
-															: opts[0]?.[0];
-												const taken = takenAs();
-												taken.delete(m.as);
-												s.measures![i] = {
-													fn,
-													field,
-													as: measureAs(fn, field, taken),
-													...(m.segment ? { segment: m.segment } : {}),
-												};
-												return s;
-											})
-										}
-									>
-										{MEASURE_FNS.filter(
-											fn => fn === 'COUNT' || fieldOptions(fn).length,
-										).map(fn => (
-											<option key={fn} value={fn}>
-												{MEASURE_FN_LABELS[fn]}
-											</option>
-										))}
-									</select>
-									{m.fn !== 'COUNT' ? (
-										<select
-											className="_rpSelect"
-											aria-label="Field"
-											value={m.field ?? ''}
-											onChange={e =>
-												setSpec(s => {
-													const taken = takenAs();
-													taken.delete(m.as);
-													s.measures![i] = {
-														...m,
-														field: e.target.value,
-														as: measureAs(m.fn, e.target.value, taken),
-													};
-													return s;
-												})
-											}
-										>
-											{fieldOptions(m.fn).map(([n, f]) => (
-												<option key={n} value={n}>
-													{f.label ?? n}
-												</option>
-											))}
-										</select>
-									) : null}
-									{source?.segments && Object.keys(source.segments).length ? (
-										<select
-											className="_rpSelect"
-											aria-label="Only these records"
-											value={m.segment ?? ''}
-											onChange={e =>
-												setSpec(s => {
-													const { segment: _old, ...rest } =
-														s.measures![i];
-													s.measures![i] = e.target.value
-														? { ...rest, segment: e.target.value }
-														: rest;
-													return s;
-												})
-											}
-										>
-											<option value="">Of every record</option>
-											{Object.entries(source.segments).map(([k, sg]) => (
-												<option key={k} value={k}>
-													Only {sg.label ?? k}
-												</option>
-											))}
-										</select>
-									) : null}
-									<IconButton
-										icon="fa-xmark"
-										label="Remove measure"
-										disabled={(spec.measures?.length ?? 0) <= 1}
-										onClick={() =>
-											setSpec(s => ({
-												...s,
-												measures: s.measures!.filter((_, j) => j !== i),
-											}))
-										}
-									/>
-								</div>
-							))}
-							{(spec.measures?.length ?? 0) < SPEC_CAPS.measures ? (
-								<button
-									type="button"
-									className="_rpBtn"
-									onClick={() =>
-										setSpec(s => ({
-											...s,
-											measures: [
-												...(s.measures ?? []),
-												{
-													fn: 'COUNT',
-													as: measureAs('COUNT', undefined, takenAs()),
-												},
-											],
-										}))
-									}
-								>
-									Add a measure
-								</button>
-							) : null}
-							{(spec.derived ?? []).map((d, i) => (
-								<DerivedRow
-									key={i}
-									value={d}
-									keys={(spec.measures ?? []).map(m => m.as)}
-									keyLabel={keyLabel}
-									onChange={v =>
-										setSpec(s => ({
-											...s,
-											derived: v
-												? s.derived!.map((e, j) => (j === i ? v : e))
-												: s.derived!.filter((_, j) => j !== i),
-										}))
-									}
-								/>
-							))}
-							{(spec.measures?.length ?? 0) >= 2 &&
-							(spec.derived?.length ?? 0) < 2 ? (
-								<button
-									type="button"
-									className="_rpBtn"
-									onClick={() =>
-										setSpec(s => ({
-											...s,
-											derived: [
-												...(s.derived ?? []),
-												{
-													as: uniqueAs('ratio', takenAs()),
-													ratio: [s.measures![0].as, s.measures![1].as],
-												},
-											],
-										}))
-									}
-								>
-									Add a calculation
-								</button>
-							) : null}
-						</div>
-
-						<div className="_rpGroup">
-							<div className="_rpGroupTitle">Group by</div>
-							{(spec.groupBy ?? []).map((g, i) => {
-								const f = fields.find(([n]) => n === g.field)?.[1];
-								return (
-									<div key={i} className="_rpLine">
-										<select
-											className="_rpSelect"
-											aria-label="Group by field"
-											value={g.field}
-											onChange={e =>
-												setSpec(s => {
-													const nf = fields.find(
-														([n]) => n === e.target.value,
-													)?.[1];
-													const taken = new Set(
-														(s.groupBy ?? []).map(x => x.as),
-													);
-													taken.delete(g.as);
-													s.groupBy![i] = {
-														field: e.target.value,
-														as: uniqueAs(e.target.value, taken),
-														...(nf?.kind === 'DATE'
-															? { bucket: g.bucket ?? 'MONTH' }
-															: {}),
-													};
-													return s;
-												})
-											}
-										>
-											{dims.map(([n, df]) => (
-												<option key={n} value={n}>
-													{df.label ?? n}
-												</option>
-											))}
-										</select>
-										{f?.kind === 'DATE' ? (
-											<select
-												className="_rpSelect"
-												aria-label="By"
-												value={g.bucket ?? 'MONTH'}
-												onChange={e =>
-													setSpec(
-														s => (
-															(s.groupBy![i] = {
-																...g,
-																bucket: e.target.value as Bucket,
-															}),
-															s
-														),
-													)
+				</div>
+			) : (
+				<>
+					<div className="_rpFields" aria-label="Fields">
+						<input
+							className="_rpInput"
+							type="search"
+							aria-label="Search fields"
+							placeholder="Search fields"
+							value={search}
+							onChange={e => setSearch(e.target.value)}
+						/>
+						{groups.map(([title, list]) =>
+							list.length ? (
+								<div key={title} className="_rpFieldGroup">
+									<div className="_rpMuted">{title}</div>
+									{list.map(([n, f]) => (
+										<div key={n} style={{ position: 'relative' }}>
+											<button
+												type="button"
+												className="_rpField"
+												aria-haspopup="menu"
+												aria-expanded={
+													menu?.kind === 'field' && menu.field === n
 												}
-											>
-												{BUCKETS.map(b => (
-													<option key={b} value={b}>
-														By {BUCKET_LABELS[b].toLowerCase()}
-													</option>
-												))}
-											</select>
-										) : null}
-										<IconButton
-											icon="fa-xmark"
-											label="Remove group by"
-											onClick={() =>
-												setSpec(s => ({
-													...s,
-													groupBy: s.groupBy!.filter((_, j) => j !== i),
-												}))
-											}
-										/>
-									</div>
-								);
-							})}
-							{(spec.groupBy?.length ?? 0) < SPEC_CAPS.groupBy && dims.length ? (
-								<button
-									type="button"
-									className="_rpBtn"
-									onClick={() =>
-										setSpec(s => {
-											const [n, f] =
-												dims.find(
-													([k]) =>
-														!(s.groupBy ?? []).some(g => g.field === k),
-												) ?? dims[0];
-											const taken = new Set((s.groupBy ?? []).map(x => x.as));
-											return {
-												...s,
-												groupBy: [
-													...(s.groupBy ?? []),
-													{
+												title="Drag to a shelf, or pick one"
+												onPointerDown={e =>
+													beginDrag(e, {
+														kind: 'field',
 														field: n,
-														as: uniqueAs(n, taken),
-														...(f.kind === 'DATE'
-															? { bucket: 'MONTH' as Bucket }
-															: {}),
-													},
-												],
-											};
-										})
-									}
-								>
-									Add a group by
-								</button>
-							) : null}
-						</div>
-
-						<div className="_rpGroup">
-							<div className="_rpGroupTitle">Filters</div>
-							{(spec.filters ?? []).map((f, i) => (
-								<FilterRow
-									key={i}
-									value={f}
-									fields={fields}
-									loadValues={loadValues}
-									onChange={v =>
-										setSpec(s => ({
-											...s,
-											filters: v
-												? s.filters!.map((e, j) => (j === i ? v : e))
-												: s.filters!.filter((_, j) => j !== i),
-										}))
-									}
-								/>
-							))}
-							{(spec.filters?.length ?? 0) < SPEC_CAPS.filters ? (
-								<div className="_rpLine">
-									{dates.length ? (
-										<button
-											type="button"
-											className="_rpBtn"
-											onClick={() =>
-												setSpec(s => {
-													// The date the report already uses, else the first by name.
-													const used =
-														s.groupBy?.find(g => g.bucket)?.field ??
-														s.filters?.find(f => f.period)?.field;
-													const field =
-														used && dates.some(([n]) => n === used)
-															? used
-															: dates[0][0];
-													return {
-														...s,
-														filters: [
-															...(s.filters ?? []),
-															{ field, period: 'THIS_MONTH' },
-														],
-													};
-												})
-											}
-										>
-											Add a date range
-										</button>
-									) : null}
-									{dims.filter(([, f]) => f.kind !== 'DATE').length ? (
-										<button
-											type="button"
-											className="_rpBtn"
-											onClick={() =>
-												setSpec(s => ({
-													...s,
-													filters: [
-														...(s.filters ?? []),
-														{
-															field: dims.find(
-																([, f]) => f.kind !== 'DATE',
-															)![0],
-															op: 'IN',
-															values: [],
-														},
-													],
-												}))
-											}
-										>
-											Add a condition
-										</button>
-									) : null}
+														label: fieldLabelOf(n),
+													})
+												}
+												onClick={e => {
+													if (justDragged.current) return;
+													menuAnchor.current = e.currentTarget;
+													setMenu(m =>
+														m?.kind === 'field' && m.field === n
+															? undefined
+															: { kind: 'field', field: n },
+													);
+												}}
+											>
+												<Icon name={fieldIcon(f)} />
+												{fieldLabelOf(n)}
+											</button>
+											{menu?.kind === 'field' && menu.field === n ? (
+												<Pop anchor={menuAnchor.current} popRef={menuRef} role="menu">
+													<div
+														className="_rpMuted"
+														style={{ padding: '4px 10px' }}
+													>
+														Add to
+													</div>
+													{SHELF_ORDER.filter(sh =>
+														sh === 'filters'
+															? n !== COUNT_FIELD
+															: accepts(sh, itemOfField(n, f)),
+													).map(sh => (
+														<button
+															key={sh}
+															type="button"
+															role="menuitem"
+															className="_rpMenuItem"
+															onClick={() =>
+																drop(
+																	{ kind: 'field', field: n },
+																	sh,
+																)
+															}
+														>
+															{SHELF_LABELS[sh]}
+															</button>
+															))}
+															</Pop>
+											) : null}
+										</div>
+									))}
 								</div>
-							) : null}
-						</div>
-
+							) : null,
+						)}
+					</div>
+					<div className="_rpEditorForm">
+						{SHELF_ORDER.map(shelfRow)}
+						{hint ? (
+							<div className="_rpMuted _rpError" role="status">
+								{hint}
+							</div>
+						) : null}
+						{(spec.derived ?? []).map((d, i) => (
+							<DerivedRow
+								key={i}
+								value={d}
+								keys={(spec.measures ?? []).map(m => m.as)}
+								keyLabel={keyLabel}
+								onChange={v =>
+									setSpec(s => ({
+										...s,
+										derived: v
+											? s.derived!.map((e, j) => (j === i ? v : e))
+											: s.derived!.filter((_, j) => j !== i),
+									}))
+								}
+							/>
+						))}
+						{(spec.measures?.length ?? 0) >= 2 && (spec.derived?.length ?? 0) < 2 ? (
+							<button
+								type="button"
+								className="_rpBtn"
+								onClick={() =>
+									setSpec(s => ({
+										...s,
+										derived: [
+											...(s.derived ?? []),
+											{
+												as: uniqueAs('ratio', takenAs()),
+												ratio: [s.measures![0].as, s.measures![1].as],
+											},
+										],
+									}))
+								}
+							>
+								Add a calculation
+							</button>
+						) : null}
 						<div className="_rpLine">
 							<label className="_rpLabel" style={{ flex: 1 }}>
 								Sort by
@@ -634,8 +806,7 @@ export function ReportEditorView({
 									))}
 									{(spec.groupBy ?? []).map(g => (
 										<option key={g.as} value={g.as}>
-											{fields.find(([n]) => n === g.field)?.[1].label ??
-												g.field}
+											{fieldLabelOf(g.field)}
 										</option>
 									))}
 								</select>
@@ -673,19 +844,86 @@ export function ReportEditorView({
 									placeholder="All"
 									value={spec.limit ?? ''}
 									onChange={e =>
-										setSpec(s => ({
-											...s,
-											limit: e.target.value
-												? Math.max(1, Number(e.target.value))
-												: undefined,
-										}))
+										setSpec(
+											s => ({
+												...s,
+												limit: e.target.value
+													? Math.max(1, Number(e.target.value))
+													: undefined,
+											}),
+											'limit',
+										)
 									}
 								/>
 							</label>
 						</div>
-					</>
-				)}
+						<div className="_rpLine">
+							<label className="_rpLabel" style={{ flex: 1 }}>
+								Compare with
+								<select
+									className="_rpSelect"
+									value={spec.compare?.to ?? ''}
+									title={blocker}
+									onChange={e =>
+										setSpec(s => {
+											const to = e.target.value as CompareTo | '';
+											const { compare: _c, ...rest } = s;
+											return to ? { ...rest, compare: { to } } : rest;
+										})
+									}
+								>
+									<option value="">Nothing</option>
+									{(Object.keys(COMPARE_LABELS) as CompareTo[]).map(c => (
+										<option key={c} value={c} disabled={!!blocker}>
+											{COMPARE_LABELS[c]}
+										</option>
+									))}
+								</select>
+							</label>
+							<label className="_rpLabel" style={{ flex: 1 }}>
+								Auto refresh
+								<select
+									className="_rpSelect"
+									value={refreshMin}
+									onChange={e => commit({ refreshMin: Number(e.target.value) })}
+								>
+									{REFRESH_CHOICES.map(m => (
+										<option key={m} value={m}>
+											{m ? `Every ${m} min` : 'Off'}
+										</option>
+									))}
+								</select>
+							</label>
+						</div>
+						{blocker && spec.compare ? <div className="_rpMuted">{blocker}</div> : null}
+					</div>
+				</>
+			)}
 
+			<div className="_rpEditorSide">
+				<div className="_rpEditorPreview">
+					{check.status !== 'error' && check.spec ? (
+						<ReportWidgetView
+							transport={transport}
+							runFunction={runFunction}
+							catalog={catalog}
+							spec={check.spec}
+							name={name || 'Preview'}
+							editable
+							onSpecChange={s => setSpec(() => s)}
+						/>
+					) : (
+						<div className="_rpWidget">
+							<div className="_rpState _rpMuted">
+								{check.status === 'checking'
+									? 'Checking'
+									: check.status === 'error'
+										? 'Fix the report to see a preview'
+										: ''}
+							</div>
+						</div>
+					)}
+				</div>
 				<div className="_rpGroup">
 					<div className="_rpGroupTitle">Show as</div>
 					<ChartTypePicker
@@ -696,92 +934,168 @@ export function ReportEditorView({
 						}
 					/>
 				</div>
+				<details className="_rpGroup">
+					<summary className="_rpGroupTitle">Style</summary>
+					<StylePanel
+						type={spec.view.type}
+						style={spec.view.style ?? {}}
+						onChange={st =>
+							setSpec(
+								s => ({
+									...s,
+									view: {
+										...s.view,
+										style: Object.keys(st).length ? st : undefined,
+									},
+								}),
+								'style',
+							)
+						}
+						measures={measuresInResult}
+					/>
+				</details>
+			</div>
 
-				<label className="_rpLabel">
-					Auto refresh
-					<select
-						className="_rpSelect"
-						value={refreshMin}
-						onChange={e => setRefreshMin(Number(e.target.value))}
-					>
-						{REFRESH_CHOICES.map(m => (
-							<option key={m} value={m}>
-								{m ? `Every ${m} min` : 'Off'}
-							</option>
-						))}
-					</select>
-				</label>
-
+			<div className="_rpLine" style={{ gridColumn: '1 / -1' }}>
 				{check.status === 'error' ? (
-					<div className="_rpError" role="alert">
+					<div className="_rpError" role="alert" style={{ flex: '1 1 100%' }}>
 						{errorText(check.error)}
 						{check.error?.path ? (
 							<span className="_rpMuted"> ({check.error.path})</span>
 						) : null}
 					</div>
 				) : null}
-
-				<div className="_rpLine">
-					{onCancel ? (
-						<button type="button" className="_rpBtn" onClick={onCancel}>
-							Cancel
-						</button>
-					) : null}
-					{extra}
+				<div style={{ flex: 1 }} />
+				<button
+					type="button"
+					className="_rpBtn"
+					onClick={() => (onCancel ? onCancel() : setHist(historyInit(start)))}
+				>
+					Discard
+				</button>
+				{extra}
+				{onSaveAsNew ? (
 					<button
 						type="button"
-						className="_rpBtn _primary"
+						className="_rpBtn"
 						disabled={!canSave}
-						title={
-							!name.trim()
-								? 'Give it a name'
-								: check.status !== 'ok'
-									? 'Fix the report first'
-									: undefined
+						onClick={() => doSave(onSaveAsNew)}
+					>
+						Save as new
+					</button>
+				) : null}
+				<button
+					type="button"
+					className="_rpBtn _primary"
+					disabled={!canSave}
+					title={
+						!name.trim()
+							? 'Give it a name'
+							: check.status !== 'ok'
+								? 'Fix the report first'
+								: undefined
+					}
+					onClick={() => doSave(onSave)}
+				>
+					{saveLabel ?? 'Save'}
+				</button>
+			</div>
+			{drag ? (
+				<div
+					className="_rpDragPill"
+					style={{ left: drag.x + 8, top: drag.y + 8 }}
+					aria-hidden="true"
+				>
+					{drag.label}
+				</div>
+			) : null}
+		</div>
+	);
+}
+
+/** A pill's settings: a measure's function and records, a date's level. */
+function PillEditor({
+	item,
+	field,
+	segments,
+	onChange,
+}: Readonly<{
+	item: ShelfItem;
+	field?: CatalogField;
+	segments?: Record<string, { label?: string }>;
+	onChange: (i: ShelfItem) => void;
+}>) {
+	if (item.kind === 'DATE')
+		return (
+			<label className="_rpLabel" style={{ padding: '4px 8px' }}>
+				By
+				<select
+					className="_rpSelect"
+					value={item.bucket ?? 'MONTH'}
+					onChange={e => onChange({ ...item, bucket: e.target.value as Bucket })}
+				>
+					{BUCKETS.map(b => (
+						<option key={b} value={b}>
+							{BUCKET_LABELS[b]}
+						</option>
+					))}
+				</select>
+			</label>
+		);
+	if (item.kind !== 'MEASURE')
+		return (
+			<div className="_rpMuted" style={{ padding: '4px 10px' }}>
+				A dimension
+			</div>
+		);
+	const fns =
+		item.field === COUNT_FIELD
+			? (['COUNT'] as MeasureFn[])
+			: (field?.fns ?? MEASURE_FNS.filter(f => f !== 'COUNT' && f !== 'COUNT_DISTINCT'));
+	return (
+		<div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '4px 8px' }}>
+			{fns.length > 1 ? (
+				<label className="_rpLabel">
+					Function
+					<select
+						className="_rpSelect"
+						value={item.fn ?? fns[0]}
+						onChange={e =>
+							onChange({ ...item, fn: e.target.value as MeasureFn, as: undefined })
 						}
-						onClick={async () => {
-							setSaving(true);
-							try {
-								await onSave({
-									name: name.trim(),
-									spec: {
-										...spec,
-										view: { ...spec.view, title: spec.view.title ?? undefined },
-									},
-									refreshMin,
-								});
-							} finally {
-								setSaving(false);
-							}
+					>
+						{fns.map(fn => (
+							<option key={fn} value={fn}>
+								{MEASURE_FN_LABELS[fn]}
+							</option>
+						))}
+					</select>
+				</label>
+			) : null}
+			{segments && Object.keys(segments).length ? (
+				<label className="_rpLabel">
+					Records
+					<select
+						className="_rpSelect"
+						value={item.segment ?? ''}
+						onChange={e => {
+							const { segment: _s, ...rest } = item;
+							onChange(
+								e.target.value
+									? { ...rest, segment: e.target.value, as: undefined }
+									: { ...rest, as: undefined },
+							);
 						}}
 					>
-						{saveLabel ?? 'Save'}
-					</button>
-				</div>
-			</div>
-			<div className="_rpEditorPreview">
-				{check.status !== 'error' && check.spec ? (
-					<ReportWidgetView
-						transport={transport}
-						runFunction={runFunction}
-						catalog={catalog}
-						spec={check.spec}
-						name={name || 'Preview'}
-						editable
-						onSpecChange={s => setSpec(() => s)}
-					/>
-				) : (
-					<div className="_rpWidget">
-						<div className="_rpState _rpMuted">
-							{check.status === 'checking'
-								? 'Checking'
-								: check.status === 'error'
-									? 'Fix the report to see a preview'
-									: ''}
-						</div>
-					</div>
-				)}
-			</div>
+						<option value="">Of every record</option>
+						{Object.entries(segments).map(([k, sg]) => (
+							<option key={k} value={k}>
+								Only {sg.label ?? k}
+							</option>
+						))}
+					</select>
+				</label>
+			) : null}
 		</div>
 	);
 }

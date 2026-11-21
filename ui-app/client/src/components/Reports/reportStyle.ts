@@ -78,6 +78,7 @@ export function reportCss(prefix: string): string {
 	const P = prefix;
 	return `
 	${P} { font: var(--rp-font); color: var(--rp-text); min-width: 0; box-sizing: border-box; }
+	${P}._rpPortal { display: contents; min-height: 0; }
 	${P} *, ${P} *::before, ${P} *::after { box-sizing: border-box; }
 	${P} button { font: inherit; color: inherit; }
 	${P} ._rpBtn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 30px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--rp-border); background: var(--rp-surface); cursor: pointer; white-space: nowrap; }
@@ -96,8 +97,8 @@ export function reportCss(prefix: string): string {
 
 	${P} ._rpWidget { position: relative; display: flex; flex-direction: column; height: 100%; min-height: 160px; background: var(--rp-surface); border: 1px solid var(--rp-border); border-radius: var(--rp-radius); }
 	${P} ._rpWidget._compact { min-height: 120px; }
-	${P} ._rpWidget._full { position: fixed; inset: 12px; z-index: 1000; height: auto; box-shadow: 0 8px 40px var(--rp-border); }
-	${P} ._rpBackdrop { position: fixed; inset: 0; z-index: 999; background: var(--rp-text); opacity: 0.35; }
+	${P} ._rpWidget._full { position: fixed; inset: 12px; z-index: 10001; height: auto; box-shadow: 0 8px 40px var(--rp-border); }
+	${P} ._rpBackdrop { position: fixed; inset: 0; z-index: 10000; background: var(--rp-text); opacity: 0.35; }
 	${P} ._rpHead { display: flex; align-items: center; gap: 4px; padding: 8px 8px 4px 12px; min-height: 40px; }
 	${P} ._rpHead._drag { cursor: grab; touch-action: none; user-select: none; }
 	${P} ._rpTitle { flex: 1; min-width: 0; font: var(--rp-title-font); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -140,6 +141,8 @@ export function reportCss(prefix: string): string {
 	${P} ._rpSpin { position: absolute; top: 6px; right: 12px; }
 	${P} ._rpPop { position: absolute; z-index: 30; min-width: 180px; max-width: min(360px, calc(100vw - 32px)); background: var(--rp-surface); border: 1px solid var(--rp-border); border-radius: 8px; box-shadow: 0 6px 24px var(--rp-border); padding: 4px; max-height: min(70vh, 520px); overflow: auto; }
 	${P} ._rpPop._right { right: 8px; }
+	${P} ._rpPop._rpPopFixed { position: fixed; z-index: 10002; }
+	${P} ._rpDrawer:focus, ${P} ._rpModal:focus { outline: none; }
 	${P} ._rpMenuItem { display: flex; width: 100%; align-items: center; gap: 8px; padding: 7px 10px; border: none; background: transparent; border-radius: 6px; cursor: pointer; text-align: left; }
 	${P} ._rpMenuItem:hover:not(:disabled), ${P} ._rpMenuItem._on { background: var(--rp-soft); }
 	${P} ._rpMenuItem:disabled { opacity: 0.45; cursor: default; }
@@ -152,7 +155,7 @@ export function reportCss(prefix: string): string {
 	${P} ._rpType._off { opacity: 0.4; cursor: not-allowed; }
 	${P} ._rpType._off i { color: var(--rp-muted); }
 	${P} ._rpReason { min-height: 18px; padding: 6px 4px 2px; font: var(--rp-small-font); color: var(--rp-muted); }
-	${P} ._rpDrawer { position: fixed; z-index: 1001; top: 0; right: 0; bottom: 0; width: min(380px, 100vw); background: var(--rp-surface); border-left: 1px solid var(--rp-border); box-shadow: -8px 0 32px var(--rp-border); display: flex; flex-direction: column; }
+	${P} ._rpDrawer { position: fixed; z-index: 10001; top: 0; right: 0; bottom: 0; width: min(380px, 100vw); background: var(--rp-surface); border-left: 1px solid var(--rp-border); box-shadow: -8px 0 32px var(--rp-border); display: flex; flex-direction: column; }
 	${P} ._rpDrawerHead { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--rp-border); font: var(--rp-title-font); font-weight: 600; }
 	${P} ._rpDrawerHead span { flex: 1; }
 	${P} ._rpDrawerBody { flex: 1; overflow: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 12px; }
@@ -160,7 +163,7 @@ export function reportCss(prefix: string): string {
 	${P} ._rpGroup { display: flex; flex-direction: column; gap: 8px; }
 	${P} ._rpGroupTitle { font-weight: 600; }
 	${P} ._rpCheck { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-	${P} ._rpModal { position: fixed; z-index: 1001; inset: 5vh 50% auto auto; transform: translateX(50%); width: min(960px, calc(100vw - 32px)); max-height: 90vh; background: var(--rp-surface); border: 1px solid var(--rp-border); border-radius: 10px; box-shadow: 0 8px 40px var(--rp-border); display: flex; flex-direction: column; }
+	${P} ._rpModal { position: fixed; z-index: 10001; inset: 5vh 50% auto auto; transform: translateX(50%); width: min(960px, calc(100vw - 32px)); max-height: 90vh; background: var(--rp-surface); border: 1px solid var(--rp-border); border-radius: 10px; box-shadow: 0 8px 40px var(--rp-border); display: flex; flex-direction: column; }
 	${P} ._rpModal ._rpDrawerBody { min-height: 0; }
 
 	${P} ._rpDash { display: flex; flex-direction: column; gap: 12px; background: var(--rp-canvas); min-width: 0; }
@@ -185,8 +188,45 @@ export function reportCss(prefix: string): string {
 	${P} ._rpEditorPreview { position: sticky; top: 8px; height: 420px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 	${P} ._rpLine { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 	${P} ._rpLine > ._rpSelect, ${P} ._rpLine > ._rpInput { flex: 1 1 120px; }
+	${P} ._rpLinkRow, ${P} ._rpLinkTile { cursor: pointer; }
+	${P} ._rpLinkRow:hover td, ${P} li._rpLinkRow:hover { background: var(--rp-soft); }
+	${P} ._rpLinkRow:focus-visible, ${P} ._rpLinkTile:focus-visible { outline: 2px solid var(--rp-accent); outline-offset: -2px; }
+	${P} ._rpLinkTile { border-radius: 6px; }
+	${P} ._rpLinkTile:hover ._rpKpiValue { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+	${P} ._rpDelta { display: inline-flex; align-self: flex-start; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 10px; background: var(--rp-soft); font: var(--rp-small-font); }
+	${P} ._rpDelta._down { color: var(--rp-error); }
+	${P} ._rpFoot { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; padding: 0 12px 10px; }
+	${P} ._rpLinkBtn { display: inline-flex; align-items: center; gap: 6px; border: none; background: transparent; padding: 4px 2px; cursor: pointer; color: var(--rp-accent); font: var(--rp-small-font); font-weight: 600; }
+	${P} ._rpLinkBtn:hover { text-decoration: underline; }
+	${P} ._rpLinkBtn:focus-visible { outline: 2px solid var(--rp-accent); border-radius: 4px; }
+	${P} ._rpZoomReset { position: absolute; top: 4px; right: 4px; z-index: 2; min-height: 26px; padding: 2px 8px; font: var(--rp-small-font); }
+	${P} ._rpEditor._shelves { grid-template-columns: minmax(180px, 220px) minmax(260px, 1fr) minmax(300px, 1.2fr); }
+	${P} ._rpFields { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+	${P} ._rpFieldGroup { display: flex; flex-direction: column; gap: 4px; }
+	${P} ._rpField { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border: 1px solid var(--rp-border); border-radius: 6px; background: var(--rp-surface); cursor: grab; touch-action: none; user-select: none; text-align: left; width: 100%; }
+	${P} ._rpField:hover, ${P} ._rpField:focus-visible { background: var(--rp-soft); }
+	${P} ._rpField i { color: var(--rp-muted); width: 14px; text-align: center; }
+	${P} ._rpShelf { display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px; min-height: 40px; border: 1px dashed var(--rp-border); border-radius: 8px; }
+	${P} ._rpShelf._over { border-color: var(--rp-accent); background: var(--rp-soft); }
+	${P} ._rpShelfName { flex: none; width: 64px; padding-top: 5px; font: var(--rp-small-font); color: var(--rp-muted); }
+	${P} ._rpShelfItems { flex: 1; display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+	${P} ._rpShelfHint { padding-top: 5px; font: var(--rp-small-font); color: var(--rp-muted); }
+	${P} ._rpPill { position: relative; display: inline-flex; align-items: center; gap: 4px; padding: 3px 4px 3px 10px; border-radius: 14px; background: var(--rp-soft); border: 1px solid var(--rp-border); font: var(--rp-small-font); max-width: 100%; }
+	${P} ._rpPill._measure { background: var(--rp-accent); color: var(--rp-accent-text); border-color: var(--rp-accent); }
+	${P} ._rpPill._measure ._rpIconBtn { color: var(--rp-accent-text); }
+	${P} ._rpPill > button:first-child { border: none; background: transparent; padding: 0; cursor: pointer; color: inherit; font: inherit; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	${P} ._rpPill ._rpIconBtn { width: 20px; height: 20px; }
+	${P} ._rpDragPill { position: fixed; z-index: 10003; pointer-events: none; padding: 4px 10px; border-radius: 14px; background: var(--rp-accent); color: var(--rp-accent-text); font: var(--rp-small-font); box-shadow: 0 6px 18px var(--rp-border); }
+	${P} ._rpEditorSide { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+	${P} ._rpEditorSide ._rpEditorPreview { position: relative; top: 0; height: 340px; }
+	${P} ._rpHistory { display: flex; gap: 2px; }
+	@media (max-width: 1100px) {
+		${P} ._rpEditor._shelves { grid-template-columns: minmax(180px, 220px) minmax(0, 1fr); }
+		${P} ._rpEditor._shelves ._rpEditorSide { grid-column: 1 / -1; }
+	}
 	@media (max-width: 720px) {
 		${P} ._rpEditor { grid-template-columns: minmax(0, 1fr); }
+		${P} ._rpEditor._shelves { grid-template-columns: minmax(0, 1fr); }
 		${P} ._rpEditorPreview { position: relative; height: 320px; }
 		${P} ._rpWidget._full { inset: 0; border-radius: 0; }
 		${P} ._rpDrawer { top: auto; height: 80vh; width: 100vw; border-left: none; border-top: 1px solid var(--rp-border); }

@@ -106,7 +106,8 @@ export function applyTopN(
 					o[`${series.key}_label`] = r[`${series.key}_label`];
 			}
 			if (r.currency !== undefined) o.currency = r.currency;
-			for (const m of measures) o[m] = isAdditive(spec, m) ? 0 : null;
+			for (const m of measures)
+				o[m] = isAdditive(spec, m) && !m.endsWith(DELTA_SUFFIX) ? 0 : null;
 			other.set(sk, o);
 		}
 		for (const m of measures) if (o[m] !== null) o[m] = (o[m] ?? 0) + (toNumber(r[m]) ?? 0);
@@ -203,4 +204,77 @@ export function trendLine(values: Array<number | null | undefined>): Array<numbe
 	const slope = (len * sxy - sx * sy) / den;
 	const intercept = (sy - slope * sx) / len;
 	return values.map((_, i) => intercept + slope * i);
+}
+
+export const CMP_SUFFIX = '_cmp';
+export const DELTA_SUFFIX = '_delta_pct';
+
+/**
+ * Compare (CONTRACT 8.1): the runner adds `<m>_cmp` and `<m>_delta_pct` to the rows (and maybe
+ * columns). Those columns are marked `role: 'compare'` so tables show them but charts and KPI
+ * tiles never draw them as measures; a column the runner left out is added when rows hold it.
+ * Without compare keys the output comes back unchanged (same object).
+ */
+export function normalizeCompare(out: ReportSuccess, compareLabel?: string): ReportSuccess {
+	const base = out.columns.filter(
+		c => c.kind === 'MEASURE' && !c.key.endsWith(CMP_SUFFIX) && !c.key.endsWith(DELTA_SUFFIX),
+	);
+	const byKey = new Map(out.columns.map(c => [c.key, c]));
+	const has = (k: string) => out.rows.some(r => r[k] !== undefined) || byKey.has(k);
+	const extra: ReportColumn[] = [];
+	const marked = new Set<string>();
+	const word = compareLabel ? ` (${compareLabel.toLowerCase()})` : ' (before)';
+	for (const m of base) {
+		const ck = m.key + CMP_SUFFIX;
+		const dk = m.key + DELTA_SUFFIX;
+		if (has(ck)) {
+			marked.add(ck);
+			if (!byKey.has(ck))
+				extra.push({ ...m, key: ck, label: `${m.label ?? m.key}${word}`, role: 'compare' });
+		}
+		if (has(dk)) {
+			marked.add(dk);
+			if (!byKey.has(dk))
+				extra.push({
+					key: dk,
+					label: `${m.label ?? m.key} change`,
+					kind: 'MEASURE',
+					format: 'PERCENT',
+					role: 'compare',
+				});
+		}
+	}
+	if (!marked.size) return out;
+	const columns = out.columns.map(c =>
+		marked.has(c.key) && c.role !== 'compare'
+			? {
+					...c,
+					role: 'compare' as const,
+					...(c.key.endsWith(DELTA_SUFFIX) ? { format: c.format ?? 'PERCENT' } : {}),
+				}
+			: c,
+	);
+	// Each measure followed by its compare columns, so a table reads "now, before, change".
+	const ordered: ReportColumn[] = [];
+	const all = [...columns, ...extra];
+	for (const c of all) {
+		if (c.role === 'compare') continue;
+		ordered.push(c);
+		for (const k of [c.key + CMP_SUFFIX, c.key + DELTA_SUFFIX]) {
+			const cc = all.find(e => e.key === k);
+			if (cc) ordered.push(cc);
+		}
+	}
+	for (const c of all) if (c.role === 'compare' && !ordered.includes(c)) ordered.push(c);
+	return { ...out, columns: ordered };
+}
+
+/** A KPI delta: the change in percent and its direction, when the run compared periods. */
+export function kpiDelta(
+	row: Record<string, any> | undefined,
+	key: string,
+): { pct: number; dir: 'up' | 'down' | 'flat' } | undefined {
+	const v = toNumber(row?.[key + DELTA_SUFFIX]);
+	if (v === undefined) return undefined;
+	return { pct: v, dir: v > 0 ? 'up' : v < 0 ? 'down' : 'flat' };
 }

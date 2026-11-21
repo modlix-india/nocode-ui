@@ -5,9 +5,31 @@ const ok = (t: ViewType, groupBy: number, measures: number) =>
 	checkView(t, { groupBy, measures }).ok;
 
 describe('shape rules (CONTRACT section 1)', () => {
-	test('every P1a view type has a rule', () => {
+	test('every view type (P1a and P1b) has a rule', () => {
 		for (const t of VIEW_TYPES) expect(SHAPE_RULES[t]).toBeDefined();
-		expect(VIEW_TYPES.length).toBe(22);
+		expect(VIEW_TYPES.length).toBe(25);
+	});
+
+	test('P1b: HEATMAP 2 group bys + 1 measure, TREEMAP 1 or 2 + 1, WATERFALL 1 + 1 (CONTRACT 8.1)', () => {
+		expect(ok('HEATMAP', 2, 1)).toBe(true);
+		expect(ok('HEATMAP', 1, 1)).toBe(false);
+		expect(ok('HEATMAP', 2, 2)).toBe(false);
+		expect(ok('TREEMAP', 1, 1)).toBe(true);
+		expect(ok('TREEMAP', 2, 1)).toBe(true);
+		expect(ok('TREEMAP', 0, 1)).toBe(false);
+		expect(ok('TREEMAP', 1, 2)).toBe(false);
+		expect(ok('WATERFALL', 1, 1)).toBe(true);
+		expect(ok('WATERFALL', 2, 1)).toBe(false);
+		expect(ok('WATERFALL', 1, 2)).toBe(false);
+		expect(checkView('HEATMAP', { groupBy: 1, measures: 1 }).reason).toBe(
+			'Heatmap needs two group bys and one measure',
+		);
+		expect(checkView('WATERFALL', { groupBy: 0, measures: 1 }).reason).toBe(
+			'Waterfall needs one group by and one measure',
+		);
+		expect(checkView('TREEMAP', { groupBy: 0, measures: 1 }).reason).toBe(
+			'Treemap needs one or two group bys and one measure',
+		);
 	});
 
 	test('KPI / GAUGE / BULLET need one row', () => {

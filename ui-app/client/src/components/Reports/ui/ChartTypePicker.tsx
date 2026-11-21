@@ -26,6 +26,9 @@ export const VIEW_ICONS: Record<ViewType, string> = {
 	SCATTER: 'fa-braille',
 	PIE: 'fa-chart-pie',
 	DOUGHNUT: 'fa-circle-notch',
+	HEATMAP: 'fa-table-cells-large',
+	TREEMAP: 'fa-border-all',
+	WATERFALL: 'fa-chart-gantt',
 };
 
 /**

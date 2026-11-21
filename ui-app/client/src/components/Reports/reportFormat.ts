@@ -194,12 +194,13 @@ export function visibleColumns(out: Pick<ReportSuccess, 'columns'>): ReportColum
 	);
 }
 
+/** Measures drawn and listed: not the compare companions (`<m>_cmp`, `<m>_delta_pct`). */
 export function measureColumns(out: Pick<ReportSuccess, 'columns'>) {
-	return visibleColumns(out).filter(c => c.kind === 'MEASURE');
+	return visibleColumns(out).filter(c => c.kind === 'MEASURE' && c.role !== 'compare');
 }
 
 export function dimensionColumns(out: Pick<ReportSuccess, 'columns'>) {
-	return visibleColumns(out).filter(c => c.kind !== 'MEASURE');
+	return visibleColumns(out).filter(c => c.kind !== 'MEASURE' && c.role !== 'compare');
 }
 
 /** "Updated 10:42", in the viewer's clock (24 hour). */

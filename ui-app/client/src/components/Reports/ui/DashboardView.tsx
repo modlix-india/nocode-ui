@@ -18,7 +18,27 @@ import {
 	withLayout,
 } from '../dashboardModel';
 import { useDashboardDoc } from '../dashboardStore';
-import { errorText, ReportTransport, runReport } from '../reportApi';
+import {
+	defaultPdfFunction,
+	errorText,
+	namespaceOf,
+	ReportTransport,
+	runReport,
+} from '../reportApi';
+import {
+	checkImport,
+	downloadText,
+	exportFileName,
+	exportPdf,
+	ImportVerdict,
+	importIntoDoc,
+	parseReportFile,
+	PdfItem,
+	pdfDocument,
+	readFileText,
+	ReportFile,
+	reportFile,
+} from '../reportExport';
 import { labelOf } from '../reportFormat';
 import { fieldLabel, valuesSpec } from '../reportSpecUtil';
 import {
@@ -30,12 +50,14 @@ import {
 	PERIOD_LABELS,
 	PERIODS,
 	ReportCatalog,
+	SessionFilter,
 	VIEW_LABELS,
 } from '../reportTypes';
 import { Icon, MultiPick, PickOption } from './common';
 import { useCatalog, useWidth } from './hooks';
 import { EditorValue, ReportEditorView } from './ReportEditorView';
-import { ReportWidgetView } from './ReportWidgetView';
+import { ReportWidgetView, WidgetExportApi } from './ReportWidgetView';
+import { Dialog } from './portal';
 
 /**
  * A per-user dashboard: a 12 column tile grid (drag to move, snap resize, both on the shared
@@ -59,6 +81,16 @@ export interface DashboardViewProps {
 	title?: string;
 	/** ReportLibrary: library only, no switch to the grid. */
 	lockMode?: boolean;
+	/** `<ns>.reportPdf`; default from the run function's namespace. */
+	pdfFunction?: string;
+	/** The app for widget files; default the run function's namespace. */
+	appNamespace?: string;
+}
+
+interface ImportState {
+	file: ReportFile;
+	verdicts?: ImportVerdict[];
+	toDashboard: boolean;
 }
 
 interface DragState {
@@ -85,7 +117,31 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 	const [notice, setNotice] = useState<string>('');
 	const [confirmReset, setConfirmReset] = useState(false);
 	const [drag, setDrag] = useState<DragState | undefined>(undefined);
+	const [cross, setCross] = useState<SessionFilter[]>([]);
+	const [importing, setImporting] = useState<ImportState | undefined>(undefined);
+	const [busy, setBusy] = useState(false);
+	const exportApis = useRef(new Map<string, WidgetExportApi>());
+	const exportRefs = useRef(new Map<string, (api: WidgetExportApi | null) => void>());
+	const fileRef = useRef<HTMLInputElement>(null);
 	const rootRef = useRef<HTMLDivElement>(null);
+	const app = props.appNamespace || namespaceOf(runFunction);
+	const pdfFunction = props.pdfFunction || defaultPdfFunction(props.appNamespace, runFunction);
+	/** One stable callback per widget id, so a widget registers its export part once. */
+	const exportRefFor = (id: string) => {
+		let f = exportRefs.current.get(id);
+		if (!f) {
+			f = (api: WidgetExportApi | null) => {
+				if (api) exportApis.current.set(id, api);
+				else exportApis.current.delete(id);
+			};
+			exportRefs.current.set(id, f);
+		}
+		return f;
+	};
+	const addCross = useCallback((fs: SessionFilter[]) => {
+		// One cross filter per field: a new click on the same field replaces it.
+		setCross(c => [...c.filter(e => !fs.some(f => f.field === e.field)), ...fs]);
+	}, []);
 	const width = useWidth(rootRef);
 	const phone = width > 0 && width < PHONE_MAX_PX;
 
@@ -230,6 +286,13 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 				dashboard={dashFilters}
 				compact={item.w <= 3 || item.h <= 2}
 				isNew={item.isNew}
+				defaultId={r.defaultId}
+				cross={cross.length ? cross : undefined}
+				onCrossFilter={addCross}
+				pdfFunction={pdfFunction}
+				appNamespace={app}
+				exportRef={exportRefFor(item.id)}
+				importError={doc.widgets[item.id]?.importError}
 				onKeep={editable ? () => apply(d => keepNew(d, item.id)) : undefined}
 				onRemoveNew={
 					editable ? () => apply(d => removeFromDashboard(d, item.id)) : undefined
@@ -299,6 +362,82 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 	};
 
 	const ordered = sortLayout(layout);
+
+	const exportDashboardPdf = async () => {
+		if (!transport) return;
+		const items = ordered
+			.map(l => exportApis.current.get(l.id)?.pdfItem())
+			.filter((i): i is PdfItem => !!i);
+		const title = props.title || 'Dashboard';
+		const d = pdfDocument(title, items, {
+			locale: catalog.locale,
+			subtitle: [
+				filters.period ? PERIOD_LABELS[filters.period] : '',
+				...cross.map(f => f.label ?? f.field),
+			]
+				.filter(Boolean)
+				.join(' · '),
+		});
+		if (!d.ok) return setNotice(d.error);
+		setBusy(true);
+		const err = await exportPdf(
+			transport,
+			pdfFunction,
+			d.document,
+			exportFileName(title, 'pdf'),
+		);
+		setBusy(false);
+		setNotice(err);
+	};
+
+	const exportDashboardFile = () => {
+		const ws = ordered
+			.map(l => resolveWidget(doc, l.id, catalog))
+			.filter((r): r is NonNullable<typeof r> => !!r)
+			.map(r => ({ id: r.id, name: r.name, spec: r.spec, refreshMin: r.refreshMin }));
+		const file = reportFile(app, ws, doc.layout);
+		downloadText(
+			JSON.stringify(file, null, 2),
+			exportFileName(props.title || 'Dashboard', 'json'),
+			'application/json',
+		);
+	};
+
+	const pickFile = async (f: File | undefined) => {
+		if (!f || !transport) return;
+		setNotice('');
+		if (f.size > 2 * 1024 * 1024) return setNotice('That file is too big for a reports file.');
+		const parsed = parseReportFile(await readFileText(f), app);
+		if (!parsed.ok) return setNotice(parsed.error);
+		const state: ImportState = { file: parsed.file, toDashboard: mode === 'dashboard' };
+		setImporting(state);
+		const verdicts = await checkImport(
+			parsed.file,
+			spec => runReport(transport, runFunction, spec, { dryRun: true }),
+			errorText,
+		);
+		setImporting(s => (s && s.file === parsed.file ? { ...s, verdicts } : s));
+	};
+
+	const finishImport = () => {
+		const im = importing;
+		if (!im?.verdicts) return;
+		let done = 0;
+		let left = 0;
+		apply(d => {
+			const r = importIntoDoc(d, im.file, im.verdicts!, { toDashboard: im.toDashboard });
+			if (r.ok) {
+				done = r.imported ?? 0;
+				left = r.left ?? 0;
+			}
+			return r;
+		});
+		setImporting(undefined);
+		if (done)
+			setNotice(
+				`Imported ${done} widget${done === 1 ? '' : 's'}${left ? `; ${left} did not fit` : ''}.`,
+			);
+	};
 
 	return (
 		<div className="_rpDash" ref={rootRef}>
@@ -371,6 +510,43 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 					</>
 				) : null}
 				<div className="_rpSpacer" />
+				{mode === 'dashboard' && ordered.length ? (
+					<>
+						<button
+							type="button"
+							className="_rpBtn"
+							disabled={busy || !pdfFunction}
+							onClick={exportDashboardPdf}
+						>
+							<Icon name={busy ? 'fa-spinner fa-spin' : 'fa-file-pdf'} /> Export PDF
+						</button>
+						<button type="button" className="_rpBtn" onClick={exportDashboardFile}>
+							<Icon name="fa-file-export" /> Export file
+						</button>
+					</>
+				) : null}
+				{editable ? (
+					<>
+						<input
+							ref={fileRef}
+							type="file"
+							accept=".json,application/json"
+							style={{ display: 'none' }}
+							onChange={e => {
+								const f = e.target.files?.[0];
+								e.target.value = '';
+								void pickFile(f);
+							}}
+						/>
+						<button
+							type="button"
+							className="_rpBtn"
+							onClick={() => fileRef.current?.click()}
+						>
+							<Icon name="fa-file-import" /> Import file
+						</button>
+					</>
+				) : null}
 				{editable ? (
 					<>
 						<button type="button" className="_rpBtn" onClick={() => setEditing({})}>
@@ -426,8 +602,28 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 				) : null}
 			</div>
 			{notice ? (
-				<div className="_rpError" role="alert">
+				<div className={/^Imported/.test(notice) ? '_rpMuted' : '_rpError'} role="alert">
 					{notice}
+				</div>
+			) : null}
+			{cross.length && mode === 'dashboard' ? (
+				<div className="_rpRow" style={{ alignItems: 'center' }}>
+					<span className="_rpMuted">Filtered by a click:</span>
+					{cross.map((f, i) => (
+						<span key={i} className="_rpChip">
+							{f.label ?? f.field}
+							<button
+								type="button"
+								aria-label={`Remove filter ${f.label ?? f.field}`}
+								onClick={() => setCross(c => c.filter((_, j) => j !== i))}
+							>
+								<Icon name="fa-xmark" />
+							</button>
+						</span>
+					))}
+					<button type="button" className="_rpLinkBtn" onClick={() => setCross([])}>
+						Clear
+					</button>
 				</div>
 			) : null}
 
@@ -563,45 +759,124 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 				</div>
 			)}
 
-			{editing ? (
-				<>
-					<div className="_rpBackdrop" />
-					<div
-						className="_rpModal"
-						role="dialog"
-						aria-label={editing.id ? 'Edit widget' : 'New widget'}
-					>
-						<div className="_rpDrawerHead">
-							<span>{editing.id ? 'Edit widget' : 'New widget'}</span>
-							<button
-								type="button"
-								className="_rpIconBtn"
-								aria-label="Close"
-								title="Close"
-								onClick={() => setEditing(undefined)}
-							>
-								<Icon name="fa-xmark" />
-							</button>
-						</div>
-						<div className="_rpDrawerBody">
-							<ReportEditorView
-								transport={transport}
-								catalog={catalog}
-								runFunction={runFunction}
-								initial={editing.value}
-								onSave={saveEditor}
-								onCancel={() => setEditing(undefined)}
-								saveLabel={
-									editing.id
-										? 'Save'
-										: mode === 'dashboard'
-											? 'Add to dashboard'
-											: 'Save to library'
+			{importing ? (
+				<Dialog kind="modal" label="Import widgets" onClose={() => setImporting(undefined)}>
+					<div className="_rpDrawerHead">
+						<span>Import widgets</span>
+						<button
+							type="button"
+							className="_rpIconBtn"
+							aria-label="Close"
+							title="Close"
+							onClick={() => setImporting(undefined)}
+						>
+							<Icon name="fa-xmark" />
+						</button>
+					</div>
+					<div className="_rpDrawerBody">
+						{!importing.verdicts ? (
+							<div className="_rpMuted" aria-busy="true">
+								Checking each widget against your data
+							</div>
+						) : (
+							importing.verdicts.map(v => (
+								<div key={v.id} className="_rpLibRow">
+									<div className="_rpLibName">
+										<span>{v.name}</span>
+										<span className={v.ok ? '_rpMuted' : '_rpMuted _rpError'}>
+											{v.ok ? 'Ready' : `Kept, not available: ${v.reason}`}
+										</span>
+									</div>
+									<Icon name={v.ok ? 'fa-check' : 'fa-triangle-exclamation'} />
+								</div>
+							))
+						)}
+					</div>
+					<div className="_rpDrawerFoot" style={{ alignItems: 'center' }}>
+						<label className="_rpCheck" style={{ flex: 1 }}>
+							<input
+								type="checkbox"
+								checked={importing.toDashboard}
+								onChange={e =>
+									setImporting(s =>
+										s ? { ...s, toDashboard: e.target.checked } : s,
+									)
 								}
 							/>
-						</div>
+							Also add to the dashboard
+						</label>
+						<button
+							type="button"
+							className="_rpBtn"
+							onClick={() => setImporting(undefined)}
+						>
+							Cancel
+						</button>
+						<button
+							type="button"
+							className="_rpBtn _primary"
+							disabled={!importing.verdicts}
+							onClick={finishImport}
+						>
+							Import
+						</button>
 					</div>
-				</>
+				</Dialog>
+			) : null}
+			{editing ? (
+				<Dialog
+					kind="modal"
+					label={editing.id ? 'Edit widget' : 'New widget'}
+					onClose={() => setEditing(undefined)}
+				>
+					<div className="_rpDrawerHead">
+						<span>{editing.id ? 'Edit widget' : 'New widget'}</span>
+						<button
+							type="button"
+							className="_rpIconBtn"
+							aria-label="Close"
+							title="Close"
+							onClick={() => setEditing(undefined)}
+						>
+							<Icon name="fa-xmark" />
+						</button>
+					</div>
+					<div className="_rpDrawerBody">
+						<ReportEditorView
+							transport={transport}
+							catalog={catalog}
+							runFunction={runFunction}
+							initial={editing.value}
+							onSave={saveEditor}
+							onSaveAsNew={
+								editing.id
+									? v => {
+											apply(d =>
+												addWidget(
+													d,
+													{
+														name: v.name,
+														spec: v.spec,
+														refreshMin: v.refreshMin,
+													},
+													{ toDashboard: mode === 'dashboard' },
+												),
+											);
+											setEditing(undefined);
+										}
+									: undefined
+							}
+							onCancel={() => setEditing(undefined)}
+							saveLabel={
+								editing.id
+									? 'Save'
+									: mode === 'dashboard'
+										? 'Add to dashboard'
+										: 'Save to library'
+							}
+						/>
+					</div>
+				</Dialog>
 			) : null}
 		</div>
 	);
@@ -667,6 +942,11 @@ export function LibraryList({
 								{r.byReference ? ' · from the app' : ''}
 								{on ? ' · on the dashboard' : ''}
 							</span>
+							{doc.widgets[id]?.importError ? (
+								<span className="_rpMuted _rpError">
+									Not available: {doc.widgets[id].importError}
+								</span>
+							) : null}
 						</div>
 						{editable ? (
 							<>

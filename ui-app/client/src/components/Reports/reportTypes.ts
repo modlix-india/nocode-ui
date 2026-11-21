@@ -4,7 +4,7 @@
  * owns validation; these types only describe what the UI reads and writes.
  */
 
-/** P1a view types, in the order the "Show me" picker lists them (CONTRACT section 1). */
+/** View types (P1a, plus P1b HEATMAP / TREEMAP / WATERFALL), in "Show me" picker order (CONTRACT 1, 8.1). */
 export const VIEW_TYPES = [
 	'KPI',
 	'GAUGE',
@@ -28,6 +28,9 @@ export const VIEW_TYPES = [
 	'SCATTER',
 	'PIE',
 	'DOUGHNUT',
+	'HEATMAP',
+	'TREEMAP',
+	'WATERFALL',
 ] as const;
 export type ViewType = (typeof VIEW_TYPES)[number];
 
@@ -54,6 +57,9 @@ export const VIEW_LABELS: Record<ViewType, string> = {
 	SCATTER: 'Scatter',
 	PIE: 'Pie',
 	DOUGHNUT: 'Donut',
+	HEATMAP: 'Heatmap',
+	TREEMAP: 'Treemap',
+	WATERFALL: 'Waterfall',
 };
 
 /** Views drawn on a canvas by chart.js (PNG download, click menu, legend). */
@@ -75,6 +81,24 @@ export const CANVAS_VIEWS = new Set<ViewType>([
 	'SCATTER',
 	'PIE',
 	'DOUGHNUT',
+	'HEATMAP',
+	'TREEMAP',
+	'WATERFALL',
+]);
+
+/** Views over time that zoom and pan (chartjs-plugin-zoom), when their X is a date. */
+export const ZOOM_VIEWS = new Set<ViewType>([
+	'BAR',
+	'GROUPED_BAR',
+	'STACKED_BAR',
+	'STACKED_BAR_100',
+	'LINE',
+	'SMOOTH_LINE',
+	'STEP_LINE',
+	'AREA',
+	'STACKED_AREA',
+	'COMBO',
+	'WATERFALL',
 ]);
 
 export const RADIAL_VIEWS = new Set<ViewType>(['PIE', 'DOUGHNUT', 'GAUGE']);
@@ -249,6 +273,21 @@ export interface ReportView {
 	drill?: ReportDrill;
 }
 
+/** Compare with an earlier period (CONTRACT 8.1): the runner adds `<m>_cmp` and `<m>_delta_pct`. */
+export type CompareTo = 'PREVIOUS_PERIOD' | 'SAME_PERIOD_LAST_YEAR';
+export const COMPARE_LABELS: Record<CompareTo, string> = {
+	PREVIOUS_PERIOD: 'Previous period',
+	SAME_PERIOD_LAST_YEAR: 'Same period last year',
+};
+
+/** A records page request (CONTRACT 8.1): a page read instead of an aggregate. */
+export interface RecordsRequest {
+	page: number;
+	size: number;
+	/** CSV export: up to 5000 rows in one page. */
+	export?: boolean;
+}
+
 export interface ReportSpec {
 	v: 1;
 	source: string;
@@ -260,6 +299,8 @@ export interface ReportSpec {
 	sort?: Array<{ by: string; dir: 'ASC' | 'DESC' }>;
 	limit?: number;
 	params?: Record<string, any>;
+	compare?: { to: CompareTo };
+	records?: RecordsRequest;
 	view: ReportView;
 }
 
@@ -272,6 +313,8 @@ export interface ReportColumn {
 	format?: ColumnFormat;
 	currency?: string;
 	hidden?: boolean;
+	/** Set by the UI on `<m>_cmp` / `<m>_delta_pct` columns: shown in tables, never drawn as a measure. */
+	role?: 'compare';
 }
 
 export interface ReportPeriod {
@@ -293,6 +336,12 @@ export interface ReportSuccess {
 	 * shape.rs). Preferred over the UI's own table when present.
 	 */
 	fits?: Record<string, { ok: boolean; reason?: string }>;
+	/** With `spec.compare`: the period compared with. */
+	comparePeriod?: ReportPeriod;
+	/** A records page (CONTRACT 8.1). */
+	total?: number;
+	page?: number;
+	size?: number;
 }
 
 export interface ReportErrorBody {
@@ -322,6 +371,38 @@ export interface CatalogField {
 	lookup?: { source?: string; key?: string; label?: string; type?: string };
 }
 
+/**
+ * An app relative link template (CONTRACT 8.0). Placeholders: row keys (`{caseId}`),
+ * `{filter.<field>}` (the single selected value of that field, else empty), `{period.from}`,
+ * `{period.to}` (the run's resolved period, YYYY-MM-DD). Unknown placeholder: empty.
+ */
+export interface CatalogLink {
+	path: string;
+	label?: string;
+}
+
+/** View records for a source (CONTRACT 8.1). */
+export interface CatalogRecords {
+	fields: string[];
+	sort?: Array<{ by?: string; field?: string; dir?: 'ASC' | 'DESC' }>;
+	link?: CatalogLink;
+	authorityAny?: string[];
+}
+
+export interface CatalogSegment {
+	label?: string;
+	condition?: any;
+	dateField?: string;
+	/** KPI tiles counting this segment open this (CONTRACT 8.0). */
+	countLink?: CatalogLink;
+}
+
+export interface CatalogHierarchy {
+	label?: string;
+	/** Coarse to fine field keys, e.g. project > tower > unit. */
+	levels: string[];
+}
+
 export interface CatalogSource {
 	kind: 'STORAGE' | 'FUNCTION';
 	label?: string;
@@ -330,7 +411,7 @@ export interface CatalogSource {
 	scope?: string;
 	authority?: string;
 	fields?: Record<string, CatalogField>;
-	segments?: Record<string, { label?: string; condition?: any }>;
+	segments?: Record<string, CatalogSegment>;
 	columns?: Record<string, any>;
 	resultPath?: string;
 	/** FUNCTION sources: default params, and the ones a spec (or a dashboard filter) may set. */
@@ -338,6 +419,13 @@ export interface CatalogSource {
 	allowedParams?: string[];
 	/** Only there to resolve labels for other sources: never offered as report data. */
 	lookupOnly?: boolean;
+	/** Row link (CONTRACT 8.0), e.g. {"path":"/caseView/{caseId}"}. */
+	link?: CatalogLink;
+	/** "View all" under the widget. */
+	moreLink?: CatalogLink;
+	/** FUNCTION sources that page: the param that carries the page number, and the page size. */
+	paging?: { param: string; size: number };
+	records?: CatalogRecords;
 }
 
 export interface CatalogDefault {
@@ -348,6 +436,8 @@ export interface CatalogDefault {
 	authorityAll?: string[];
 	layout?: { w?: number; h?: number };
 	refreshMin?: number;
+	/** The KPI tile opens this (CONTRACT 8.0); wins over the segment's. */
+	countLink?: CatalogLink;
 }
 
 export interface ReportCatalog {
@@ -360,6 +450,7 @@ export interface ReportCatalog {
 	fyStartMonth?: number;
 	ai?: boolean;
 	quickFilters?: string[];
+	hierarchies?: Record<string, CatalogHierarchy>;
 	sources: Record<string, CatalogSource>;
 	defaults?: CatalogDefault[];
 }
@@ -374,6 +465,8 @@ export interface SavedWidget {
 	defaultId?: string;
 	/** Set once the user changed a default's spec or name: it is their own widget from then on. */
 	edited?: boolean;
+	/** Imported from a file but refused by this catalog's dry run: why (CONTRACT 8.2). */
+	importError?: string;
 }
 
 export interface LayoutItem {

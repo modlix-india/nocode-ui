@@ -30,6 +30,9 @@ import {
  * - LINE / SMOOTH_LINE / STEP_LINE / AREA: one group by (a date bucket preferred, any
  *   dimension allowed) or two (the second is the series).
  * - TABLE / LIST: any shape.
+ * - HEATMAP (P1b, CONTRACT 8.1): two group bys and one measure.
+ * - TREEMAP (P1b): one or two group bys and one measure.
+ * - WATERFALL (P1b): one group by and one measure (the running change).
  */
 
 export interface ResultShape {
@@ -90,6 +93,9 @@ export const SHAPE_RULES: Record<ViewType, Rule> = {
 	AREA: { groupBy: [1, 2], minMeasures: 1, reason: LINE_DIMS },
 	TABLE: { reason: '' },
 	LIST: { reason: '' },
+	HEATMAP: { groupBy: [2], measures: [1], reason: TWO_DIMS_ONE_MEASURE },
+	TREEMAP: { groupBy: [1, 2], measures: [1], reason: 'needs one or two group bys and one measure' },
+	WATERFALL: { groupBy: [1], measures: [1], reason: 'needs one group by and one measure' },
 };
 
 const LINE_FAMILY = new Set<ViewType>(['LINE', 'SMOOTH_LINE', 'STEP_LINE', 'AREA', 'STACKED_AREA']);

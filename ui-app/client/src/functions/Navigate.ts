@@ -8,8 +8,7 @@ import {
 	Parameter,
 	Schema,
 } from '@fincity/kirun-js';
-import { getHref } from '../components/util/getHref';
-import { isLeavingForBeacon } from '../sso/ssoModule';
+import { navigateTo } from './navigateTo';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 
 const SIGNATURE = new FunctionSignature('Navigate')
@@ -38,38 +37,12 @@ const SIGNATURE = new FunctionSignature('Navigate')
 export class Navigate extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
 		const linkPath: string = context.getArguments()?.get('linkPath');
-		const target = context.getArguments()?.get('target');
-		const force = context.getArguments()?.get('force');
-		const removeThisPageFromHistory = context.getArguments()?.get('removeThisPageFromHistory');
-		const addressOnly = context.getArguments()?.get('addressOnly') ?? false;
-		const url = getHref(linkPath, window.location);
-
-		// A beacon hop is already committed and this page is on its way out. Navigate's
-		// history dance (pushState, back, then a forward 100ms later) would cancel that
-		// hop, and because it is a race the failure is intermittent and silent: signed in
-		// here, no session shared with anything else. Pages routinely place Navigate beside
-		// Login rather than after it, so the two run at once.
-		if (isLeavingForBeacon()) return new FunctionOutput([EventResult.outputOf(new Map())]);
-
-		if (addressOnly && target === '_self' && !force && !url?.startsWith('http')) {
-			if (
-				url &&
-				url !==
-					`${window.location.pathname}${window.location.search}${window.location.hash}`
-			)
-				window.history.replaceState(window.history.state, '', url);
-		} else if (target === '_self' && !force && !url?.startsWith('http')) {
-			if (removeThisPageFromHistory) {
-				window.history.replaceState(undefined, '', url);
-				window.history.back();
-				setTimeout(() => window.history.forward(), 100);
-			} else {
-				window.history.pushState(undefined, '', url);
-				window.history.back();
-				setTimeout(() => window.history.forward(), 100);
-			}
-		} else window.open(url, target);
-
+		navigateTo(linkPath, {
+			target: context.getArguments()?.get('target'),
+			force: context.getArguments()?.get('force'),
+			removeThisPageFromHistory: context.getArguments()?.get('removeThisPageFromHistory'),
+			addressOnly: context.getArguments()?.get('addressOnly') ?? false,
+		});
 		return new FunctionOutput([EventResult.outputOf(new Map())]);
 	}
 

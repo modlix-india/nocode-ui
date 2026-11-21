@@ -22,6 +22,8 @@ export interface ReportTransport {
 	loadDoc(name: string): Promise<any>;
 	/** Writes a personalization document. */
 	saveDoc(name: string, doc: any): Promise<void>;
+	/** Downloads a file the platform made (an exported PDF) with the user's token. */
+	fetchFile?(url: string): Promise<Blob>;
 }
 
 export class ReportCallError extends Error {
@@ -111,6 +113,17 @@ export const serverTransport: ReportTransport = {
 			headers: authHeaders(),
 		});
 	},
+	async fetchFile(url) {
+		try {
+			const r = await axios.get(url.replace(/^\//, ''), {
+				headers: authHeaders(),
+				responseType: 'blob',
+			});
+			return r.data as Blob;
+		} catch (e: any) {
+			throw httpError(e, 'The file could not be downloaded');
+		}
+	},
 };
 
 let fixtureTransport: Promise<ReportTransport> | undefined;
@@ -159,6 +172,19 @@ export function defaultRunFunction(appNamespace: string | undefined) {
 
 export function defaultCatalogFunction(appNamespace: string | undefined) {
 	return appNamespace ? `${appNamespace}.reportCatalog` : '';
+}
+
+/** `<ns>.reportPdf` (CONTRACT 8.2), from the namespace or the run function's. */
+export function defaultPdfFunction(appNamespace: string | undefined, runFunction?: string) {
+	const ns = appNamespace || namespaceOf(runFunction);
+	return ns ? `${ns}.reportPdf` : '';
+}
+
+/** The namespace of a `Namespace.name` function ('' when it has none). */
+export function namespaceOf(fn: string | undefined): string {
+	const s = String(fn ?? '');
+	const dot = s.lastIndexOf('.');
+	return dot > 0 ? s.slice(0, dot) : '';
 }
 
 /** Runs a spec. Never throws: every failure comes back as `{ok:false, error}`. */

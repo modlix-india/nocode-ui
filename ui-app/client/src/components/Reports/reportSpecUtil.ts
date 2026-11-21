@@ -72,15 +72,23 @@ export function nextLevel(bucket: Bucket | undefined): Bucket | undefined {
 	return i < 0 || i >= DRILL_LEVELS.length - 1 ? undefined : DRILL_LEVELS[i + 1];
 }
 
-/** One step of a date drill: the bucket clicked and the finer level shown inside it. */
+/**
+ * One drill step. A date step (`kind` empty or 'date'): the bucket clicked and the finer level
+ * shown inside it. A hierarchy step (CONTRACT 8.1): the group by moves from `field` to the next
+ * level `next`, with an EQ filter on the clicked `value`.
+ */
 export interface DrillStep {
+	kind?: 'date' | 'hierarchy';
 	field: string;
 	as: string;
-	/** The level that was clicked (MONTH) and its range. */
-	from: string;
-	to: string;
-	level: Bucket;
-	/** "Nov 2026". */
+	/** Date step: the level that was clicked (MONTH) and its range. */
+	from?: string;
+	to?: string;
+	level?: Bucket;
+	/** Hierarchy step: the next level's field and the clicked key. */
+	next?: string;
+	value?: any;
+	/** "Nov 2026", "Tower A". */
 	label: string;
 }
 
@@ -101,8 +109,29 @@ export interface MarkActions {
 	drill?: DrillStep;
 }
 
+/** The next level of a catalog hierarchy after `field`, if the source has it (CONTRACT 8.1). */
+export function hierarchyNext(
+	catalog: ReportCatalog | undefined,
+	source: string | undefined,
+	field: string,
+): { next: string; hierarchy: string } | undefined {
+	const fields = source ? catalog?.sources?.[source]?.fields : undefined;
+	for (const [name, h] of Object.entries(catalog?.hierarchies ?? {})) {
+		const levels = Array.isArray(h?.levels) ? h.levels : [];
+		const i = levels.indexOf(field);
+		if (i < 0 || i >= levels.length - 1) continue;
+		const next = levels[i + 1];
+		if (fields?.[next] && !fields[next].pii) return { next, hierarchy: name };
+	}
+	return undefined;
+}
+
 /** The Keep only / Exclude / Drill down choices for a click on a mark. */
-export function markActions(spec: ReportSpec | undefined, target: MarkTarget): MarkActions {
+export function markActions(
+	spec: ReportSpec | undefined,
+	target: MarkTarget,
+	catalog?: ReportCatalog,
+): MarkActions {
 	const res: MarkActions = {};
 	if (!spec || !target.x) return res;
 	const gx = groupByOf(spec, target.x.key);
@@ -127,6 +156,7 @@ export function markActions(spec: ReportSpec | undefined, target: MarkTarget): M
 			const level = nextLevel(gx.bucket);
 			if (level)
 				res.drill = {
+					kind: 'date',
 					field: gx.field,
 					as: gx.as,
 					from: range.from,
@@ -140,6 +170,16 @@ export function markActions(spec: ReportSpec | undefined, target: MarkTarget): M
 		res.exclude = [
 			{ field: gx.field, op: 'NE', values: [value], label: `${xLabel} is not ${text}` },
 		];
+		const h = hierarchyNext(catalog, spec.source, gx.field);
+		if (h && (spec.filters?.length ?? 0) < SPEC_CAPS.filters)
+			res.drill = {
+				kind: 'hierarchy',
+				field: gx.field,
+				as: gx.as,
+				next: h.next,
+				value,
+				label: text,
+			};
 	}
 	const gs = target.series ? groupByOf(spec, target.series.key) : undefined;
 	if (gs && !gs.bucket && target.seriesValue !== undefined && res.keep) {
@@ -154,21 +194,38 @@ export function markActions(spec: ReportSpec | undefined, target: MarkTarget): M
 	return res;
 }
 
-/** The spec with a date drill applied: finer bucket on that group by, inside the clicked range. */
+/**
+ * The spec with the drill steps applied in order: a date step puts the finer bucket on that
+ * group by inside the clicked range; a hierarchy step moves the group by to the next level and
+ * keeps only the clicked value of the level above.
+ */
 export function applyDrill(spec: ReportSpec, steps: DrillStep[]): ReportSpec {
 	if (!steps.length) return spec;
 	const next = cloneSpec(spec);
-	const last = steps[steps.length - 1];
-	next.groupBy = (next.groupBy ?? []).map(g =>
-		g.as === last.as ? { ...g, bucket: last.level } : g,
-	);
-	next.filters = withPeriod(next.filters, {
-		field: last.field,
-		period: 'CUSTOM',
-		from: last.from,
-		to: last.to,
-	});
-	next.view = { ...next.view, drill: { field: last.field, level: last.level } };
+	let lastDate: DrillStep | undefined;
+	for (const st of steps) {
+		if (st.kind === 'hierarchy') {
+			if (!st.next) continue;
+			next.groupBy = (next.groupBy ?? []).map(g =>
+				g.as === st.as ? { field: st.next!, as: g.as } : g,
+			);
+			next.filters = [...(next.filters ?? []), { field: st.field, op: 'EQ', values: [st.value] }];
+			continue;
+		}
+		if (!st.level) continue;
+		lastDate = st;
+		next.groupBy = (next.groupBy ?? []).map(g =>
+			g.as === st.as ? { ...g, bucket: st.level } : g,
+		);
+		next.filters = withPeriod(next.filters, {
+			field: st.field,
+			period: 'CUSTOM',
+			from: st.from,
+			to: st.to,
+		});
+	}
+	if (lastDate?.level)
+		next.view = { ...next.view, drill: { field: lastDate.field, level: lastDate.level } };
 	return next;
 }
 
@@ -185,10 +242,19 @@ export function withPeriod(filters: ReportFilter[] | undefined, f: ReportFilter)
 	return list.map((e, j) => (j === i ? f : e));
 }
 
-export function drillCrumbs(spec: ReportSpec | undefined, steps: DrillStep[]): string[] {
+export function drillCrumbs(
+	spec: ReportSpec | undefined,
+	steps: DrillStep[],
+	catalog?: ReportCatalog,
+): string[] {
 	if (!steps.length || !spec) return [];
 	const first = groupByOf(spec, steps[0].as);
-	const top = first?.bucket ? `All ${BUCKET_LABELS[first.bucket].toLowerCase()}s` : 'All';
+	const top =
+		steps[0].kind === 'hierarchy'
+			? `All ${fieldLabel(catalog, steps[0].field).toLowerCase()}`
+			: first?.bucket
+				? `All ${BUCKET_LABELS[first.bucket].toLowerCase()}s`
+				: 'All';
 	return [top, ...steps.map(s => s.label)];
 }
 
@@ -217,6 +283,8 @@ export function effectiveSpec(
 		dashboard?: DashboardFilters;
 		session?: SessionFilter[];
 		drill?: DrillStep[];
+		/** "Filter dashboard" clicks on other widgets (CONTRACT 8.1); applied where the source has the field. */
+		cross?: SessionFilter[];
 	},
 ): EffectiveSpec {
 	const skipped: string[] = [];
@@ -256,6 +324,16 @@ export function effectiveSpec(
 			continue;
 		}
 		extra.push({ field, op: 'IN', values });
+	}
+	for (const f of opts.cross ?? []) {
+		if (!hasField(opts.catalog, spec, f.field)) {
+			skipped.push(f.label ?? fieldLabel(opts.catalog, f.field));
+			continue;
+		}
+		if (f.period && (next.filters ?? []).some(e => e.field === f.field && e.period)) {
+			const { label: _l, ...plain } = f;
+			next.filters = withPeriod(next.filters, plain);
+		} else extra.push(f);
 	}
 	// A session date range (Keep only on a date) replaces that field's period, as a drill does.
 	for (const f of opts.session ?? []) {
@@ -319,4 +397,45 @@ export function fieldLabel(catalog: ReportCatalog | undefined, field: string): s
 /** A stable key for a spec (for the 10 s forced refresh guard and caches). */
 export function specKey(spec: ReportSpec | undefined): string {
 	return spec ? JSON.stringify(spec) : '';
+}
+
+/**
+ * A records page request (CONTRACT 8.1) for what a widget shows: its source, segment and
+ * effective filters, plus a clicked mark's Keep only filters, within the filter cap.
+ */
+export function recordsSpec(
+	eff: ReportSpec,
+	extra: SessionFilter[] | undefined,
+	page: number,
+	size: number,
+	exportAll?: boolean,
+): ReportSpec {
+	let filters = [...(eff.filters ?? [])];
+	for (const f of extra ?? []) {
+		const { label: _l, ...plain } = f;
+		if (plain.period) filters = withPeriod(filters, plain);
+		else if (filters.length < SPEC_CAPS.filters) filters.push(plain);
+	}
+	return {
+		v: 1,
+		source: eff.source,
+		...(eff.segment ? { segment: eff.segment } : {}),
+		...(filters.length ? { filters } : {}),
+		records: { page, size, ...(exportAll ? { export: true } : {}) },
+		view: { type: 'TABLE' },
+	};
+}
+
+/** Why a spec cannot compare periods, or undefined when it can (CONTRACT 8.1: one period, not ALL_TIME). */
+export function compareBlocker(
+	spec: ReportSpec | undefined,
+	catalog: ReportCatalog | undefined,
+): string | undefined {
+	if (!spec) return 'Nothing to compare';
+	if (catalog?.sources?.[spec.source]?.kind === 'FUNCTION')
+		return 'This report cannot be compared';
+	const periods = (spec.filters ?? []).filter(f => f.period);
+	if (!periods.length) return 'Set a date range to compare';
+	if (periods.some(f => f.period === 'ALL_TIME')) return 'All time cannot be compared';
+	return undefined;
 }
