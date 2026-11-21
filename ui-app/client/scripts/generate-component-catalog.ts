@@ -285,7 +285,9 @@ function arrayDeclaredAs(id: ts.Identifier): ts.ArrayLiteralExpression | undefin
 		if (!ts.isVariableStatement(st)) continue;
 		for (const d of st.declarationList.declarations) {
 			if (ts.isIdentifier(d.name) && d.name.text === id.text && d.initializer) {
-				const init = ts.isAsExpression(d.initializer) ? d.initializer.expression : d.initializer;
+				const init = ts.isAsExpression(d.initializer)
+					? d.initializer.expression
+					: d.initializer;
 				if (ts.isArrayLiteralExpression(init)) return init;
 			}
 		}
@@ -991,6 +993,14 @@ const DEFAULT_TIER: ComponentTier = 'specialized';
 // AI agent understands what it does and when to use it.
 
 const COMPONENT_BRIEFS: Record<string, string> = {
+	ReportWidget:
+		'One report widget (CXZ-1780): runs a report spec through <appNamespace>.reportRun and shows it as a number, table, list, crosstab or chart (22 view types), with a chart type picker that greys out types that do not fit, a style panel, click a mark for Keep only / Exclude / Drill down / View data, full screen and PNG download. spec = report spec v1 {"v":1,"source","segment","measures","derived","groupBy","filters","sort","limit","view":{"type","x","y","title","style"}}. bindingPath (optional) holds the spec and is written back when editable. Events onEdit / onDuplicate / onRemove / onDelete add those menu items. For a whole per-user dashboard use Dashboard instead.',
+	Dashboard:
+		'A per-user dashboard of report widgets (CXZ-1780). appNamespace (e.g. CxZump) gives <ns>.reportCatalog and <ns>.reportRun; name picks the saved document (personalization reports_<name>, shared with ReportLibrary and ReportEditor of the same name). First visit places the app default widgets from the catalog; later defaults arrive as New with Keep / Remove. 12 column tile grid with drag and snap resize (editable true), one column with move up / down on phones, filter bar with period + catalog quickFilters (showFilters), Add widget, Library and Reset to defaults. mode library shows the saved widget list instead. Put it alone in a full width Grid; it needs no children.',
+	ReportLibrary:
+		'The saved report widget library of a Dashboard (same appNamespace and name): edit, duplicate, delete, add to or remove from the dashboard, and add back app default widgets. editable defaults to true. Same as Dashboard with mode library, without the switch to the grid.',
+	ReportEditor:
+		'A form to build a report widget from the app report catalog (CXZ-1780): data source, segment, measures, calculations, group by (with date buckets), filters, sort and limit, chart type and auto refresh, validated with a dry run and previewed live. Save puts the widget into the saved dashboard named dashboardName (and on the dashboard when "Add to my dashboard" is ticked, addToDashboard default true). bindingPath receives {id, name, spec} on save; onSave runs after.',
 	AutomationFlow:
 		'Draws ONE Automation document (/api/core/automations) as plain sentence cards on a rail: WHEN (trigger), DO (action), WAIT, IF (Yes / Otherwise lanes), AT THE SAME TIME (side by side lanes closed by a JOIN), END. bindingPath = the document (read, and written back on every edit), bindingPath2 = the catalog from GET /api/core/automations/catalog?appCode=, bindingPath3 = a run (GET /api/core/eventRuns/automations/{id}) shown in mode run, bindingPath4 = the check report from POST /api/core/automations/check (badges the cards it names), bindingPath5 = the selected node key ("__trigger" for WHEN). mode view|edit|run: edit adds "+" on every rail gap, move up/down/remove on each card, and a built-in side panel (showEditor, default true) with trigger, action, wait and condition editors. onCardClick runs after the selected key is written to bindingPath5; onChange runs after the edited document is written to bindingPath. Save the document from onChange.',
 	BlueprintEditor:
@@ -2078,6 +2088,24 @@ function main() {
 			for (const [name, comp] of tableResults) {
 				components[name] = comp;
 				console.log(`  ✓ ${name} (Table sub-component)`);
+			}
+			continue;
+		}
+
+		// Report components live one level down (Reports/<Name>/<Name>.tsx), next to their
+		// shared code (Reports/ui, Reports/fixtures): only folders holding a <Name>.tsx are
+		// components.
+		if (entry.name === 'Reports') {
+			for (const sub of fs.readdirSync(dirPath, { withFileTypes: true })) {
+				if (!sub.isDirectory()) continue;
+				const subPath = path.join(dirPath, sub.name);
+				if (!fs.existsSync(path.join(subPath, `${sub.name}.tsx`))) continue;
+				const r = processComponent(subPath, sub.name);
+				if (!r) continue;
+				components[r[0]] = r[1];
+				console.log(
+					`  ✓ ${r[0]} (Reports, ${r[1].properties.length} props, ${r[1].pseudoStates.length} pseudo-states)`,
+				);
 			}
 			continue;
 		}

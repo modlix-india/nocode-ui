@@ -766,6 +766,43 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 
+	{
+		name: 'dataLabels',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Data Labels',
+		description:
+			'Write each value on its bar, point or slice. Off (the default) draws the chart as ' +
+			'before and loads nothing extra.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'off',
+		enumValues: [
+			{ name: 'off', displayName: 'Off' },
+			{ name: 'inside', displayName: 'Inside' },
+			{ name: 'outside', displayName: 'Outside' },
+			{ name: 'end', displayName: 'At the end, inside' },
+		],
+	},
+	{
+		name: 'referenceLines',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Reference Lines',
+		description:
+			'Dashed lines across the chart at fixed values, such as a target. A list of ' +
+			'{"value": 100, "label": "Target", "axis": "y", "paletteIndex": 2}; axis is y ' +
+			'(default) or x, paletteIndex picks a theme chart colour (1 to 12). Empty: none.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'onDataClick',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Data Click',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description:
+			'Event run when a bar, point or slice is clicked. Before it runs, the clicked point ' +
+			'is written to the Selection Binding as {datasetIndex, index, label, x, y, row}.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
+
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
