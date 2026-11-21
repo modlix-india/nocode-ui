@@ -135,6 +135,10 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 	const [importing, setImporting] = useState<ImportState | undefined>(undefined);
 	const [busy, setBusy] = useState(false);
 	const [transfer, setTransfer] = useState<TransferState | undefined>(undefined);
+	/** A widget waiting for the user to confirm its delete (PLAT-1704). */
+	const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string } | undefined>(
+		undefined,
+	);
 	const exportApis = useRef(new Map<string, WidgetExportApi>());
 	const exportRefs = useRef(new Map<string, (api: WidgetExportApi | null) => void>());
 	const fileRef = useRef<HTMLInputElement>(null);
@@ -339,7 +343,9 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 						: undefined
 				}
 				onRemove={editable ? () => apply(d => removeFromDashboard(d, item.id)) : undefined}
-				onDelete={editable ? () => apply(d => deleteWidget(d, item.id)) : undefined}
+				onDelete={
+					editable ? () => setConfirmDelete({ id: item.id, name: r.name }) : undefined
+				}
 				onSpecChange={
 					editable
 						? spec => apply(d => editWidget(d, item.id, { spec }, catalog))
@@ -702,6 +708,7 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 					editable={editable}
 					apply={apply}
 					onEdit={(id, value) => setEditing({ id, value })}
+					onDelete={(id, name) => setConfirmDelete({ id, name })}
 					onTransfer={
 						editable && otherGroups.length
 							? (id, name) => setTransfer({ id, name, move: false })
@@ -922,7 +929,9 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 									type="radio"
 									name="rpTransferKind"
 									checked={!transfer.move}
-									onChange={() => setTransfer(s => (s ? { ...s, move: false } : s))}
+									onChange={() =>
+										setTransfer(s => (s ? { ...s, move: false } : s))
+									}
 								/>
 								Copy (keep it here too)
 							</label>
@@ -931,7 +940,9 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 									type="radio"
 									name="rpTransferKind"
 									checked={transfer.move}
-									onChange={() => setTransfer(s => (s ? { ...s, move: true } : s))}
+									onChange={() =>
+										setTransfer(s => (s ? { ...s, move: true } : s))
+									}
 								/>
 								Move (take it off here)
 							</label>
@@ -974,6 +985,52 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 						>
 							{transfer.busy ? <Icon name="fa-spinner fa-spin" /> : null}
 							{transfer.move ? 'Move' : 'Copy'}
+						</button>
+					</div>
+				</Dialog>
+			) : null}
+			{confirmDelete ? (
+				<Dialog
+					kind="modal"
+					label="Delete widget"
+					onClose={() => setConfirmDelete(undefined)}
+				>
+					<div className="_rpDrawerHead">
+						<span>Delete widget</span>
+						<button
+							type="button"
+							className="_rpIconBtn"
+							aria-label="Close"
+							title="Close"
+							onClick={() => setConfirmDelete(undefined)}
+						>
+							<Icon name="fa-xmark" />
+						</button>
+					</div>
+					<div className="_rpDrawerBody">
+						<span>
+							Delete the widget {confirmDelete.name}? It goes from the dashboard and
+							the library. This cannot be undone.
+						</span>
+					</div>
+					<div className="_rpDrawerFoot">
+						<button
+							type="button"
+							className="_rpBtn"
+							onClick={() => setConfirmDelete(undefined)}
+						>
+							Cancel
+						</button>
+						<button
+							type="button"
+							className="_rpBtn _primary"
+							onClick={() => {
+								const id = confirmDelete.id;
+								setConfirmDelete(undefined);
+								apply(d => deleteWidget(d, id));
+							}}
+						>
+							Delete
 						</button>
 					</div>
 				</Dialog>
@@ -1068,6 +1125,7 @@ export function LibraryList({
 	editable,
 	apply,
 	onEdit,
+	onDelete,
 	onTransfer,
 }: Readonly<{
 	doc: DashboardDoc;
@@ -1075,6 +1133,8 @@ export function LibraryList({
 	editable?: boolean;
 	apply: (fn: (d: DashboardDoc) => DocResult | DashboardDoc) => void;
 	onEdit: (id: string, v: EditorValue) => void;
+	/** Asks before deleting (PLAT-1704); without it Delete acts at once. */
+	onDelete?: (id: string, name: string) => void;
 	/** Copy or move to another group (only when there is one). */
 	onTransfer?: (id: string, name: string) => void;
 }>) {
@@ -1157,7 +1217,11 @@ export function LibraryList({
 								<button
 									type="button"
 									className="_rpBtn"
-									onClick={() => apply(d => deleteWidget(d, id))}
+									onClick={() =>
+										onDelete
+											? onDelete(id, r.name)
+											: apply(d => deleteWidget(d, id))
+									}
 								>
 									Delete
 								</button>

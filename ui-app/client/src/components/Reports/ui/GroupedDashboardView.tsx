@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { navigateTo } from '../../../functions/navigateTo';
 import {
 	DEFAULT_GROUP,
 	GROUP_LABEL_MAX,
@@ -27,8 +28,19 @@ export interface GroupedDashboardViewProps extends Omit<DashboardViewProps, 'nam
 	group: string;
 	groups?: unknown;
 	showGroupManager?: boolean;
-	/** The group label is the title when `title` is empty (the page named a group). */
-	labelAsTitle?: boolean;
+	/**
+	 * The app's group page, e.g. "/reportGroup/{id}". Set: a new group and a deleted current
+	 * group navigate (the new group's page; the first remaining group of the user's, else the
+	 * dashboard group). Not set: the dashboard switches in place.
+	 */
+	groupPagePath?: string;
+}
+
+/** The group page path for a group id: `{id}` replaced, else the id appended. */
+export function groupPageHref(template: string, id: string): string {
+	const t = template.trim();
+	const enc = encodeURIComponent(id);
+	return t.includes('{id}') ? t.split('{id}').join(enc) : `${t.replace(/\/+$/, '')}/${enc}`;
 }
 
 interface ManageState {
@@ -39,7 +51,7 @@ interface ManageState {
 }
 
 export function GroupedDashboardView(props: Readonly<GroupedDashboardViewProps>) {
-	const { group, groups: groupsProp, showGroupManager, labelAsTitle, ...rest } = props;
+	const { group, groups: groupsProp, showGroupManager, groupPagePath, ...rest } = props;
 	const { transport } = rest;
 	const app = rest.appNamespace || namespaceOf(rest.runFunction);
 	const cat = useCatalog(transport, rest.catalogFunction);
@@ -61,7 +73,10 @@ export function GroupedDashboardView(props: Readonly<GroupedDashboardViewProps>)
 		setActive(tabs[0].id);
 	}, [tabs.length, knownMissing]); // eslint-disable-line react-hooks/exhaustive-deps
 
-	const title = rest.title || (labelAsTitle && !tabs.length ? info?.label : undefined);
+	// A title only when one is set, or on a group page (manager or tabs): then the group label.
+	// A plain `group` shows none (the page has its own heading).
+	const asGroupPage = !!showGroupManager || tabs.length > 0;
+	const title = rest.title || (asGroupPage ? info?.label : undefined);
 	const canAdd = groups.status === 'ready' && groups.user.groups.length < USER_GROUP_CAP;
 
 	const submit = async () => {
@@ -84,11 +99,22 @@ export function GroupedDashboardView(props: Readonly<GroupedDashboardViewProps>)
 					: await groups.remove(active);
 		if (!r.ok) return setManage({ ...manage, busy: false, error: r.error });
 		setManage(undefined);
+		const pagePath = groupPagePath?.trim();
 		if (manage.kind === 'new' && r.id) {
 			setGone('');
 			setActive(r.id);
+			if (pagePath) navigateTo(groupPageHref(pagePath, r.id));
 		} else if (manage.kind === 'delete') {
-			if (tabs.length) setActive(tabs.find(t => t.id !== active)?.id ?? DEFAULT_GROUP);
+			if (pagePath) {
+				const next =
+					r.doc.groups
+						.slice()
+						.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+						.find(g => g.id !== active)?.id ?? DEFAULT_GROUP;
+				setGone('');
+				setActive(next);
+				navigateTo(groupPageHref(pagePath, next));
+			} else if (tabs.length) setActive(tabs.find(t => t.id !== active)?.id ?? DEFAULT_GROUP);
 			else setGone(info?.label ?? '');
 		}
 	};
@@ -181,7 +207,9 @@ export function GroupedDashboardView(props: Readonly<GroupedDashboardViewProps>)
 				<div className="_rpWidget">
 					<div className="_rpState">
 						<span className="_rpMuted">
-							{gone ? `The group ${gone} was deleted.` : 'This group no longer exists.'}
+							{gone
+								? `The group ${gone} was deleted.`
+								: 'This group no longer exists.'}
 						</span>
 					</div>
 				</div>
@@ -236,7 +264,13 @@ export function GroupedDashboardView(props: Readonly<GroupedDashboardViewProps>)
 										value={manage.label}
 										onChange={e =>
 											setManage(s =>
-												s ? { ...s, label: e.target.value, error: undefined } : s,
+												s
+													? {
+															...s,
+															label: e.target.value,
+															error: undefined,
+														}
+													: s,
 											)
 										}
 									/>

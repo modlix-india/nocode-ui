@@ -49,6 +49,32 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 	},
 	{
+		name: 'allowDataImport',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Allow Data Import',
+		description:
+			"Adds Import data from CSV and Manage your data to the Data picker: the user's own datasets, saved through <namespace>.reportDatasetSave, reportDatasetList and reportDatasetDelete. Off by default.",
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
+	{
+		name: 'readSpecFromUrl',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Open A Spec From The Address',
+		description:
+			'Opens the editor prefilled from ?spec=<base64url JSON> in the page address (the assistant links to the Reports page that way). Nothing is saved until the user saves. Off by default.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
+	{
+		name: 'aiEndpoint',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'AI Endpoint',
+		description:
+			'The AI report builder the Ask AI box streams from, with {app} for the app code. Empty: /api/ai/reports/{app}/build. The box shows only when the catalog says ai: true.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'catalogFunction',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Catalog Function',

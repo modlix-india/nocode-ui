@@ -10,6 +10,7 @@ import { createRoot, Root } from 'react-dom/client';
 
 jest.mock('../../../context/StoreContext', () => ({
 	getDataFromPath: () => undefined,
+	setData: () => undefined,
 }));
 const chartProps: { current?: any } = {};
 jest.mock('../ui/ReportChart', () => ({

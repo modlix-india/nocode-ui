@@ -17,7 +17,7 @@ export const REPORT_TIMEOUT_MS = 15000;
 
 export interface ReportTransport {
 	/** Executes a server function; answers what `/function/execute` answers (its events). */
-	call(fn: string, args: Record<string, any>): Promise<any>;
+	call(fn: string, args: Record<string, any>, opts?: { timeoutMs?: number }): Promise<any>;
 	/** Reads a personalization document; `{}` when there is none. Throws when it cannot read. */
 	loadDoc(name: string): Promise<any>;
 	/** Writes a personalization document. */
@@ -87,13 +87,13 @@ function httpError(e: any, what: string): ReportCallError {
 }
 
 export const serverTransport: ReportTransport = {
-	async call(fn, args) {
+	async call(fn, args, opts) {
 		const { namespace, name } = splitFunctionName(fn);
 		try {
 			const response = await axios.post(
 				`api/core/function/execute/${encodeURIComponent(namespace)}/${encodeURIComponent(name)}`,
 				args ?? {},
-				{ headers: authHeaders(), timeout: REPORT_TIMEOUT_MS },
+				{ headers: authHeaders(), timeout: opts?.timeoutMs ?? REPORT_TIMEOUT_MS },
 			);
 			return response.data;
 		} catch (e: any) {
@@ -144,7 +144,7 @@ export function transportFor(useFixtures: boolean | undefined): Promise<ReportTr
 	return fixtureTransport;
 }
 
-function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
+export function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
 	return new Promise<T>((resolve, reject) => {
 		const h = setTimeout(
 			() => reject(new ReportCallError('TIMEOUT', 'The report took too long.')),
@@ -194,6 +194,20 @@ export function namespaceOf(fn: string | undefined): string {
 	return dot > 0 ? s.slice(0, dot) : '';
 }
 
+/** The runner caches a result for 60 s: a source whose data just changed runs with `force`. */
+export const RUN_CACHE_MS = 60000;
+const sourceChangedAt = new Map<string, number>();
+
+/** The data behind a source changed (a dataset replaced): skip the runner's cache for a while. */
+export function markSourceChanged(source: string) {
+	sourceChangedAt.set(source, Date.now());
+}
+
+function recentlyChanged(source: string | undefined): boolean {
+	const at = source ? sourceChangedAt.get(source) : undefined;
+	return at !== undefined && Date.now() - at < RUN_CACHE_MS;
+}
+
 /** Runs a spec. Never throws: every failure comes back as `{ok:false, error}`. */
 export async function runReport(
 	transport: ReportTransport,
@@ -204,7 +218,11 @@ export async function runReport(
 	try {
 		if (!runFunction) throw new ReportCallError('BAD_FUNCTION', 'No report function is set.');
 		const data = await withTimeout(
-			transport.call(runFunction, { spec, force: !!opts?.force, dryRun: !!opts?.dryRun }),
+			transport.call(runFunction, {
+				spec,
+				force: !!opts?.force || recentlyChanged(spec?.source),
+				dryRun: !!opts?.dryRun,
+			}),
 			opts?.timeoutMs ?? REPORT_TIMEOUT_MS,
 		);
 		const out = pickOutput(eventResults(data));
@@ -274,9 +292,36 @@ export function clearCatalogCache() {
 	catalogCache.clear();
 }
 
+const catalogListeners = new Set<() => void>();
+
+/**
+ * The catalog changed on the server (a dataset was imported, renamed or deleted: its source is
+ * added or removed, CONTRACT 10): forget the cached catalogs and have every component on the
+ * page load it again.
+ */
+export function invalidateCatalog() {
+	catalogCache.clear();
+	catalogListeners.forEach(l => l());
+}
+
+export function onCatalogInvalidated(listener: () => void): () => void {
+	catalogListeners.add(listener);
+	return () => {
+		catalogListeners.delete(listener);
+	};
+}
+
 /** Plain words for an error code, for the widget's error state. */
-export function errorText(error: { code: string; message?: string } | undefined): string {
+export const DATASET_DELETED_TEXT = 'Dataset deleted. Pick other data or remove this widget.';
+
+export function errorText(
+	error: { code: string; message?: string } | undefined,
+	/** The spec's source: an unknown `dataset:` source is a deleted dataset (CONTRACT 10). */
+	source?: string,
+): string {
 	if (!error) return 'Something went wrong.';
+	if (error.code === 'UNKNOWN_SOURCE' && String(source ?? '').startsWith('dataset:'))
+		return DATASET_DELETED_TEXT;
 	switch (error.code) {
 		case 'TIMEOUT':
 			return 'This report took too long. Try again.';

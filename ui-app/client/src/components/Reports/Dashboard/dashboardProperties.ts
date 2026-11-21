@@ -57,6 +57,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		name: 'groupPagePath',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Group Page Path',
+		description:
+			"The app's report group page, with {id} for the group id, e.g. /reportGroup/{id}. Set: New group opens the new group's page, and deleting the open group opens the user's first remaining group (else the dashboard group). Empty: the dashboard switches groups in place.",
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'editable',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Editable',
@@ -83,7 +91,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Title',
 		description:
-			'Shown above the dashboard. Empty with a Report Group set and no tabs: the group label.',
+			'Shown above the dashboard. Empty: no title, except with Group Tabs or Show Group Manager on, where the group label is the title.',
 		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},

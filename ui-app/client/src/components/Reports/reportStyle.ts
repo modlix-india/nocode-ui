@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react';
-import { getDataFromPath } from '../../context/StoreContext';
 import { StylePropertyDefinition } from '../../types/common';
-import { styleDefaults as chartStyleDefaults } from '../Chart/chartStyleProperties';
-import { ChartTheme } from './reportChartConfig';
 
 /**
  * Looks for the report components (ReportWidget, Dashboard, ReportEditor). Every colour and
  * font is a theme variable (defaults point at the app's own theme colours), passed to the CSS
  * as custom properties on the component root, so a Dashboard's tiles look like a ReportWidget
- * without either needing the other's style sheet. The chart canvas reads the same variables.
+ * without either needing the other's style sheet. The chart canvas reads the same variables
+ * (reportTheme.ts).
+ *
+ * This file is on the page load path: every report entry's Style component imports it, and the
+ * entries are registered eagerly. Keep it to theme variable definitions and CSS text; anything
+ * that runs (hooks, colour probes, chart code) belongs in a module only the lazy parts import.
  */
 
 /**
@@ -52,7 +53,7 @@ export const REPORT_VARS: Array<{ n: string; dn: string; dv: string; cp: string 
 		dv: 'color-mix(in srgb, <fontColorOne> 5%, <backgroundColorSeven>)',
 		cp: '--rp-soft',
 	},
-	{ n: 'reportErrorColor', dn: 'Error Color', dv: '<fontColorNine>', cp: '--rp-error' },
+	{ n: 'reportErrorColor', dn: 'Error Color', dv: '<errorColor>', cp: '--rp-error' },
 	{ n: 'reportFont', dn: 'Font', dv: '<primaryFont>', cp: '--rp-font' },
 	{ n: 'reportTitleFont', dn: 'Title Font', dv: '<tertiaryFont>', cp: '--rp-title-font' },
 	{ n: 'reportNumberFont', dn: 'Big Number Font', dv: '<senaryFont>', cp: '--rp-kpi-font' },
@@ -226,6 +227,20 @@ export function reportCss(prefix: string): string {
 	${P} ._rpEditorSide { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 	${P} ._rpEditorSide ._rpEditorPreview { position: relative; top: 0; height: 340px; }
 	${P} ._rpHistory { display: flex; gap: 2px; }
+	${P} ._rpDrop { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 120px; padding: 16px; border: 2px dashed var(--rp-border); border-radius: var(--rp-radius); background: var(--rp-soft); cursor: pointer; text-align: center; }
+	${P} ._rpDrop:hover, ${P} ._rpDrop:focus-within { border-color: var(--rp-accent); }
+	${P} ._rpDrop i { font-size: 24px; color: var(--rp-muted); }
+	${P} ._rpDrop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+	${P} ._rpProgress { width: 100%; height: 10px; accent-color: var(--rp-accent); }
+	${P} ._rpImport { max-height: 46vh; border: 1px solid var(--rp-border); border-radius: 6px; }
+	${P} ._rpImport th { cursor: default; vertical-align: top; min-width: 150px; }
+	${P} ._rpImport ._skip { opacity: 0.45; }
+	${P} ._rpImportHead { display: flex; flex-direction: column; gap: 4px; font-weight: 400; }
+	${P} ._rpAsk { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px solid var(--rp-border); border-radius: var(--rp-radius); background: var(--rp-soft); }
+	${P} ._rpAsk form { display: flex; gap: 8px; align-items: flex-start; }
+	${P} ._rpAsk textarea { flex: 1; resize: vertical; min-height: 36px; }
+	${P} ._rpAskChoices { display: flex; flex-wrap: wrap; gap: 6px; }
+	${P} ._rpSummary { padding: 6px 10px; border-left: 3px solid var(--rp-accent); background: var(--rp-soft); border-radius: 4px; }
 	@media (max-width: 1100px) {
 		${P} ._rpEditor._shelves { grid-template-columns: minmax(180px, 220px) minmax(0, 1fr); }
 		${P} ._rpEditor._shelves ._rpEditorSide { grid-column: 1 / -1; }
@@ -238,65 +253,4 @@ export function reportCss(prefix: string): string {
 		${P} ._rpDrawer { top: auto; height: 80vh; width: 100vw; border-left: none; border-top: 1px solid var(--rp-border); }
 	}
 	`;
-}
-
-/** A colour custom property resolved to rgb (a probe element evaluates color-mix and var()). */
-function cssColor(el: Element | null | undefined, name: string): string {
-	if (!el || typeof getComputedStyle !== 'function' || typeof document === 'undefined') return '';
-	try {
-		const probe = document.createElement('span');
-		probe.style.color = `var(${name})`;
-		probe.style.display = 'none';
-		el.appendChild(probe);
-		const c = getComputedStyle(probe).color;
-		probe.remove();
-		return c || '';
-	} catch {
-		return '';
-	}
-}
-
-/** The theme chart palette for a scheme (`_primary` -> Theme.chartPrimaryDataColor1..12). */
-export function themePalette(scheme: string | undefined): string[] {
-	const s = scheme && scheme.length > 1 ? scheme : '_primary';
-	const name = s[1].toUpperCase() + s.slice(2);
-	const out: string[] = [];
-	for (let i = 1; i <= 12; i++) {
-		const key = `chart${name}DataColor${i}`;
-		const v = getDataFromPath(`Theme.${key}`, []) ?? chartStyleDefaults.get(key);
-		if (v) out.push(String(v));
-	}
-	if (!out.length && s !== '_primary') return themePalette('_primary');
-	return out;
-}
-
-/** Canvas colours from the widget's own theme variables, re-read when the palette changes. */
-export function useChartTheme(
-	ref: React.RefObject<HTMLElement | null>,
-	scheme: string | undefined,
-): ChartTheme {
-	const [theme, setTheme] = useState<ChartTheme>(() => ({
-		palette: themePalette(scheme),
-		text: '',
-		muted: '',
-		grid: '',
-		surface: '',
-	}));
-	useEffect(() => {
-		const el = ref.current;
-		const color =
-			el && typeof getComputedStyle === 'function' ? getComputedStyle(el).color : '';
-		setTheme({
-			palette: themePalette(scheme),
-			text: cssColor(el, '--rp-text') || color,
-			muted: cssColor(el, '--rp-muted') || color,
-			grid: cssColor(el, '--rp-border') || color,
-			surface: cssColor(el, '--rp-surface') || color,
-			font:
-				el && typeof getComputedStyle === 'function'
-					? getComputedStyle(el).fontFamily
-					: undefined,
-		});
-	}, [ref, scheme]);
-	return theme;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
 	getPathFromLocation,
 	PageStoreExtractor,
@@ -9,11 +9,13 @@ import { ComponentProps } from '../../../types/common';
 import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
 import { HelperComponent } from '../../HelperComponents/HelperComponent';
 import useDefinition from '../../util/useDefinition';
+import { datasetFunctions } from '../datasetApi';
 import { addWidget } from '../dashboardModel';
 import { readyDoc, updateEntry, useDashboardDoc } from '../dashboardStore';
 import { catalogForGroup, labelError } from '../groupsModel';
 import { useReportGroups } from '../groupsStore';
 import { usePageEvents } from '../pageEvents';
+import { aiUrl, specFromQuery } from '../reportAi';
 import { defaultCatalogFunction, defaultRunFunction, namespaceOf } from '../reportApi';
 import { useCatalog, useTransport } from '../ui/hooks';
 import { ReportEditorView } from '../ui/ReportEditorView';
@@ -58,6 +60,19 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 		undefined,
 	);
 	const [round, setRound] = useState(0);
+	// `?spec=<base64url JSON>` (the CXZump assistant's link, CONTRACT 11): the first editing
+	// session starts from it; after a save the editor starts empty again.
+	const urlSpec = useMemo(
+		() =>
+			properties.readSpecFromUrl && typeof window !== 'undefined'
+				? specFromQuery(window.location.search)
+				: undefined,
+		// Read once, when the editor opens.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[],
+	);
+	/** A new group the AI suggested: made only when the user picks it and saves. */
+	const [aiGroup, setAiGroup] = useState<string | undefined>(undefined);
 	const path = definition.bindingPath
 		? getPathFromLocation(definition.bindingPath, locationHistory, pageExtractor)
 		: undefined;
@@ -79,7 +94,8 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 			const err = labelError(newLabel, groups.user, groups.app);
 			if (err) return { error: err };
 			const made = await groups.create(newLabel);
-			if (!made.ok || !made.id) return { error: made.ok ? 'The group was not made.' : made.error };
+			if (!made.ok || !made.id)
+				return { error: made.ok ? 'The group was not made.' : made.error };
 			group = made.id;
 			setTarget(made.id);
 			setNewLabel('');
@@ -136,6 +152,34 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 				catalog={cat.catalog}
 				runFunction={runFunction}
 				saveLabel="Save widget"
+				initial={
+					round === 0 && urlSpec
+						? { name: urlSpec.view.title ?? '', spec: urlSpec, refreshMin: 0 }
+						: undefined
+				}
+				ai={{
+					endpoint: aiUrl(properties.aiEndpoint as string | undefined),
+					group: target === NEW_GROUP ? undefined : target,
+					groups: groupOptions.map(g => ({
+						id: g.id,
+						label: g.label,
+						kind: (g as { kind?: string }).kind,
+					})),
+					onGroup: g => {
+						const found =
+							(!g.new && g.id ? groupOptions.find(o => o.id === g.id) : undefined) ??
+							groupOptions.find(
+								o => o.label.toLowerCase() === g.label.trim().toLowerCase(),
+							);
+						if (found) {
+							setTarget(found.id);
+							setAiGroup(undefined);
+						} else setAiGroup(g.label.trim().slice(0, 40));
+					},
+				}}
+				datasets={
+					properties.allowDataImport ? datasetFunctions(ns, runFunction) : undefined
+				}
 				extra={
 					<>
 						<label className="_rpLabel">
@@ -155,6 +199,29 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 								) : null}
 							</select>
 						</label>
+						{aiGroup && target !== NEW_GROUP ? (
+							<div className="_rpLine" role="status">
+								<span className="_rpMuted">AI suggests a new group: {aiGroup}</span>
+								<button
+									type="button"
+									className="_rpBtn"
+									onClick={() => {
+										setTarget(NEW_GROUP);
+										setNewLabel(aiGroup);
+										setAiGroup(undefined);
+									}}
+								>
+									Use it
+								</button>
+								<button
+									type="button"
+									className="_rpBtn"
+									onClick={() => setAiGroup(undefined)}
+								>
+									No thanks
+								</button>
+							</div>
+						) : null}
 						{target === NEW_GROUP ? (
 							<label className="_rpLabel">
 								New group name

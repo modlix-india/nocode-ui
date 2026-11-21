@@ -1,3 +1,4 @@
+import { datasetCatalogSource, DatasetInfo } from '../datasetModel';
 import { checkView, shapeOf } from '../shapeRules';
 import { ReportTransport } from '../reportApi';
 import {
@@ -249,7 +250,7 @@ function fail(code: string, message: string, path?: string): ReportOutput {
 
 /** What the runner would answer for a spec (CONTRACT section 3), from made up numbers. */
 export function fixtureRun(spec: ReportSpec, dryRun = false): ReportOutput {
-	const cat = FIXTURE_CATALOG;
+	const cat = fixtureCatalog();
 	const src = cat.sources[spec?.source];
 	if (!src) return fail('UNKNOWN_SOURCE', `Unknown source ${spec?.source}`, 'source');
 	if (src.kind === 'FUNCTION')
@@ -405,7 +406,7 @@ export function fixtureRun(spec: ReportSpec, dryRun = false): ReportOutput {
 
 /** A records page (CONTRACT 8.1): 230 made up cases. */
 function records(spec: ReportSpec, dryRun: boolean): ReportOutput {
-	const src = FIXTURE_CATALOG.sources[spec.source];
+	const src = fixtureCatalog().sources[spec.source];
 	if (!src.records) return fail('RECORDS_NOT_ALLOWED', 'This source has no records', 'records');
 	const total = 230;
 	const size = Math.min(spec.records!.export ? 5000 : 100, spec.records!.size || 100);
@@ -477,11 +478,68 @@ function moneySummary(): ReportOutput {
 const docs = new Map<string, any>();
 
 /** In memory: the server's event answer shape, `[{name:'output', result:{result: ...}}]`. */
+/** The sample user's datasets (CONTRACT 10), kept for the page visit. */
+const datasets = new Map<string, DatasetInfo & { rows: any[][] }>();
+let datasetSeq = 0;
+
+/** For tests: forget the sample datasets. */
+export function resetFixtureDatasets() {
+	datasets.clear();
+	datasetSeq = 0;
+}
+
+/** The sample catalog plus one source per sample dataset. */
+export function fixtureCatalog(): ReportCatalog {
+	if (!datasets.size) return FIXTURE_CATALOG;
+	const sources = { ...FIXTURE_CATALOG.sources };
+	for (const d of datasets.values()) sources[`dataset:${d._id}`] = datasetCatalogSource(d);
+	return { ...FIXTURE_CATALOG, sources };
+}
+
+function datasetCall(fn: string, args: any): any {
+	const ok = (result: any) => [{ name: 'output', result: { result } }];
+	if (/reportDatasetList$/.test(fn))
+		return ok(
+			[...datasets.values()].map(({ rows, ...info }) => ({ ...info, rowCount: rows.length })),
+		);
+	if (/reportDatasetDelete$/.test(fn)) {
+		if (!datasets.delete(String(args?.datasetId)))
+			return ok({ ok: false, error: { code: 'NOT_FOUND', message: 'No such dataset' } });
+		return ok({ ok: true });
+	}
+	// reportDatasetSave
+	const now = new Date().toISOString();
+	let d = args?.datasetId ? datasets.get(String(args.datasetId)) : undefined;
+	if (args?.datasetId && !d)
+		return ok({ ok: false, error: { code: 'NOT_FOUND', message: 'No such dataset' } });
+	if (!d) {
+		if (datasets.size >= 20)
+			return ok({ ok: false, error: { code: 'LIMIT', message: 'At most 20 datasets' } });
+		d = { _id: `ds${++datasetSeq}`, name: '', columns: [], rows: [], createdAt: now };
+		datasets.set(d._id, d);
+	}
+	if (Number(args?.part) === 0) {
+		// Metadata only (a rename): the rows stay.
+		d.name = String(args?.name ?? d.name);
+		d.updatedAt = now;
+		return ok({ ok: true, datasetId: d._id, rowCount: d.rows.length });
+	}
+	d.name = String(args?.name ?? d.name);
+	d.columns = Array.isArray(args?.columns) ? args.columns : d.columns;
+	d.updatedAt = now;
+	if (Array.isArray(args?.rows)) {
+		if (Number(args.part) === 1) d.rows = [];
+		d.rows.push(...args.rows);
+	}
+	return ok({ ok: true, datasetId: d._id, rowCount: d.rows.length });
+}
+
 export const fixtureTransport: ReportTransport = {
 	async call(fn, args) {
 		await new Promise(r => setTimeout(r, 150));
 		if (/reportCatalog$/.test(fn))
-			return [{ name: 'output', result: { result: FIXTURE_CATALOG } }];
+			return [{ name: 'output', result: { result: fixtureCatalog() } }];
+		if (/reportDataset(Save|List|Delete)$/.test(fn)) return datasetCall(fn, args);
 		// A stand-in for <ns>.reportPdf until the core's Report.Pdf answers (CONTRACT 8.2).
 		if (/reportPdf$/.test(fn))
 			return [

@@ -458,5 +458,10 @@ export function copyWidgetTo(
 		{ toDashboard, w: tile?.w, h: tile?.h },
 	);
 	if (!added.ok) return added;
-	return { ok: true, doc: added.doc, id: added.id!, placed: toDashboard ? 'dashboard' : 'library' };
+	return {
+		ok: true,
+		doc: added.doc,
+		id: added.id!,
+		placed: toDashboard ? 'dashboard' : 'library',
+	};
 }

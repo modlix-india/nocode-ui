@@ -41,8 +41,7 @@ export interface UserGroupsDoc {
 }
 
 export type GroupsResult =
-	| { ok: true; doc: UserGroupsDoc; id?: string }
-	| { ok: false; error: string };
+	{ ok: true; doc: UserGroupsDoc; id?: string } | { ok: false; error: string };
 
 export const GROUP_MESSAGES = {
 	cap: `You can have at most ${USER_GROUP_CAP} groups of your own. Delete one first.`,
@@ -221,9 +220,7 @@ export function catalogForGroup(
 export function tabGroups(prop: unknown, all: GroupInfo[]): GroupInfo[] {
 	if (prop === undefined || prop === null || prop === '' || prop === 'none') return [];
 	if (prop === 'all') return all;
-	const ids = (
-		Array.isArray(prop) ? prop : typeof prop === 'string' ? prop.split(',') : []
-	)
+	const ids = (Array.isArray(prop) ? prop : typeof prop === 'string' ? prop.split(',') : [])
 		.map(e => String(e ?? '').trim())
 		.filter(Boolean);
 	return ids.map(id => all.find(g => g.id === id)).filter((g): g is GroupInfo => !!g);

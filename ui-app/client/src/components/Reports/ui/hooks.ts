@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { loadCatalog, ReportTransport, transportFor } from '../reportApi';
+import { loadCatalog, onCatalogInvalidated, ReportTransport, transportFor } from '../reportApi';
 import { ReportCatalog } from '../reportTypes';
 
 /** The server transport, or the sample data one (loaded as its own chunk) when asked. */
@@ -33,6 +33,8 @@ export function useCatalog(
 		loading: boolean;
 	}>({ loading: true });
 	const [attempt, setAttempt] = useState(0);
+	// A dataset import or delete changes the catalog: load it again (the old one stays shown).
+	useEffect(() => onCatalogInvalidated(() => setAttempt(a => a + 1)), []);
 	useEffect(() => {
 		if (!transport || !catalogFunction) {
 			setState({

@@ -55,6 +55,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		translatable: true,
 	},
 	{
+		name: 'allowDataImport',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Allow Data Import',
+		description:
+			"Shows a Your data button above the library: import CSV files as the user's own datasets, rename, replace and delete them (<namespace>.reportDatasetSave, reportDatasetList and reportDatasetDelete). Off by default.",
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
+	{
 		name: 'catalogFunction',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Catalog Function',

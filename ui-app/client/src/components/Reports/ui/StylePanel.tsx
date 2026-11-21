@@ -1,5 +1,5 @@
 import React from 'react';
-import { themePalette } from '../reportStyle';
+import { themePalette } from '../reportTheme';
 import { ReferenceLine, ReportStyle, ViewType } from '../reportTypes';
 
 export const PALETTES = [

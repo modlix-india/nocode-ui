@@ -51,7 +51,13 @@ import {
 	SPEC_CAPS,
 	ViewType,
 } from '../reportTypes';
+import { DatasetFunctions } from '../datasetApi';
+import { datasetSourceId, isDatasetSource } from '../datasetModel';
 import { ChartTypePicker } from './ChartTypePicker';
+import { AiGroup, AiPeriod } from '../reportAi';
+import { AskAiBox } from './AskAiBox';
+import { FunctionParams } from './FunctionParams';
+import { DatasetImportDialog, DatasetListDialog, dayOrderFor, useDatasets } from './Datasets';
 import { Icon, IconButton, MultiPick, PickOption, useDismiss } from './common';
 import { ReportWidgetView } from './ReportWidgetView';
 import { Pop } from './portal';
@@ -72,6 +78,8 @@ export interface EditorValue {
 	refreshMin: number;
 }
 
+const IMPORT_DATA = '__importData__';
+const MANAGE_DATA = '__manageData__';
 const BUCKETS: Bucket[] = ['DAY', 'WEEK', 'MONTH', 'QUARTER', 'YEAR'];
 const NO_VALUE_OPS = new Set<FilterOp>(['IS_NULL', 'NOT_NULL']);
 const HUGE = { width: 1e7, height: 1e7 };
@@ -160,6 +168,8 @@ export function ReportEditorView({
 	onCancel,
 	saveLabel,
 	extra,
+	datasets,
+	ai,
 }: Readonly<{
 	transport?: ReportTransport;
 	catalog?: ReportCatalog;
@@ -173,6 +183,17 @@ export function ReportEditorView({
 	saveLabel?: string;
 	/** More controls next to Save (the standalone editor's "Add to my dashboard"). */
 	extra?: React.ReactNode;
+	/** CSV data import from the Data picker (CONTRACT 10): the app's dataset functions. */
+	datasets?: DatasetFunctions;
+	/** The Ask AI box (CONTRACT 11), shown when the catalog says `ai: true`. */
+	ai?: {
+		endpoint: string;
+		group?: string;
+		groups?: Array<{ id: string; label: string; kind?: string }>;
+		/** The AI suggested a group (an existing one, or a new label); the page decides. */
+		onGroup?: (group: AiGroup) => void;
+		fetchImpl?: typeof fetch;
+	};
 }>) {
 	const start = useMemo<EditorValue>(
 		() => ({
@@ -226,6 +247,56 @@ export function ReportEditorView({
 	const undo = () => setHist(h => historyUndo(h));
 	const redo = () => setHist(h => historyRedo(h));
 
+	const [dataDialog, setDataDialog] = useState<'import' | 'list' | undefined>(undefined);
+	/** A dataset just imported: picked as the source once the reloaded catalog lists it. */
+	const [pendingSource, setPendingSource] = useState<string | undefined>(undefined);
+	const datasetList = useDatasets(dataDialog === 'import' ? transport : undefined, datasets);
+	const pickSource = (id: string) => {
+		const next = newSpec(catalog);
+		next.source = id;
+		if (catalog?.sources?.[id]?.kind === 'FUNCTION') {
+			delete next.measures;
+			next.view = { type: 'TABLE' };
+		}
+		commit({ spec: next });
+	};
+	useEffect(() => {
+		if (!pendingSource || !catalog?.sources?.[pendingSource]) return;
+		setPendingSource(undefined);
+		if (spec.source !== pendingSource) pickSource(pendingSource);
+	}, [catalog, pendingSource]); // eslint-disable-line react-hooks/exhaustive-deps
+
+	/** The AI's plain-words summary, shown while the spec is the one it proposed. */
+	const [aiSummary, setAiSummary] = useState<{ text: string; key: string } | undefined>(
+		undefined,
+	);
+	const latest = useRef({ spec, refine: false });
+	latest.current = { spec, refine: !!initial || hist.past.length > 0 };
+	/** The name the AI last filled in: a later AI answer may replace it, a typed name stays. */
+	const aiName = useRef<string | undefined>(undefined);
+	const loadAiSpec = (
+		proposed: ReportSpec,
+		summaryText: string,
+		group?: AiGroup,
+		period?: AiPeriod,
+	) => {
+		// The builder's summary normally carries the period in words and dates already.
+		const summary =
+			period?.label &&
+			summaryText &&
+			!summaryText.toLowerCase().includes(period.label.toLowerCase()) &&
+			!/\d{4}/.test(summaryText)
+				? `${summaryText} (${period.label})`
+				: summaryText;
+		const next = tidySpec({ ...cloneSpec(proposed), v: 1 }, catalog);
+		const takeName = !name.trim() || name === aiName.current;
+		const title = next.view.title ?? '';
+		if (takeName) aiName.current = title;
+		commit({ spec: next, ...(takeName ? { name: title } : {}) });
+		setAiSummary(summary ? { text: summary, key: JSON.stringify(next) } : undefined);
+		if (group) ai?.onGroup?.(group);
+	};
+
 	const source = catalog?.sources?.[spec.source];
 	const isFunction = source?.kind === 'FUNCTION';
 	const fields = fieldsOf(catalog, spec.source);
@@ -252,14 +323,24 @@ export function ReportEditorView({
 
 	const loadValues = useCallback(
 		(field: string) => async (): Promise<PickOption[]> => {
-			const vs = valuesSpec(catalog, field);
+			const vs = valuesSpec(catalog, field, spec.source);
 			if (!vs || !transport) return [];
 			const r = await runReport(transport, runFunction, vs);
 			if (!r.ok) throw new Error(errorText(r.error));
 			return r.rows.map(row => ({ value: row.k, label: labelOf(row, 'k') }));
 		},
-		[catalog, transport, runFunction],
+		[catalog, transport, runFunction, spec.source],
 	);
+
+	/** One loader per param named like a catalog field (stable, so each loads once). */
+	const paramLoader = useMemo(() => {
+		const cache = new Map<string, () => Promise<PickOption[]>>();
+		return (key: string) => {
+			if (!valuesSpec(catalog, key)) return undefined;
+			if (!cache.has(key)) cache.set(key, loadValues(key));
+			return cache.get(key);
+		};
+	}, [catalog, loadValues]);
 
 	const fieldLabelOf = (field: string) =>
 		field === COUNT_FIELD ? 'Number of records' : (fieldMap.get(field)?.label ?? field);
@@ -568,8 +649,41 @@ export function ReportEditorView({
 		);
 	};
 
+	const dataDialogs =
+		datasets && transport && dataDialog ? (
+			dataDialog === 'import' ? (
+				<DatasetImportDialog
+					transport={transport}
+					fns={datasets}
+					existing={datasetList.list ?? []}
+					dayOrder={dayOrderFor(catalog?.locale)}
+					onClose={() => setDataDialog(undefined)}
+					onDone={id => setPendingSource(datasetSourceId(id))}
+				/>
+			) : (
+				<DatasetListDialog
+					transport={transport}
+					fns={datasets}
+					dayOrder={dayOrderFor(catalog?.locale)}
+					onClose={() => setDataDialog(undefined)}
+					onImported={id => setPendingSource(datasetSourceId(id))}
+				/>
+			)
+		) : null;
+
 	return (
 		<div className="_rpEditor _shelves" onKeyDown={onKeyDown}>
+			{dataDialogs}
+			{ai && catalog?.ai ? (
+				<AskAiBox
+					endpoint={ai.endpoint}
+					group={ai.group}
+					groups={ai.groups}
+					fetchImpl={ai.fetchImpl}
+					currentSpec={() => (latest.current.refine ? latest.current.spec : undefined)}
+					onSpec={loadAiSpec}
+				/>
+			) : null}
 			<div className="_rpLine" style={{ gridColumn: '1 / -1' }}>
 				<label className="_rpLabel" style={{ flex: '2 1 220px' }}>
 					Name
@@ -586,20 +700,55 @@ export function ReportEditorView({
 						className="_rpSelect"
 						value={spec.source}
 						onChange={e => {
-							const next = newSpec(catalog);
-							next.source = e.target.value;
-							if (catalog?.sources?.[next.source]?.kind === 'FUNCTION') {
-								delete next.measures;
-								next.view = { type: 'TABLE' };
+							const v = e.target.value;
+							if (v === IMPORT_DATA || v === MANAGE_DATA) {
+								setDataDialog(v === IMPORT_DATA ? 'import' : 'list');
+								return;
 							}
-							commit({ spec: next });
+							pickSource(v);
 						}}
 					>
-						{reportSources(catalog).map(([k, s]) => (
-							<option key={k} value={k}>
-								{s.label ?? k}
-							</option>
-						))}
+						{(() => {
+							const all = reportSources(catalog);
+							const own = all.filter(([k]) => isDatasetSource(k));
+							const app = all.filter(([k]) => !isDatasetSource(k));
+							const opts = (list: typeof all) =>
+								list.map(([k, s]) => (
+									<option key={k} value={k}>
+										{s.label ?? k}
+									</option>
+								));
+							const known = all.some(([k]) => k === spec.source);
+							return (
+								<>
+									{!known && spec.source ? (
+										<option value={spec.source}>
+											{isDatasetSource(spec.source)
+												? 'Dataset deleted'
+												: spec.source}
+										</option>
+									) : null}
+									{own.length || datasets ? (
+										<>
+											<optgroup label="App data">{opts(app)}</optgroup>
+											{own.length ? (
+												<optgroup label="Your data">{opts(own)}</optgroup>
+											) : null}
+										</>
+									) : (
+										opts(app)
+									)}
+									{datasets ? (
+										<optgroup label="Your files">
+											<option value={IMPORT_DATA}>
+												Import data from CSV
+											</option>
+											<option value={MANAGE_DATA}>Manage your data</option>
+										</optgroup>
+									) : null}
+								</>
+							);
+						})()}
 					</select>
 				</label>
 				{!isFunction && source?.segments && Object.keys(source.segments).length ? (
@@ -639,24 +788,13 @@ export function ReportEditorView({
 
 			{isFunction ? (
 				<div className="_rpEditorForm" style={{ gridColumn: 'span 2' }}>
-					<label className="_rpLabel">
-						Parameters (JSON)
-						<textarea
-							className="_rpInput"
-							rows={4}
-							defaultValue={spec.params ? JSON.stringify(spec.params, null, 2) : ''}
-							onBlur={e => {
-								try {
-									const v = e.target.value.trim()
-										? JSON.parse(e.target.value)
-										: undefined;
-									setSpec(s => ({ ...s, params: v }));
-								} catch {
-									setHint('Parameters must be JSON');
-								}
-							}}
-						/>
-					</label>
+					<FunctionParams
+						source={source}
+						catalog={catalog}
+						params={spec.params}
+						loadValues={paramLoader}
+						onChange={p => setSpec(s => ({ ...s, params: p }), 'params')}
+					/>
 				</div>
 			) : (
 				<>
@@ -909,6 +1047,11 @@ export function ReportEditorView({
 			)}
 
 			<div className="_rpEditorSide">
+				{aiSummary && aiSummary.key === JSON.stringify(spec) ? (
+					<div className="_rpSummary" role="status">
+						{aiSummary.text}
+					</div>
+				) : null}
 				<div className="_rpEditorPreview">
 					{check.status !== 'error' && check.spec ? (
 						<ReportWidgetView
@@ -967,7 +1110,7 @@ export function ReportEditorView({
 			<div className="_rpLine" style={{ gridColumn: '1 / -1' }}>
 				{check.status === 'error' ? (
 					<div className="_rpError" role="alert" style={{ flex: '1 1 100%' }}>
-						{errorText(check.error)}
+						{errorText(check.error, spec.source)}
 						{check.error?.path ? (
 							<span className="_rpMuted"> ({check.error.path})</span>
 						) : null}

@@ -44,7 +44,7 @@ export default function LazyDashboard(props: Readonly<ComponentProps>) {
 				group={group}
 				groups={properties.groups}
 				showGroupManager={!!properties.showGroupManager}
-				labelAsTitle={!!properties.group}
+				groupPagePath={(properties.groupPagePath as string) || undefined}
 				editable={!!properties.editable}
 				mode={properties.mode === 'library' ? 'library' : 'dashboard'}
 				showFilters={properties.showFilters !== false}

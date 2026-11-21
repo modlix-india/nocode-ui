@@ -359,10 +359,15 @@ export function effectiveSpec(
 export function valuesSpec(
 	catalog: ReportCatalog | undefined,
 	field: string,
+	/** The source being edited: its own values first (dataset sources share slot names). */
+	preferSource?: string,
 ): ReportSpec | undefined {
-	const entry = reportSources(catalog)
-		.filter(([, s]) => s.kind !== 'FUNCTION' && !!s.fields?.[field] && !s.fields[field].pii)
-		.sort(bySize)[0];
+	const usable = reportSources(catalog).filter(
+		([, s]) => s.kind !== 'FUNCTION' && !!s.fields?.[field] && !s.fields[field].pii,
+	);
+	const entry =
+		usable.find(([k]) => k === preferSource) ??
+		usable.filter(([k]) => !k.startsWith('dataset:')).sort(bySize)[0];
 	if (!entry) return undefined;
 	return {
 		v: 1,
@@ -384,6 +389,9 @@ export function reportSources(catalog: ReportCatalog | undefined): Array<[string
 
 /** Most fields first, then by key: the main source of an app (e.g. cases) wins, every time. */
 export function bySize(a: [string, CatalogSource], b: [string, CatalogSource]): number {
+	// The user's own datasets (CONTRACT 10) never become the default source.
+	const ds = Number(a[0].startsWith('dataset:')) - Number(b[0].startsWith('dataset:'));
+	if (ds) return ds;
 	const d = Object.keys(b[1].fields ?? {}).length - Object.keys(a[1].fields ?? {}).length;
 	return d || a[0].localeCompare(b[0]);
 }

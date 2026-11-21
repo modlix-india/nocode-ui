@@ -10,6 +10,7 @@ import { createRoot, Root } from 'react-dom/client';
 
 jest.mock('../../../context/StoreContext', () => ({
 	getDataFromPath: () => undefined,
+	setData: () => undefined,
 }));
 jest.mock('../ui/ReportChart', () => ({
 	__esModule: true,

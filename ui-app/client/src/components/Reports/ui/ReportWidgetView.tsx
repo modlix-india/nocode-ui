@@ -48,7 +48,7 @@ import {
 	MarkTarget,
 	specKey,
 } from '../reportSpecUtil';
-import { useChartTheme } from '../reportStyle';
+import { useChartTheme } from '../reportTheme';
 import {
 	applyStyleTransforms,
 	chartAxes,
@@ -525,7 +525,7 @@ export function ReportWidgetView(props: Readonly<ReportWidgetViewProps>) {
 		if (state.status === 'error' && !out)
 			return (
 				<div className="_rpState" role="alert">
-					<span className="_rpError">{errorText(state.error)}</span>
+					<span className="_rpError">{errorText(state.error, spec.source)}</span>
 					<button type="button" className="_rpBtn" onClick={() => run(false)}>
 						Try again
 					</button>
@@ -880,7 +880,7 @@ export function ReportWidgetView(props: Readonly<ReportWidgetViewProps>) {
 						.join(' · ')}
 				</span>
 				{state.status === 'error' && out ? (
-					<span className="_rpError _rpMuted">{errorText(state.error)}</span>
+					<span className="_rpError _rpMuted">{errorText(state.error, spec.source)}</span>
 				) : null}
 				{props.importError && state.status === 'error' ? (
 					<span className="_rpError _rpMuted">Imported: {props.importError}</span>
