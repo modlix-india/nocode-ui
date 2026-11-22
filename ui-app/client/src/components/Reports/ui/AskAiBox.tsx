@@ -21,6 +21,14 @@ export interface AskAiBoxProps {
 	fetchImpl?: typeof fetch;
 	/** Sent once when the box opens (a prompt typed on the list). */
 	initialPrompt?: string;
+	/** The catalog's example prompt (`aiExample`); none: no example. */
+	example?: string;
+}
+
+/** "Describe the report you want", with the app's own example when its catalog gives one. */
+export function askPlaceholder(example: string | undefined): string {
+	const e = String(example ?? '').trim();
+	return e ? `Describe the report you want, e.g. ${e}` : 'Describe the report you want';
 }
 
 export function AskAiBox(props: Readonly<AskAiBoxProps>) {
@@ -109,7 +117,7 @@ export function AskAiBox(props: Readonly<AskAiBoxProps>) {
 					placeholder={
 						hasSpec
 							? 'Change it, e.g. make it a line by month'
-							: 'Ask AI, e.g. bookings by RM this quarter'
+							: askPlaceholder(props.example)
 					}
 					value={prompt}
 					disabled={running}

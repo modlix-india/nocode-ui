@@ -82,7 +82,7 @@ describe('shelves -> spec (CONTRACT 8.3)', () => {
 			addToShelf(three, 'rows', { kind: 'MEASURE', field: 'paidAmount', fn: 'AVG' }),
 		).toEqual({
 			ok: false,
-			reason: 'At most 3 measures',
+			reason: 'At most 3 measures (a table takes up to 6)',
 		});
 	});
 
