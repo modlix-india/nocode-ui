@@ -8,6 +8,7 @@ import {
 	ReportGroupBy,
 	ReportMeasure,
 	ReportSpec,
+	MAX_MEASURES_ANY,
 	SPEC_CAPS,
 } from './reportTypes';
 
@@ -128,13 +129,15 @@ export function shelfDimensions(sh: Shelves): ShelfItem[] {
 
 /**
  * Puts an item on a shelf (at `index`, default the end). Color, Size and Label hold one item
- * (a new one replaces it). Refused, with the reason, past 2 dimensions or 3 measures.
+ * (a new one replaces it). Refused, with the reason, past 2 dimensions or `maxMeasures`.
  */
 export function addToShelf(
 	sh: Shelves,
 	shelf: Exclude<ShelfName, 'filters'>,
 	item: ShelfItem,
 	index?: number,
+	/** The measure cap (the editor passes the table's, the largest; default 3). */
+	maxMeasures: number = SPEC_CAPS.measures,
 ): { ok: true; shelves: Shelves } | { ok: false; reason: string } {
 	if (!accepts(shelf, item))
 		return {
@@ -152,8 +155,14 @@ export function addToShelf(
 	}
 	if (shelfDimensions(next).length > SPEC_CAPS.groupBy)
 		return { ok: false, reason: `At most ${SPEC_CAPS.groupBy} dimensions` };
-	if (shelfMeasures(next).length > SPEC_CAPS.measures)
-		return { ok: false, reason: `At most ${SPEC_CAPS.measures} measures` };
+	if (shelfMeasures(next).length > maxMeasures)
+		return {
+			ok: false,
+			reason:
+				maxMeasures < MAX_MEASURES_ANY
+					? `At most ${maxMeasures} measures (a table takes up to ${MAX_MEASURES_ANY})`
+					: `At most ${maxMeasures} measures`,
+		};
 	return { ok: true, shelves: next };
 }
 
@@ -167,12 +176,13 @@ export function moveOnShelves(
 	from: { shelf: Exclude<ShelfName, 'filters'>; index: number },
 	to: Exclude<ShelfName, 'filters'>,
 	index?: number,
+	maxMeasures: number = SPEC_CAPS.measures,
 ): { ok: true; shelves: Shelves } | { ok: false; reason: string } {
 	const item = sh[from.shelf][from.index];
 	if (!item) return { ok: false, reason: 'Nothing to move' };
 	const without = removeFromShelf(sh, from.shelf, from.index);
 	const at = from.shelf === to && index !== undefined && index > from.index ? index - 1 : index;
-	return addToShelf(without, to, item, at);
+	return addToShelf(without, to, item, at, maxMeasures);
 }
 
 export function replaceOnShelf(
@@ -247,7 +257,9 @@ export function specToShelves(spec: ReportSpec, catalog?: ReportCatalog): Shelve
 export function shelvesToSpec(sh: Shelves, base: ReportSpec): ReportSpec {
 	const next = cloneSpec(base);
 	const dims = shelfDimensions(sh).slice(0, SPEC_CAPS.groupBy);
-	const ms = shelfMeasures(sh).slice(0, SPEC_CAPS.measures);
+	// Up to the largest cap of any view (a table's 6): a chart with too many is shown as not
+	// fitting, never cut down here.
+	const ms = shelfMeasures(sh).slice(0, MAX_MEASURES_ANY);
 	const oldMeasureKeys = new Set((base.measures ?? []).map(m => m.as));
 
 	const takenDims = new Set<string>();

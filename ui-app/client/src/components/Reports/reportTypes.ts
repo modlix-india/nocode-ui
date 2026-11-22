@@ -194,6 +194,12 @@ export const FILTER_OP_LABELS: Record<FilterOp, string> = {
 /** Spec caps the runner enforces; the editor enforces them too so a user never meets TOO_MANY. */
 export const SPEC_CAPS = { measures: 3, groupBy: 2, filters: 8 };
 
+/**
+ * The most measures any view takes (a TABLE, CONTRACT 8.7). The shelves model holds up to this
+ * many so nothing is dropped; each view's own cap comes from the runner (`measureCap`).
+ */
+export const MAX_MEASURES_ANY = 6;
+
 export interface ReportMeasure {
 	fn: MeasureFn;
 	field?: string;
@@ -204,7 +210,11 @@ export interface ReportMeasure {
 
 export interface ReportDerived {
 	as: string;
+	/** Shown for the column (CONTRACT 8.7), e.g. "CPM". */
+	label?: string;
 	ratio?: [string, string];
+	/** Ratio only (R5): a x scale / b, e.g. 1000 for cost per thousand. */
+	scale?: number;
 	difference?: [string, string];
 	percent?: [string, string];
 }
@@ -374,6 +384,10 @@ export interface CatalogField {
 	authority?: string;
 	stringDate?: boolean;
 	lookup?: { source?: string; key?: string; label?: string; type?: string };
+	/** Inline value labels (CONTRACT 8.7 R6); the runner answers them as `<as>_label`. */
+	labels?: Record<string, string>;
+	/** A local day with no time (R3). */
+	dateOnly?: boolean;
 }
 
 /**
@@ -428,6 +442,18 @@ export interface CatalogSource {
 	link?: CatalogLink;
 	/** "View all" under the widget. */
 	moreLink?: CatalogLink;
+	/**
+	 * FUNCTION sources (CONTRACT 8.7 R2): the period goes in through these params, and the
+	 * source takes one filter, a period filter on `field` (default "period").
+	 */
+	periodParams?: {
+		from?: string;
+		to?: string;
+		format?: string;
+		tzOffsetParam?: string;
+		field?: string;
+		default?: string;
+	};
 	/** FUNCTION sources that page: the param that carries the page number, and the page size. */
 	paging?: { param: string; size: number };
 	records?: CatalogRecords;
@@ -463,6 +489,8 @@ export interface ReportCatalog {
 	currency?: string;
 	fyStartMonth?: number;
 	ai?: boolean;
+	/** An example prompt for the Ask AI box ("bookings by RM this quarter"); none when not set. */
+	aiExample?: string;
 	quickFilters?: string[];
 	hierarchies?: Record<string, CatalogHierarchy>;
 	sources: Record<string, CatalogSource>;

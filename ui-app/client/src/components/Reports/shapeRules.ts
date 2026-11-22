@@ -38,6 +38,8 @@ import {
 export interface ResultShape {
 	groupBy: number;
 	measures: number;
+	/** The spec's own measures (not derived), for the per view cap (CONTRACT 8.7). */
+	specMeasures?: number;
 	/** The first group by is a date bucket (lines read best over time). */
 	firstIsDate?: boolean;
 }
@@ -115,7 +117,42 @@ function matches(
 }
 
 /** Whether one view type fits a shape, with the reason when it does not. */
+/**
+ * Measures per view (CONTRACT 8.7): the runner's `ViewTypes` answers `measureCaps`
+ * ({"TABLE": 6, "other": 3}); until it has (or when it does not say), every view takes 3.
+ */
+let measureCaps: Record<string, number> = {};
+
+export function setMeasureCaps(caps: Record<string, unknown> | undefined) {
+	const next: Record<string, number> = {};
+	for (const [k, v] of Object.entries(caps ?? {})) {
+		const n = Number(v);
+		if (Number.isInteger(n) && n > 0) next[k] = n;
+	}
+	measureCaps = next;
+}
+
+export function measureCap(type: ViewType | string): number {
+	return measureCaps[type] ?? measureCaps.other ?? 3;
+}
+
+/** The view's measure cap, or why the spec has too many for it. */
+function capCheck(type: ViewType, shape: ResultShape): ViewFit | undefined {
+	const n = shape.specMeasures ?? 0;
+	const cap = measureCap(type);
+	if (n <= cap) return undefined;
+	const table = measureCap('TABLE');
+	const other = measureCap('other');
+	const reason =
+		type !== 'TABLE' && table > cap
+			? `Only a table takes more than ${other} measures (up to ${table}); this ${VIEW_LABELS[type].toLowerCase()} has ${n}.`
+			: `${VIEW_LABELS[type]} takes up to ${cap} measures; this one has ${n}.`;
+	return { type, ok: false, reason };
+}
+
 export function checkView(type: ViewType, shape: ResultShape): ViewFit {
+	const capped = capCheck(type, shape);
+	if (capped) return capped;
 	const rule = SHAPE_RULES[type];
 	if (!rule) return { type, ok: false, reason: 'is not a known view' };
 	const ok = matches(rule, shape) || (!!rule.or && matches(rule.or, shape));
@@ -180,12 +217,15 @@ export function shapeOf(
 	return {
 		groupBy: groupBy.length,
 		measures: (spec?.measures?.length ?? 0) + (spec?.derived?.length ?? 0),
+		specMeasures: spec?.measures?.length ?? 0,
 		firstIsDate,
 	};
 }
 
 /** The best view for a shape when the current one does not fit (editor default). */
 export function suggestView(shape: ResultShape): ViewType {
+	// More measures than a chart takes: only a table holds them (none are dropped).
+	if ((shape.specMeasures ?? 0) > measureCap('other')) return 'TABLE';
 	if (shape.groupBy === 0) return 'KPI';
 	if (shape.groupBy === 2) return shape.measures === 1 ? 'STACKED_BAR' : 'TABLE';
 	if (shape.firstIsDate) return 'LINE';

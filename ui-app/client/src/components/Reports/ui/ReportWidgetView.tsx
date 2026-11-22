@@ -55,6 +55,8 @@ import {
 	isAdditive,
 	kpiDelta,
 	normalizeCompare,
+	valueOrZero,
+	zeroWhenEmpty,
 } from '../reportTransform';
 import {
 	CANVAS_VIEWS,
@@ -557,6 +559,7 @@ export function ReportWidgetView(props: Readonly<ReportWidgetViewProps>) {
 						out={shown}
 						view={view}
 						fmt={fmt}
+						zero={zeroWhenEmpty(eff.spec)}
 						href={countHref}
 						navigate={navigate}
 						compareLabel={hasCompare ? compareLabel : undefined}
@@ -1181,10 +1184,13 @@ function Kpi({
 	href,
 	navigate,
 	compareLabel,
+	zero,
 }: Readonly<{
 	out: ReportSuccess;
 	view: ReportView;
 	fmt: FormatOptions;
+	/** Measures shown as 0 when the period has no rows (zeroWhenEmpty). */
+	zero?: Set<string>;
 	/** The count link (CONTRACT 8.0): the whole tile opens it. */
 	href?: string;
 	navigate: Navigator;
@@ -1209,7 +1215,16 @@ function Kpi({
 	const extras = (
 		view.y?.length ? view.y.slice(1).map(k => ms.find(m => m.key === k)) : ms
 	).filter((m): m is NonNullable<typeof m> => !!m && m !== main);
-	const rows = out.rows.length ? out.rows : [{}];
+	const z = zero ?? new Set<string>();
+	// No row (or a null left out) for a count or sum: 0, so the compare change reads too.
+	const keys = new Set(ms.map(m => m.key));
+	const rows = (out.rows.length ? out.rows : [{}]).map(r => {
+		const o: Record<string, any> = { ...r };
+		for (const k of z)
+			if (keys.has(k) || (compareLabel && k.endsWith('_cmp'))) o[k] = valueOrZero(o, k, z);
+		return o;
+	});
+	const val = (r: Record<string, any>, key: string) => valueOrZero(r, key, z);
 	const delta = compareLabel ? kpiDelta(rows[0], main.key) : undefined;
 	return (
 		<div
@@ -1220,9 +1235,9 @@ function Kpi({
 				<div
 					key={i}
 					className="_rpKpiValue"
-					title={formatMeasure(r[main.key], main, r, full)}
+					title={formatMeasure(val(r, main.key), main, r, full)}
 				>
-					{formatMeasure(r[main.key], main, r, big)}
+					{formatMeasure(val(r, main.key), main, r, big)}
 				</div>
 			))}
 			<div className="_rpMuted">{main.label ?? main.key}</div>
@@ -1247,7 +1262,8 @@ function Kpi({
 				<div className="_rpKpiMore">
 					{extras.map(m => (
 						<span key={m.key} className="_rpMuted">
-							{m.label ?? m.key}: {formatMeasure(rows[0][m.key], m, rows[0], plain)}
+							{m.label ?? m.key}:{' '}
+							{formatMeasure(val(rows[0], m.key), m, rows[0], plain)}
 						</span>
 					))}
 				</div>
