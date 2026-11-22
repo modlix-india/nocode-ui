@@ -241,11 +241,44 @@ export function reportCss(prefix: string): string {
 	${P} ._rpAsk textarea { flex: 1; resize: vertical; min-height: 36px; }
 	${P} ._rpAskChoices { display: flex; flex-wrap: wrap; gap: 6px; }
 	${P} ._rpSummary { padding: 6px 10px; border-left: 3px solid var(--rp-accent); background: var(--rp-soft); border-radius: 4px; }
+	${P} ._rpBuilder { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+	${P} ._rpBuilderTop { display: flex; align-items: center; gap: 12px; }
+	${P} ._rpBuilderTitle { font: var(--rp-title-font); font-weight: 600; }
+	${P} ._rpBuilderMain { display: grid; grid-template-columns: minmax(260px, 360px) minmax(0, 1fr); gap: 20px; align-items: start; }
+	${P} ._rpBuilderForm { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+	${P} ._rpQuestions { display: flex; flex-direction: column; gap: 14px; }
+	${P} ._rpBuilder ._rpEditorSide ._rpEditorPreview { height: 420px; }
+	${P} ._rpSuggest { display: flex; flex-wrap: wrap; gap: 4px; }
+	${P} ._rpSuggest ._rpType { flex: 0 0 auto; min-width: 84px; }
+	${P} ._rpMoreOptions { border-top: 1px solid var(--rp-border); padding-top: 10px; }
+	${P} ._rpMoreOptions > summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
+	${P} ._rpMoreOptions[open] > summary { margin-bottom: 12px; }
+	${P} ._rpBuilderFoot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid var(--rp-border); }
+	${P} ._rpListHead { align-items: center; }
+	${P} ._rpCards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+	${P} ._rpCard { display: flex; flex-direction: column; min-width: 0; background: var(--rp-surface); border: 1px solid var(--rp-border); border-radius: var(--rp-radius); overflow: hidden; }
+	${P} ._rpCardMini { height: 128px; padding: 8px 8px 0; pointer-events: none; overflow: hidden; background: var(--rp-soft); }
+	${P} ._rpCardMini ._rpWidget._mini { min-height: 0; height: 100%; border: none; border-radius: 0; background: transparent; }
+	${P} ._rpCardMini ._rpWidget._mini ._rpBody { padding: 0; }
+	${P} ._rpCardMini ._rpKpiValue { font-size: 28px; }
+	${P} ._rpCardBody { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; min-width: 0; }
+	${P} ._rpCardName { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	${P} ._rpCardFoot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 8px 8px 12px; border-top: 1px solid var(--rp-border); }
+	${P} ._rpSwitch { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font: var(--rp-small-font); user-select: none; }
+	${P} ._rpSwitch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+	${P} ._rpSwitch span { position: relative; width: 32px; height: 18px; border-radius: 9px; background: var(--rp-border); transition: background 0.15s; flex: none; }
+	${P} ._rpSwitch span::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--rp-surface); transition: transform 0.15s; }
+	${P} ._rpSwitch input:checked + span { background: var(--rp-accent); }
+	${P} ._rpSwitch input:checked + span::after { transform: translateX(14px); }
+	${P} ._rpSwitch input:focus-visible + span { outline: 2px solid var(--rp-accent); outline-offset: 2px; }
 	@media (max-width: 1100px) {
 		${P} ._rpEditor._shelves { grid-template-columns: minmax(180px, 220px) minmax(0, 1fr); }
 		${P} ._rpEditor._shelves ._rpEditorSide { grid-column: 1 / -1; }
 	}
 	@media (max-width: 720px) {
+		${P} ._rpBuilderMain { grid-template-columns: minmax(0, 1fr); }
+		${P} ._rpBuilder ._rpEditorSide ._rpEditorPreview { height: 320px; }
+		${P} ._rpCards { grid-template-columns: minmax(0, 1fr); }
 		${P} ._rpEditor { grid-template-columns: minmax(0, 1fr); }
 		${P} ._rpEditor._shelves { grid-template-columns: minmax(0, 1fr); }
 		${P} ._rpEditorPreview { position: relative; height: 320px; }

@@ -130,6 +130,8 @@ export interface ReportWidgetViewProps {
 	exportRef?: (api: WidgetExportApi | null) => void;
 	/** Imported from a file and refused by the dry run: why. */
 	importError?: string;
+	/** A small read only preview (the report list's cards): the result only, no header or menus. */
+	mini?: boolean;
 }
 
 export interface WidgetExportApi {
@@ -186,7 +188,11 @@ export function ReportWidgetView(props: Readonly<ReportWidgetViewProps>) {
 	}, [savedKey]);
 
 	const baseView = viewOverride ?? spec.view;
-	const view: ReportView = styleDraft ? { ...baseView, style: styleDraft } : baseView;
+	const styled: ReportView = styleDraft ? { ...baseView, style: styleDraft } : baseView;
+	// A mini preview draws the shape only: no legend, no data labels.
+	const view: ReportView = props.mini
+		? { ...styled, style: { ...(styled.style ?? {}), legend: 'none', dataLabels: 'off' } }
+		: styled;
 	const style = view.style ?? {};
 	const source = catalog?.sources?.[spec.source];
 
@@ -604,7 +610,11 @@ export function ReportWidgetView(props: Readonly<ReportWidgetViewProps>) {
 								<ReportChart
 									ref={chartRef}
 									config={config}
-									onMarkClick={view.type === 'GAUGE' ? undefined : onMarkClick}
+									onMarkClick={
+										view.type === 'GAUGE' || props.mini
+											? undefined
+											: onMarkClick
+									}
 									onZoomChange={setZoomed}
 								/>
 							) : null}
@@ -629,268 +639,306 @@ export function ReportWidgetView(props: Readonly<ReportWidgetViewProps>) {
 	const card = (
 		<div
 			ref={rootRef}
-			className={`_rpWidget${compact ? ' _compact' : ''}${full ? ' _full' : ''}${props.className ? ' ' + props.className : ''}`}
+			className={`_rpWidget${compact ? ' _compact' : ''}${full ? ' _full' : ''}${props.mini ? ' _mini' : ''}${props.className ? ' ' + props.className : ''}`}
 			role="region"
 			aria-label={title}
 		>
-			{props.isNew ? (
-				<div className="_rpNewBar">
-					<span>New from the app</span>
-					{props.onKeep ? (
-						<button type="button" className="_rpBtn _primary" onClick={props.onKeep}>
-							Keep
-						</button>
+			{props.mini ? null : (
+				<>
+					{props.isNew ? (
+						<div className="_rpNewBar">
+							<span>New from the app</span>
+							{props.onKeep ? (
+								<button
+									type="button"
+									className="_rpBtn _primary"
+									onClick={props.onKeep}
+								>
+									Keep
+								</button>
+							) : null}
+							{props.onRemoveNew ? (
+								<button
+									type="button"
+									className="_rpBtn"
+									onClick={props.onRemoveNew}
+								>
+									Remove
+								</button>
+							) : null}
+						</div>
 					) : null}
-					{props.onRemoveNew ? (
-						<button type="button" className="_rpBtn" onClick={props.onRemoveNew}>
-							Remove
-						</button>
-					) : null}
-				</div>
-			) : null}
-			<div
-				className={`_rpHead${props.onHeadPointerDown && !full ? ' _drag' : ''}`}
-				onPointerDown={full ? undefined : props.onHeadPointerDown}
-			>
-				<div className="_rpTitle" title={title}>
-					{title}
-				</div>
-				{props.isNew ? <span className="_rpBadge">New</span> : null}
-				<div ref={menuRef} style={{ display: 'flex', alignItems: 'center' }}>
-					<IconButton
-						icon="fa-chart-simple"
-						label="Chart type"
-						on={pop === 'type'}
-						onClick={() => setPop(p => (p === 'type' ? undefined : 'type'))}
-					/>
-					<IconButton
-						icon="fa-palette"
-						label="Style"
-						on={styleDraft !== undefined}
-						onClick={() => {
-							setPop(undefined);
-							setStyleDraft(baseView.style ?? {});
-						}}
-					/>
-					<IconButton
-						icon="fa-rotate-right"
-						label={forceBlocked ? 'Refreshed just now' : 'Refresh'}
-						disabled={forceBlocked || state.status === 'loading'}
-						onClick={() => run(true)}
-					/>
-					<IconButton
-						icon="fa-ellipsis-vertical"
-						label="More"
-						on={pop === 'menu'}
-						onClick={() => setPop(p => (p === 'menu' ? undefined : 'menu'))}
-					/>
-					{pop === 'type' ? (
-						<Pop anchor={menuRef.current} align="right" popRef={popRef}>
-							<ChartTypePicker
-								shape={shape}
-								value={view.type}
-								onPick={pickType}
-								runnerFits={out?.fits}
+					<div
+						className={`_rpHead${props.onHeadPointerDown && !full ? ' _drag' : ''}`}
+						onPointerDown={full ? undefined : props.onHeadPointerDown}
+					>
+						<div className="_rpTitle" title={title}>
+							{title}
+						</div>
+						{props.isNew ? <span className="_rpBadge">New</span> : null}
+						<div ref={menuRef} style={{ display: 'flex', alignItems: 'center' }}>
+							<IconButton
+								icon="fa-chart-simple"
+								label="Chart type"
+								on={pop === 'type'}
+								onClick={() => setPop(p => (p === 'type' ? undefined : 'type'))}
 							/>
-						</Pop>
-					) : null}
-					{pop === 'menu' ? (
-						<Pop anchor={menuRef.current} align="right" popRef={popRef} role="menu">
-							{props.onEdit ? (
-								<MenuItem
-									icon="fa-pen"
-									label="Edit"
-									onClick={() => (setPop(undefined), props.onEdit!())}
-								/>
-							) : null}
-							{props.onDuplicate ? (
-								<MenuItem
-									icon="fa-copy"
-									label="Duplicate"
-									onClick={() => (setPop(undefined), props.onDuplicate!())}
-								/>
-							) : null}
-							{props.onCopyToGroup ? (
-								<MenuItem
-									icon="fa-clone"
-									label="Copy to group"
-									onClick={() => (setPop(undefined), props.onCopyToGroup!())}
-								/>
-							) : null}
-							{props.onMoveToGroup ? (
-								<MenuItem
-									icon="fa-share-from-square"
-									label="Move to group"
-									onClick={() => (setPop(undefined), props.onMoveToGroup!())}
-								/>
-							) : null}
-							<MenuItem
-								icon="fa-table"
-								label="View data"
-								disabled={!out}
-								onClick={() => (setPop(undefined), setShowData(true))}
+							<IconButton
+								icon="fa-palette"
+								label="Style"
+								on={styleDraft !== undefined}
+								onClick={() => {
+									setPop(undefined);
+									setStyleDraft(baseView.style ?? {});
+								}}
 							/>
-							{canRecords ? (
-								<MenuItem
-									icon="fa-list-ul"
-									label="View records"
-									onClick={() => (setPop(undefined), setRecords({}))}
-								/>
+							<IconButton
+								icon="fa-rotate-right"
+								label={forceBlocked ? 'Refreshed just now' : 'Refresh'}
+								disabled={forceBlocked || state.status === 'loading'}
+								onClick={() => run(true)}
+							/>
+							<IconButton
+								icon="fa-ellipsis-vertical"
+								label="More"
+								on={pop === 'menu'}
+								onClick={() => setPop(p => (p === 'menu' ? undefined : 'menu'))}
+							/>
+							{pop === 'type' ? (
+								<Pop anchor={menuRef.current} align="right" popRef={popRef}>
+									<ChartTypePicker
+										shape={shape}
+										value={view.type}
+										onPick={pickType}
+										runnerFits={out?.fits}
+									/>
+								</Pop>
 							) : null}
-							<div className="_rpMenuSep" />
-							<div className="_rpMuted" style={{ padding: '4px 10px' }}>
-								Compare with
-							</div>
-							{([undefined, 'PREVIOUS_PERIOD', 'SAME_PERIOD_LAST_YEAR'] as const).map(
-								c => (
-									<button
-										key={c ?? 'off'}
-										type="button"
-										role="menuitemradio"
-										aria-checked={compare === c}
-										disabled={!!c && !!blocker}
-										title={c && blocker ? blocker : undefined}
-										className={`_rpMenuItem${compare === c ? ' _on' : ''}`}
-										onClick={() => (setPop(undefined), setCompare(c))}
-									>
-										{c ? COMPARE_LABELS[c] : 'Nothing'}
-									</button>
-								),
-							)}
-							{blocker ? (
-								<div className="_rpMuted" style={{ padding: '2px 10px 4px' }}>
-									{blocker}
-								</div>
-							) : null}
-							<div className="_rpMenuSep" />
-							<MenuItem
-								icon="fa-file-csv"
-								label="Export CSV"
-								disabled={!out}
-								onClick={exportCsv}
-							/>
-							<MenuItem
-								icon="fa-file-pdf"
-								label="Export PDF"
-								disabled={!out || !pdfFunction}
-								onClick={exportWidgetPdf}
-							/>
-							<MenuItem
-								icon="fa-file-export"
-								label="Export widget file"
-								onClick={exportWidgetFile}
-							/>
-							<div className="_rpMenuSep" />
-							<MenuItem
-								icon={full ? 'fa-compress' : 'fa-expand'}
-								label={full ? 'Exit full screen' : 'Full screen'}
-								onClick={() => (setPop(undefined), setFull(f => !f))}
-							/>
-							{isCanvas ? (
-								<MenuItem
-									icon="fa-image"
-									label="Download PNG"
-									disabled={!config}
-									onClick={downloadPng}
-								/>
-							) : null}
-							{props.onRefreshMinChange ? (
-								<>
-									<div className="_rpMenuSep" />
-									<div className="_rpMuted" style={{ padding: '4px 10px' }}>
-										Auto refresh
-									</div>
-									{REFRESH_CHOICES.map(m => (
-										<button
-											key={m}
-											type="button"
-											role="menuitemradio"
-											aria-checked={refreshMin === m}
-											className={`_rpMenuItem${refreshMin === m ? ' _on' : ''}`}
+							{pop === 'menu' ? (
+								<Pop
+									anchor={menuRef.current}
+									align="right"
+									popRef={popRef}
+									role="menu"
+								>
+									{props.onEdit ? (
+										<MenuItem
+											icon="fa-pen"
+											label="Edit"
+											onClick={() => (setPop(undefined), props.onEdit!())}
+										/>
+									) : null}
+									{props.onDuplicate ? (
+										<MenuItem
+											icon="fa-copy"
+											label="Duplicate"
 											onClick={() => (
 												setPop(undefined),
-												props.onRefreshMinChange!(m)
+												props.onDuplicate!()
 											)}
+										/>
+									) : null}
+									{props.onCopyToGroup ? (
+										<MenuItem
+											icon="fa-clone"
+											label="Copy to group"
+											onClick={() => (
+												setPop(undefined),
+												props.onCopyToGroup!()
+											)}
+										/>
+									) : null}
+									{props.onMoveToGroup ? (
+										<MenuItem
+											icon="fa-share-from-square"
+											label="Move to group"
+											onClick={() => (
+												setPop(undefined),
+												props.onMoveToGroup!()
+											)}
+										/>
+									) : null}
+									<MenuItem
+										icon="fa-table"
+										label="View data"
+										disabled={!out}
+										onClick={() => (setPop(undefined), setShowData(true))}
+									/>
+									{canRecords ? (
+										<MenuItem
+											icon="fa-list-ul"
+											label="View records"
+											onClick={() => (setPop(undefined), setRecords({}))}
+										/>
+									) : null}
+									<div className="_rpMenuSep" />
+									<div className="_rpMuted" style={{ padding: '4px 10px' }}>
+										Compare with
+									</div>
+									{(
+										[
+											undefined,
+											'PREVIOUS_PERIOD',
+											'SAME_PERIOD_LAST_YEAR',
+										] as const
+									).map(c => (
+										<button
+											key={c ?? 'off'}
+											type="button"
+											role="menuitemradio"
+											aria-checked={compare === c}
+											disabled={!!c && !!blocker}
+											title={c && blocker ? blocker : undefined}
+											className={`_rpMenuItem${compare === c ? ' _on' : ''}`}
+											onClick={() => (setPop(undefined), setCompare(c))}
 										>
-											{m ? `Every ${m} min` : 'Off'}
+											{c ? COMPARE_LABELS[c] : 'Nothing'}
 										</button>
 									))}
-								</>
+									{blocker ? (
+										<div
+											className="_rpMuted"
+											style={{ padding: '2px 10px 4px' }}
+										>
+											{blocker}
+										</div>
+									) : null}
+									<div className="_rpMenuSep" />
+									<MenuItem
+										icon="fa-file-csv"
+										label="Export CSV"
+										disabled={!out}
+										onClick={exportCsv}
+									/>
+									<MenuItem
+										icon="fa-file-pdf"
+										label="Export PDF"
+										disabled={!out || !pdfFunction}
+										onClick={exportWidgetPdf}
+									/>
+									<MenuItem
+										icon="fa-file-export"
+										label="Export widget file"
+										onClick={exportWidgetFile}
+									/>
+									<div className="_rpMenuSep" />
+									<MenuItem
+										icon={full ? 'fa-compress' : 'fa-expand'}
+										label={full ? 'Exit full screen' : 'Full screen'}
+										onClick={() => (setPop(undefined), setFull(f => !f))}
+									/>
+									{isCanvas ? (
+										<MenuItem
+											icon="fa-image"
+											label="Download PNG"
+											disabled={!config}
+											onClick={downloadPng}
+										/>
+									) : null}
+									{props.onRefreshMinChange ? (
+										<>
+											<div className="_rpMenuSep" />
+											<div
+												className="_rpMuted"
+												style={{ padding: '4px 10px' }}
+											>
+												Auto refresh
+											</div>
+											{REFRESH_CHOICES.map(m => (
+												<button
+													key={m}
+													type="button"
+													role="menuitemradio"
+													aria-checked={refreshMin === m}
+													className={`_rpMenuItem${refreshMin === m ? ' _on' : ''}`}
+													onClick={() => (
+														setPop(undefined),
+														props.onRefreshMinChange!(m)
+													)}
+												>
+													{m ? `Every ${m} min` : 'Off'}
+												</button>
+											))}
+										</>
+									) : null}
+									{props.onRemove || props.onDelete ? (
+										<div className="_rpMenuSep" />
+									) : null}
+									{props.onRemove ? (
+										<MenuItem
+											icon="fa-eye-slash"
+											label="Remove from dashboard"
+											onClick={() => (setPop(undefined), props.onRemove!())}
+										/>
+									) : null}
+									{props.onDelete ? (
+										<MenuItem
+											icon="fa-trash"
+											label="Delete"
+											onClick={() => (setPop(undefined), props.onDelete!())}
+										/>
+									) : null}
+								</Pop>
 							) : null}
-							{props.onRemove || props.onDelete ? (
-								<div className="_rpMenuSep" />
-							) : null}
-							{props.onRemove ? (
-								<MenuItem
-									icon="fa-eye-slash"
-									label="Remove from dashboard"
-									onClick={() => (setPop(undefined), props.onRemove!())}
-								/>
-							) : null}
-							{props.onDelete ? (
-								<MenuItem
-									icon="fa-trash"
-									label="Delete"
-									onClick={() => (setPop(undefined), props.onDelete!())}
-								/>
-							) : null}
-						</Pop>
-					) : null}
-				</div>
-			</div>
-			<div className="_rpSub">
-				{crumbs.length ? (
-					<nav className="_rpCrumbs" aria-label="Drill path">
-						{crumbs.map((c, i) =>
-							i < crumbs.length - 1 ? (
-								<React.Fragment key={i}>
-									<button
-										type="button"
-										onClick={() => setSteps(s => s.slice(0, i))}
-									>
-										{c}
-									</button>
-									<span className="_rpMuted">/</span>
-								</React.Fragment>
-							) : (
-								<span key={i}>{c}</span>
-							),
-						)}
-					</nav>
-				) : null}
-				{session.map((f, i) => (
-					<span key={i} className="_rpChip">
-						{f.label ?? f.field}
-						<button
-							type="button"
-							aria-label={`Remove filter ${f.label ?? f.field}`}
-							onClick={() => setSession(s => s.filter((_, j) => j !== i))}
-						>
-							<Icon name="fa-xmark" />
-						</button>
-					</span>
-				))}
-				<span className="_rpMuted">
-					{[
-						out?.period?.label,
-						updatedLabel(out?.refreshedAt),
-						eff.skipped.length ? `Not applied: ${eff.skipped.join(', ')}` : '',
-					]
-						.filter(Boolean)
-						.join(' · ')}
-				</span>
-				{state.status === 'error' && out ? (
-					<span className="_rpError _rpMuted">{errorText(state.error, spec.source)}</span>
-				) : null}
-				{props.importError && state.status === 'error' ? (
-					<span className="_rpError _rpMuted">Imported: {props.importError}</span>
-				) : null}
-				{notice ? (
-					<span className="_rpMuted" role="status">
-						{notice}
-					</span>
-				) : null}
-			</div>
+						</div>
+					</div>
+					<div className="_rpSub">
+						{crumbs.length ? (
+							<nav className="_rpCrumbs" aria-label="Drill path">
+								{crumbs.map((c, i) =>
+									i < crumbs.length - 1 ? (
+										<React.Fragment key={i}>
+											<button
+												type="button"
+												onClick={() => setSteps(s => s.slice(0, i))}
+											>
+												{c}
+											</button>
+											<span className="_rpMuted">/</span>
+										</React.Fragment>
+									) : (
+										<span key={i}>{c}</span>
+									),
+								)}
+							</nav>
+						) : null}
+						{session.map((f, i) => (
+							<span key={i} className="_rpChip">
+								{f.label ?? f.field}
+								<button
+									type="button"
+									aria-label={`Remove filter ${f.label ?? f.field}`}
+									onClick={() => setSession(s => s.filter((_, j) => j !== i))}
+								>
+									<Icon name="fa-xmark" />
+								</button>
+							</span>
+						))}
+						<span className="_rpMuted">
+							{[
+								out?.period?.label,
+								updatedLabel(out?.refreshedAt),
+								eff.skipped.length ? `Not applied: ${eff.skipped.join(', ')}` : '',
+							]
+								.filter(Boolean)
+								.join(' · ')}
+						</span>
+						{state.status === 'error' && out ? (
+							<span className="_rpError _rpMuted">
+								{errorText(state.error, spec.source)}
+							</span>
+						) : null}
+						{props.importError && state.status === 'error' ? (
+							<span className="_rpError _rpMuted">Imported: {props.importError}</span>
+						) : null}
+						{notice ? (
+							<span className="_rpMuted" role="status">
+								{notice}
+							</span>
+						) : null}
+					</div>
+				</>
+			)}
 			<div className="_rpBody" aria-busy={state.status === 'loading'}>
 				{state.status === 'loading' && out ? (
 					<span className="_rpSpin _rpMuted" aria-hidden="true">
@@ -977,7 +1025,7 @@ export function ReportWidgetView(props: Readonly<ReportWidgetViewProps>) {
 					</Pop>
 				) : null}
 			</div>
-			{hasMore || moreHref ? (
+			{!props.mini && (hasMore || moreHref) ? (
 				<div className="_rpFoot">
 					{more?.error ? <span className="_rpError _rpMuted">{more.error}</span> : null}
 					{hasMore ? (
@@ -1003,7 +1051,7 @@ export function ReportWidgetView(props: Readonly<ReportWidgetViewProps>) {
 					) : null}
 				</div>
 			) : null}
-			{props.footer}
+			{props.mini ? null : props.footer}
 		</div>
 	);
 

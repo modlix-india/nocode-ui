@@ -56,11 +56,13 @@ import {
 	SessionFilter,
 	VIEW_LABELS,
 } from '../reportTypes';
-import { Icon, MultiPick, PickOption } from './common';
+import { Icon, MultiPick, PickOption, useDismiss } from './common';
 import { useCatalog, useWidth } from './hooks';
 import { EditorValue, ReportEditorView } from './ReportEditorView';
 import { ReportWidgetView, WidgetExportApi } from './ReportWidgetView';
-import { Dialog } from './portal';
+import { Dialog, Pop } from './portal';
+import { ListAsk, ReportCards } from './ReportCards';
+import { aiUrl } from '../reportAi';
 
 /**
  * A per-user dashboard: a 12 column tile grid (drag to move, snap resize, both on the shared
@@ -88,6 +90,13 @@ export interface DashboardViewProps {
 	pdfFunction?: string;
 	/** The app for widget files; default the run function's namespace. */
 	appNamespace?: string;
+	/**
+	 * New report and Edit open the page's builder (a ReportEditor on the same page) instead of
+	 * this view's own dialog (reportsPage.ts).
+	 */
+	onOpenBuilder?: (req: { id?: string; value?: EditorValue; prompt?: string }) => void;
+	/** Library: "Your data" (CSV files) in the Data menu. */
+	onYourData?: () => void;
 }
 
 /** Copy / Move to group: the widget and the choice so far. */
@@ -125,9 +134,16 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 	const doc = docState.doc;
 	const [mode, setMode] = useState<'dashboard' | 'library'>(props.mode ?? 'dashboard');
 	const [filters, setFilters] = useState<DashboardFilters>({});
-	const [editing, setEditing] = useState<{ id?: string; value?: EditorValue } | undefined>(
-		undefined,
-	);
+	const [editing, setEditing] = useState<
+		{ id?: string; value?: EditorValue; prompt?: string } | undefined
+	>(undefined);
+	const [dataMenu, setDataMenu] = useState(false);
+	const dataBtn = useRef<HTMLButtonElement>(null);
+	const dataMenuRef = useDismiss(dataMenu, () => setDataMenu(false));
+	const openNew = (prompt?: string) =>
+		props.onOpenBuilder ? props.onOpenBuilder({ prompt }) : setEditing({ prompt });
+	const openEdit = (id: string, value: EditorValue) =>
+		props.onOpenBuilder ? props.onOpenBuilder({ id, value }) : setEditing({ id, value });
 	const [notice, setNotice] = useState<string>('');
 	const [confirmReset, setConfirmReset] = useState(false);
 	const [drag, setDrag] = useState<DragState | undefined>(undefined);
@@ -512,166 +528,256 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 
 	return (
 		<div className="_rpDash" ref={rootRef}>
-			<div className="_rpBar">
-				{props.title ? <div className="_rpTitle">{props.title}</div> : null}
-				{props.showFilters !== false && mode === 'dashboard' ? (
-					<>
-						<label className="_rpLabel">
-							Period
-							<select
-								className="_rpSelect"
-								value={filters.period ?? ''}
-								onChange={e =>
-									setFilters(f => ({
-										...f,
-										period: (e.target.value || undefined) as Period | undefined,
-									}))
-								}
-							>
-								<option value="">As each widget is set</option>
-								{PERIODS.map(p => (
-									<option key={p} value={p}>
-										{PERIOD_LABELS[p]}
-									</option>
-								))}
-							</select>
-						</label>
-						{filters.period === 'CUSTOM' ? (
+			{mode === 'library' ? (
+				<>
+					<div className="_rpBar _rpListHead">
+						{props.title ? <div className="_rpTitle">{props.title}</div> : null}
+						<div className="_rpSpacer" />
+						{editable ? (
 							<>
-								<label className="_rpLabel">
-									From
-									<input
-										className="_rpInput"
-										type="date"
-										value={filters.from ?? ''}
-										onChange={e =>
-											setFilters(f => ({ ...f, from: e.target.value }))
-										}
-									/>
-								</label>
-								<label className="_rpLabel">
-									To
-									<input
-										className="_rpInput"
-										type="date"
-										value={filters.to ?? ''}
-										onChange={e =>
-											setFilters(f => ({ ...f, to: e.target.value }))
-										}
-									/>
-								</label>
-							</>
-						) : null}
-						{(catalog.quickFilters ?? []).map(f =>
-							valuesSpec(catalog, f) ? (
-								<MultiPick
-									key={f}
-									label={fieldLabel(catalog, f)}
-									values={filters.quick?.[f] ?? []}
-									loadOptions={loaders.get(f)!}
-									onChange={v =>
-										setFilters(s => ({
-											...s,
-											quick: { ...(s.quick ?? {}), [f]: v },
-										}))
-									}
+								<input
+									ref={fileRef}
+									type="file"
+									accept=".json,application/json"
+									style={{ display: 'none' }}
+									onChange={e => {
+										const f = e.target.files?.[0];
+										e.target.value = '';
+										void pickFile(f);
+									}}
 								/>
-							) : null,
-						)}
-					</>
-				) : null}
-				<div className="_rpSpacer" />
-				{mode === 'dashboard' && ordered.length ? (
-					<>
-						<button
-							type="button"
-							className="_rpBtn"
-							disabled={busy || !pdfFunction}
-							onClick={exportDashboardPdf}
-						>
-							<Icon name={busy ? 'fa-spinner fa-spin' : 'fa-file-pdf'} /> Export PDF
-						</button>
-						<button type="button" className="_rpBtn" onClick={exportDashboardFile}>
-							<Icon name="fa-file-export" /> Export file
-						</button>
-					</>
-				) : null}
-				{editable ? (
-					<>
-						<input
-							ref={fileRef}
-							type="file"
-							accept=".json,application/json"
-							style={{ display: 'none' }}
-							onChange={e => {
-								const f = e.target.files?.[0];
-								e.target.value = '';
-								void pickFile(f);
-							}}
-						/>
-						<button
-							type="button"
-							className="_rpBtn"
-							onClick={() => fileRef.current?.click()}
-						>
-							<Icon name="fa-file-import" /> Import file
-						</button>
-					</>
-				) : null}
-				{editable ? (
-					<>
-						<button type="button" className="_rpBtn" onClick={() => setEditing({})}>
-							<Icon name="fa-plus" /> Add widget
-						</button>
-						{props.lockMode ? null : (
-							<button
-								type="button"
-								className="_rpBtn"
-								onClick={() =>
-									setMode(m => (m === 'dashboard' ? 'library' : 'dashboard'))
-								}
-							>
-								<Icon
-									name={mode === 'dashboard' ? 'fa-book' : 'fa-table-cells-large'}
-								/>
-								{mode === 'dashboard' ? 'Library' : 'Dashboard'}
-							</button>
-						)}
-						{mode === 'dashboard' ? (
-							confirmReset ? (
-								<span className="_rpRow" style={{ alignItems: 'center' }}>
-									<span className="_rpMuted">Reset to the app defaults?</span>
-									<button
-										type="button"
-										className="_rpBtn _primary"
-										onClick={() => {
-											setConfirmReset(false);
-											apply(d => resetDoc(d, catalog));
-										}}
+								<button
+									ref={dataBtn}
+									type="button"
+									className="_rpBtn"
+									aria-haspopup="menu"
+									aria-expanded={dataMenu}
+									onClick={() => setDataMenu(v => !v)}
+								>
+									<Icon name="fa-database" /> Data
+								</button>
+								{dataMenu ? (
+									<Pop
+										anchor={dataBtn.current}
+										popRef={dataMenuRef}
+										align="right"
+										role="menu"
 									>
-										Reset
-									</button>
+										{props.onYourData ? (
+											<button
+												type="button"
+												role="menuitem"
+												className="_rpMenuItem"
+												onClick={() => {
+													setDataMenu(false);
+													props.onYourData!();
+												}}
+											>
+												<Icon name="fa-file-csv" /> Your data (CSV files)
+											</button>
+										) : null}
+										<button
+											type="button"
+											role="menuitem"
+											className="_rpMenuItem"
+											onClick={() => {
+												setDataMenu(false);
+												fileRef.current?.click();
+											}}
+										>
+											<Icon name="fa-file-import" /> Import a report file
+										</button>
+									</Pop>
+								) : null}
+								{props.lockMode ? null : (
 									<button
 										type="button"
 										className="_rpBtn"
-										onClick={() => setConfirmReset(false)}
+										onClick={() => setMode('dashboard')}
 									>
-										Cancel
+										<Icon name="fa-table-cells-large" /> Dashboard
 									</button>
-								</span>
-							) : (
+								)}
+								<button
+									type="button"
+									className="_rpBtn _primary"
+									onClick={() => openNew()}
+								>
+									<Icon name="fa-plus" /> New report
+								</button>
+							</>
+						) : null}
+					</div>
+					{editable && cat.catalog?.ai ? <ListAsk onAsk={p => openNew(p)} /> : null}
+				</>
+			) : (
+				<div className="_rpBar">
+					{props.title ? <div className="_rpTitle">{props.title}</div> : null}
+					{props.showFilters !== false && mode === 'dashboard' ? (
+						<>
+							<label className="_rpLabel">
+								Period
+								<select
+									className="_rpSelect"
+									value={filters.period ?? ''}
+									onChange={e =>
+										setFilters(f => ({
+											...f,
+											period: (e.target.value || undefined) as
+												Period | undefined,
+										}))
+									}
+								>
+									<option value="">As each widget is set</option>
+									{PERIODS.map(p => (
+										<option key={p} value={p}>
+											{PERIOD_LABELS[p]}
+										</option>
+									))}
+								</select>
+							</label>
+							{filters.period === 'CUSTOM' ? (
+								<>
+									<label className="_rpLabel">
+										From
+										<input
+											className="_rpInput"
+											type="date"
+											value={filters.from ?? ''}
+											onChange={e =>
+												setFilters(f => ({ ...f, from: e.target.value }))
+											}
+										/>
+									</label>
+									<label className="_rpLabel">
+										To
+										<input
+											className="_rpInput"
+											type="date"
+											value={filters.to ?? ''}
+											onChange={e =>
+												setFilters(f => ({ ...f, to: e.target.value }))
+											}
+										/>
+									</label>
+								</>
+							) : null}
+							{(catalog.quickFilters ?? []).map(f =>
+								valuesSpec(catalog, f) ? (
+									<MultiPick
+										key={f}
+										label={fieldLabel(catalog, f)}
+										values={filters.quick?.[f] ?? []}
+										loadOptions={loaders.get(f)!}
+										onChange={v =>
+											setFilters(s => ({
+												...s,
+												quick: { ...(s.quick ?? {}), [f]: v },
+											}))
+										}
+									/>
+								) : null,
+							)}
+						</>
+					) : null}
+					<div className="_rpSpacer" />
+					{mode === 'dashboard' && ordered.length ? (
+						<>
+							<button
+								type="button"
+								className="_rpBtn"
+								disabled={busy || !pdfFunction}
+								onClick={exportDashboardPdf}
+							>
+								<Icon name={busy ? 'fa-spinner fa-spin' : 'fa-file-pdf'} /> Export
+								PDF
+							</button>
+							<button type="button" className="_rpBtn" onClick={exportDashboardFile}>
+								<Icon name="fa-file-export" /> Export file
+							</button>
+						</>
+					) : null}
+					{editable ? (
+						<>
+							<input
+								ref={fileRef}
+								type="file"
+								accept=".json,application/json"
+								style={{ display: 'none' }}
+								onChange={e => {
+									const f = e.target.files?.[0];
+									e.target.value = '';
+									void pickFile(f);
+								}}
+							/>
+							<button
+								type="button"
+								className="_rpBtn"
+								onClick={() => fileRef.current?.click()}
+							>
+								<Icon name="fa-file-import" /> Import file
+							</button>
+						</>
+					) : null}
+					{editable ? (
+						<>
+							<button type="button" className="_rpBtn" onClick={() => openNew()}>
+								<Icon name="fa-plus" /> Add widget
+							</button>
+							{props.lockMode ? null : (
 								<button
 									type="button"
 									className="_rpBtn"
-									onClick={() => setConfirmReset(true)}
+									onClick={() =>
+										setMode(m => (m === 'dashboard' ? 'library' : 'dashboard'))
+									}
 								>
-									<Icon name="fa-arrow-rotate-left" /> Reset to defaults
+									<Icon
+										name={
+											mode === 'dashboard'
+												? 'fa-book'
+												: 'fa-table-cells-large'
+										}
+									/>
+									{mode === 'dashboard' ? 'Library' : 'Dashboard'}
 								</button>
-							)
-						) : null}
-					</>
-				) : null}
-			</div>
+							)}
+							{mode === 'dashboard' ? (
+								confirmReset ? (
+									<span className="_rpRow" style={{ alignItems: 'center' }}>
+										<span className="_rpMuted">Reset to the app defaults?</span>
+										<button
+											type="button"
+											className="_rpBtn _primary"
+											onClick={() => {
+												setConfirmReset(false);
+												apply(d => resetDoc(d, catalog));
+											}}
+										>
+											Reset
+										</button>
+										<button
+											type="button"
+											className="_rpBtn"
+											onClick={() => setConfirmReset(false)}
+										>
+											Cancel
+										</button>
+									</span>
+								) : (
+									<button
+										type="button"
+										className="_rpBtn"
+										onClick={() => setConfirmReset(true)}
+									>
+										<Icon name="fa-arrow-rotate-left" /> Reset to defaults
+									</button>
+								)
+							) : null}
+						</>
+					) : null}
+				</div>
+			)}
 			{notice ? (
 				<div
 					className={/^(Imported|Copied|Moved)/.test(notice) ? '_rpMuted' : '_rpError'}
@@ -702,12 +808,14 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 			) : null}
 
 			{mode === 'library' ? (
-				<LibraryList
+				<ReportCards
 					doc={doc}
 					catalog={catalog}
 					editable={editable}
 					apply={apply}
-					onEdit={(id, value) => setEditing({ id, value })}
+					transport={transport}
+					runFunction={runFunction}
+					onEdit={openEdit}
 					onDelete={(id, name) => setConfirmDelete({ id, name })}
 					onTransfer={
 						editable && otherGroups.length
@@ -1059,6 +1167,12 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 							catalog={catalog}
 							runFunction={runFunction}
 							initial={editing.value}
+							heading=""
+							ai={
+								cat.catalog?.ai
+									? { endpoint: aiUrl(undefined), initialPrompt: editing.prompt }
+									: undefined
+							}
 							onSave={saveEditor}
 							onSaveAsNew={
 								editing.id

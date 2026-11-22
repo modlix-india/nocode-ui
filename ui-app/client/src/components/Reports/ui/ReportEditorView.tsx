@@ -49,18 +49,21 @@ import {
 	ReportFilter,
 	ReportSpec,
 	SPEC_CAPS,
+	VIEW_LABELS,
 	ViewType,
 } from '../reportTypes';
 import { DatasetFunctions } from '../datasetApi';
 import { datasetSourceId, isDatasetSource } from '../datasetModel';
-import { ChartTypePicker } from './ChartTypePicker';
+import { autoName, describeSpec, simpleState, suggestedViews } from '../simpleForm';
+import { ChartTypePicker, VIEW_ICONS } from './ChartTypePicker';
 import { AiGroup, AiPeriod } from '../reportAi';
 import { AskAiBox } from './AskAiBox';
 import { FunctionParams } from './FunctionParams';
 import { DatasetImportDialog, DatasetListDialog, dayOrderFor, useDatasets } from './Datasets';
 import { Icon, IconButton, MultiPick, PickOption, useDismiss } from './common';
 import { ReportWidgetView } from './ReportWidgetView';
-import { Pop } from './portal';
+import { Dialog, Pop } from './portal';
+import { SimpleQuestions } from './SimpleQuestions';
 import { StylePanel } from './StylePanel';
 
 /**
@@ -170,6 +173,8 @@ export function ReportEditorView({
 	extra,
 	datasets,
 	ai,
+	heading,
+	backLabel,
 }: Readonly<{
 	transport?: ReportTransport;
 	catalog?: ReportCatalog;
@@ -192,8 +197,14 @@ export function ReportEditorView({
 		groups?: Array<{ id: string; label: string; kind?: string }>;
 		/** The AI suggested a group (an existing one, or a new label); the page decides. */
 		onGroup?: (group: AiGroup) => void;
+		/** Asked on the list ("Describe the report you want"): sent once when the builder opens. */
+		initialPrompt?: string;
 		fetchImpl?: typeof fetch;
 	};
+	/** The builder's title; default "New report" or "Edit report"; '' for none (in a dialog). */
+	heading?: string;
+	/** A link back (e.g. "Back to list") that cancels; none when not given. */
+	backLabel?: string;
 }>) {
 	const start = useMemo<EditorValue>(
 		() => ({
@@ -213,6 +224,13 @@ export function ReportEditorView({
 		spec?: ReportSpec;
 	}>({ status: 'idle' });
 	const [saving, setSaving] = useState(false);
+	/** The save dialog (name; the page's group and dashboard choices come through `extra`). */
+	const [saveDialog, setSaveDialog] = useState<{ name: string } | undefined>(undefined);
+	const [allTypes, setAllTypes] = useState(false);
+	// More options opens on a spec the four questions cannot show in full, so nothing is hidden.
+	const [moreOpen, setMoreOpen] = useState(
+		() => simpleState(start.spec, catalog).unsupported.length > 0,
+	);
 	const [search, setSearch] = useState('');
 	const [menu, setMenu] = useState<Menu | undefined>(undefined);
 	const [hint, setHint] = useState('');
@@ -482,7 +500,26 @@ export function ReportEditorView({
 	};
 	const takenAs = () => new Set(valueKeys);
 	const blocker = compareBlocker(spec, catalog);
-	const canSave = !!name.trim() && check.status === 'ok' && !saving;
+	const canSave = check.status === 'ok' && !saving;
+	const simple = simpleState(spec, catalog);
+	const moreHint = [...simple.unsupported, ...simple.inUse].join(', ');
+	const suggested = suggestedViews(shape, spec.view.type);
+	const unsupportedCount = simple.unsupported.length;
+	useEffect(() => {
+		if (unsupportedCount) setMoreOpen(true);
+	}, [unsupportedCount]);
+	const confirmSave = async (fn: (v: EditorValue) => void | Promise<void>) => {
+		const n = saveDialog?.name.trim();
+		if (!n) return;
+		commit({ name: n }, 'name');
+		setSaving(true);
+		try {
+			await fn({ ...value(), name: n });
+			setSaveDialog(undefined);
+		} finally {
+			setSaving(false);
+		}
+	};
 	const value = (): EditorValue => ({
 		name: name.trim(),
 		spec: { ...spec, view: { ...spec.view, title: spec.view.title ?? undefined } },
@@ -672,104 +709,18 @@ export function ReportEditorView({
 		) : null;
 
 	return (
-		<div className="_rpEditor _shelves" onKeyDown={onKeyDown}>
+		<div className="_rpBuilder" onKeyDown={onKeyDown}>
 			{dataDialogs}
-			{ai && catalog?.ai ? (
-				<AskAiBox
-					endpoint={ai.endpoint}
-					group={ai.group}
-					groups={ai.groups}
-					fetchImpl={ai.fetchImpl}
-					currentSpec={() => (latest.current.refine ? latest.current.spec : undefined)}
-					onSpec={loadAiSpec}
-				/>
-			) : null}
-			<div className="_rpLine" style={{ gridColumn: '1 / -1' }}>
-				<label className="_rpLabel" style={{ flex: '2 1 220px' }}>
-					Name
-					<input
-						className="_rpInput"
-						value={name}
-						placeholder="Bookings by RM"
-						onChange={e => commit({ name: e.target.value }, 'name')}
-					/>
-				</label>
-				<label className="_rpLabel" style={{ flex: '1 1 160px' }}>
-					Data
-					<select
-						className="_rpSelect"
-						value={spec.source}
-						onChange={e => {
-							const v = e.target.value;
-							if (v === IMPORT_DATA || v === MANAGE_DATA) {
-								setDataDialog(v === IMPORT_DATA ? 'import' : 'list');
-								return;
-							}
-							pickSource(v);
-						}}
-					>
-						{(() => {
-							const all = reportSources(catalog);
-							const own = all.filter(([k]) => isDatasetSource(k));
-							const app = all.filter(([k]) => !isDatasetSource(k));
-							const opts = (list: typeof all) =>
-								list.map(([k, s]) => (
-									<option key={k} value={k}>
-										{s.label ?? k}
-									</option>
-								));
-							const known = all.some(([k]) => k === spec.source);
-							return (
-								<>
-									{!known && spec.source ? (
-										<option value={spec.source}>
-											{isDatasetSource(spec.source)
-												? 'Dataset deleted'
-												: spec.source}
-										</option>
-									) : null}
-									{own.length || datasets ? (
-										<>
-											<optgroup label="App data">{opts(app)}</optgroup>
-											{own.length ? (
-												<optgroup label="Your data">{opts(own)}</optgroup>
-											) : null}
-										</>
-									) : (
-										opts(app)
-									)}
-									{datasets ? (
-										<optgroup label="Your files">
-											<option value={IMPORT_DATA}>
-												Import data from CSV
-											</option>
-											<option value={MANAGE_DATA}>Manage your data</option>
-										</optgroup>
-									) : null}
-								</>
-							);
-						})()}
-					</select>
-				</label>
-				{!isFunction && source?.segments && Object.keys(source.segments).length ? (
-					<label className="_rpLabel" style={{ flex: '1 1 160px' }}>
-						Which records
-						<select
-							className="_rpSelect"
-							value={spec.segment ?? ''}
-							onChange={e =>
-								setSpec(s => ({ ...s, segment: e.target.value || undefined }))
-							}
-						>
-							<option value="">All {source.label?.toLowerCase() ?? 'records'}</option>
-							{Object.entries(source.segments).map(([k, sg]) => (
-								<option key={k} value={k}>
-									{sg.label ?? k}
-								</option>
-							))}
-						</select>
-					</label>
+			<div className="_rpBuilderTop">
+				{onCancel && backLabel ? (
+					<button type="button" className="_rpLinkBtn" onClick={onCancel}>
+						<Icon name="fa-arrow-left" /> {backLabel}
+					</button>
 				) : null}
+				<span className="_rpBuilderTitle">
+					{heading ?? (initial ? 'Edit report' : 'New report')}
+				</span>
+				<span style={{ flex: 1 }} />
 				<div className="_rpHistory" role="toolbar" aria-label="History">
 					<IconButton
 						icon="fa-rotate-left"
@@ -785,329 +736,476 @@ export function ReportEditorView({
 					/>
 				</div>
 			</div>
-
-			{isFunction ? (
-				<div className="_rpEditorForm" style={{ gridColumn: 'span 2' }}>
-					<FunctionParams
-						source={source}
-						catalog={catalog}
-						params={spec.params}
-						loadValues={paramLoader}
-						onChange={p => setSpec(s => ({ ...s, params: p }), 'params')}
-					/>
-				</div>
-			) : (
-				<>
-					<div className="_rpFields" aria-label="Fields">
-						<input
-							className="_rpInput"
-							type="search"
-							aria-label="Search fields"
-							placeholder="Search fields"
-							value={search}
-							onChange={e => setSearch(e.target.value)}
+			{ai && catalog?.ai ? (
+				<AskAiBox
+					endpoint={ai.endpoint}
+					group={ai.group}
+					groups={ai.groups}
+					fetchImpl={ai.fetchImpl}
+					initialPrompt={ai.initialPrompt}
+					currentSpec={() => (latest.current.refine ? latest.current.spec : undefined)}
+					onSpec={loadAiSpec}
+				/>
+			) : null}
+			<div className="_rpBuilderMain">
+				<div className="_rpBuilderForm">
+					<label className="_rpLabel">
+						Data
+						<select
+							className="_rpSelect"
+							value={spec.source}
+							onChange={e => {
+								const v = e.target.value;
+								if (v === IMPORT_DATA || v === MANAGE_DATA) {
+									setDataDialog(v === IMPORT_DATA ? 'import' : 'list');
+									return;
+								}
+								pickSource(v);
+							}}
+						>
+							{(() => {
+								const all = reportSources(catalog);
+								const own = all.filter(([k]) => isDatasetSource(k));
+								const app = all.filter(([k]) => !isDatasetSource(k));
+								const opts = (list: typeof all) =>
+									list.map(([k, s]) => (
+										<option key={k} value={k}>
+											{s.label ?? k}
+										</option>
+									));
+								const known = all.some(([k]) => k === spec.source);
+								return (
+									<>
+										{!known && spec.source ? (
+											<option value={spec.source}>
+												{isDatasetSource(spec.source)
+													? 'Dataset deleted'
+													: spec.source}
+											</option>
+										) : null}
+										{own.length || datasets ? (
+											<>
+												<optgroup label="App data">{opts(app)}</optgroup>
+												{own.length ? (
+													<optgroup label="Your data">
+														{opts(own)}
+													</optgroup>
+												) : null}
+											</>
+										) : (
+											opts(app)
+										)}
+										{datasets ? (
+											<optgroup label="Your files">
+												<option value={IMPORT_DATA}>
+													Import data from CSV
+												</option>
+												<option value={MANAGE_DATA}>
+													Manage your data
+												</option>
+											</optgroup>
+										) : null}
+									</>
+								);
+							})()}
+						</select>
+					</label>
+					{isFunction ? (
+						<FunctionParams
+							source={source}
+							catalog={catalog}
+							params={spec.params}
+							loadValues={paramLoader}
+							onChange={p => setSpec(s => ({ ...s, params: p }), 'params')}
 						/>
-						{groups.map(([title, list]) =>
-							list.length ? (
-								<div key={title} className="_rpFieldGroup">
-									<div className="_rpMuted">{title}</div>
-									{list.map(([n, f]) => (
-										<div key={n} style={{ position: 'relative' }}>
-											<button
-												type="button"
-												className="_rpField"
-												aria-haspopup="menu"
-												aria-expanded={
-													menu?.kind === 'field' && menu.field === n
-												}
-												title="Drag to a shelf, or pick one"
-												onPointerDown={e =>
-													beginDrag(e, {
-														kind: 'field',
-														field: n,
-														label: fieldLabelOf(n),
-													})
-												}
-												onClick={e => {
-													if (justDragged.current) return;
-													menuAnchor.current = e.currentTarget;
-													setMenu(m =>
-														m?.kind === 'field' && m.field === n
-															? undefined
-															: { kind: 'field', field: n },
-													);
-												}}
-											>
-												<Icon name={fieldIcon(f)} />
-												{fieldLabelOf(n)}
-											</button>
-											{menu?.kind === 'field' && menu.field === n ? (
-												<Pop
-													anchor={menuAnchor.current}
-													popRef={menuRef}
-													role="menu"
-												>
-													<div
-														className="_rpMuted"
-														style={{ padding: '4px 10px' }}
-													>
-														Add to
-													</div>
-													{SHELF_ORDER.filter(sh =>
-														sh === 'filters'
-															? n !== COUNT_FIELD
-															: accepts(sh, itemOfField(n, f)),
-													).map(sh => (
-														<button
-															key={sh}
-															type="button"
-															role="menuitem"
-															className="_rpMenuItem"
-															onClick={() =>
-																drop(
-																	{ kind: 'field', field: n },
-																	sh,
-																)
-															}
-														>
-															{SHELF_LABELS[sh]}
-														</button>
-													))}
-												</Pop>
-											) : null}
-										</div>
-									))}
+					) : (
+						<SimpleQuestions
+							spec={spec}
+							catalog={catalog}
+							onChange={(next, group) => setSpec(() => next, group)}
+						/>
+					)}
+					{!isFunction && simple.unsupported.length ? (
+						<div className="_rpMuted" role="note">
+							This report also has {simple.unsupported.join(', ')}: see More options.
+						</div>
+					) : null}
+				</div>
+				<div className="_rpEditorSide">
+					{aiSummary && aiSummary.key === JSON.stringify(spec) ? (
+						<div className="_rpSummary" role="status">
+							{aiSummary.text}
+						</div>
+					) : !isFunction ? (
+						<div className="_rpMuted" aria-live="polite">
+							{describeSpec(spec, catalog)}
+						</div>
+					) : null}
+					<div className="_rpEditorPreview">
+						{check.status !== 'error' && check.spec ? (
+							<ReportWidgetView
+								transport={transport}
+								runFunction={runFunction}
+								catalog={catalog}
+								spec={check.spec}
+								name={name || 'Preview'}
+								editable
+								onSpecChange={s => setSpec(() => s)}
+							/>
+						) : (
+							<div className="_rpWidget">
+								<div className="_rpState _rpMuted">
+									{check.status === 'checking'
+										? 'Checking'
+										: check.status === 'error'
+											? 'Fix the report to see a preview'
+											: ''}
 								</div>
-							) : null,
+							</div>
 						)}
 					</div>
-					<div className="_rpEditorForm">
-						{SHELF_ORDER.map(shelfRow)}
-						{hint ? (
-							<div className="_rpMuted _rpError" role="status">
-								{hint}
-							</div>
-						) : null}
-						{(spec.derived ?? []).map((d, i) => (
-							<DerivedRow
-								key={i}
-								value={d}
-								keys={(spec.measures ?? []).map(m => m.as)}
-								keyLabel={keyLabel}
-								onChange={v =>
-									setSpec(s => ({
-										...s,
-										derived: v
-											? s.derived!.map((e, j) => (j === i ? v : e))
-											: s.derived!.filter((_, j) => j !== i),
-									}))
-								}
-							/>
-						))}
-						{(spec.measures?.length ?? 0) >= 2 && (spec.derived?.length ?? 0) < 2 ? (
-							<button
-								type="button"
-								className="_rpBtn"
-								onClick={() =>
-									setSpec(s => ({
-										...s,
-										derived: [
-											...(s.derived ?? []),
-											{
-												as: uniqueAs('ratio', takenAs()),
-												ratio: [s.measures![0].as, s.measures![1].as],
-											},
-										],
-									}))
-								}
-							>
-								Add a calculation
-							</button>
-						) : null}
-						<div className="_rpLine">
-							<label className="_rpLabel" style={{ flex: 1 }}>
-								Sort by
-								<select
-									className="_rpSelect"
-									value={spec.sort?.[0]?.by ?? ''}
-									onChange={e =>
-										setSpec(s => ({
-											...s,
-											sort: e.target.value
-												? [
-														{
-															by: e.target.value,
-															dir: s.sort?.[0]?.dir ?? 'DESC',
-														},
-													]
-												: undefined,
-										}))
+					<div className="_rpGroup">
+						<div className="_rpGroupTitle">Show as</div>
+						<div className="_rpSuggest" role="radiogroup" aria-label="Chart type">
+							{suggested.map(t => (
+								<button
+									key={t}
+									type="button"
+									role="radio"
+									aria-checked={spec.view.type === t}
+									className={`_rpType${spec.view.type === t ? ' _on' : ''}`}
+									onClick={() =>
+										setSpec(s => ({ ...s, view: { ...s.view, type: t } }))
 									}
 								>
-									<option value="">Natural order</option>
-									{valueKeys.map(k => (
-										<option key={k} value={k}>
-											{keyLabel(k)}
-										</option>
-									))}
-									{(spec.groupBy ?? []).map(g => (
-										<option key={g.as} value={g.as}>
-											{fieldLabelOf(g.field)}
-										</option>
-									))}
-								</select>
-							</label>
-							{spec.sort?.[0] ? (
-								<label className="_rpLabel">
-									Order
-									<select
-										className="_rpSelect"
-										value={spec.sort[0].dir}
-										onChange={e =>
+									<Icon name={VIEW_ICONS[t]} />
+									{VIEW_LABELS[t]}
+								</button>
+							))}
+							<button
+								type="button"
+								className={`_rpType${allTypes ? ' _on' : ''}`}
+								aria-expanded={allTypes}
+								onClick={() => setAllTypes(v => !v)}
+							>
+								<Icon name="fa-ellipsis" />
+								{allTypes ? 'Fewer' : 'More'}
+							</button>
+						</div>
+						{allTypes ? (
+							<ChartTypePicker
+								shape={shape}
+								value={spec.view.type}
+								onPick={(t: ViewType) =>
+									setSpec(s => ({ ...s, view: { ...s.view, type: t } }))
+								}
+							/>
+						) : null}
+					</div>
+				</div>
+			</div>
+			<details
+				className="_rpMoreOptions"
+				open={moreOpen}
+				onToggle={e => {
+					if (e.target === e.currentTarget) setMoreOpen(e.currentTarget.open);
+				}}
+			>
+				<summary>
+					More options
+					{moreHint ? <span className="_rpMuted"> ({moreHint})</span> : null}
+				</summary>
+				<div className="_rpEditor _shelves">
+					{isFunction ? null : (
+						<>
+							<div className="_rpFields" aria-label="Fields">
+								<input
+									className="_rpInput"
+									type="search"
+									aria-label="Search fields"
+									placeholder="Search fields"
+									value={search}
+									onChange={e => setSearch(e.target.value)}
+								/>
+								{groups.map(([title, list]) =>
+									list.length ? (
+										<div key={title} className="_rpFieldGroup">
+											<div className="_rpMuted">{title}</div>
+											{list.map(([n, f]) => (
+												<div key={n} style={{ position: 'relative' }}>
+													<button
+														type="button"
+														className="_rpField"
+														aria-haspopup="menu"
+														aria-expanded={
+															menu?.kind === 'field' &&
+															menu.field === n
+														}
+														title="Drag to a shelf, or pick one"
+														onPointerDown={e =>
+															beginDrag(e, {
+																kind: 'field',
+																field: n,
+																label: fieldLabelOf(n),
+															})
+														}
+														onClick={e => {
+															if (justDragged.current) return;
+															menuAnchor.current = e.currentTarget;
+															setMenu(m =>
+																m?.kind === 'field' && m.field === n
+																	? undefined
+																	: { kind: 'field', field: n },
+															);
+														}}
+													>
+														<Icon name={fieldIcon(f)} />
+														{fieldLabelOf(n)}
+													</button>
+													{menu?.kind === 'field' && menu.field === n ? (
+														<Pop
+															anchor={menuAnchor.current}
+															popRef={menuRef}
+															role="menu"
+														>
+															<div
+																className="_rpMuted"
+																style={{ padding: '4px 10px' }}
+															>
+																Add to
+															</div>
+															{SHELF_ORDER.filter(sh =>
+																sh === 'filters'
+																	? n !== COUNT_FIELD
+																	: accepts(
+																			sh,
+																			itemOfField(n, f),
+																		),
+															).map(sh => (
+																<button
+																	key={sh}
+																	type="button"
+																	role="menuitem"
+																	className="_rpMenuItem"
+																	onClick={() =>
+																		drop(
+																			{
+																				kind: 'field',
+																				field: n,
+																			},
+																			sh,
+																		)
+																	}
+																>
+																	{SHELF_LABELS[sh]}
+																</button>
+															))}
+														</Pop>
+													) : null}
+												</div>
+											))}
+										</div>
+									) : null,
+								)}
+							</div>
+							<div className="_rpEditorForm">
+								{SHELF_ORDER.map(shelfRow)}
+								{hint ? (
+									<div className="_rpMuted _rpError" role="status">
+										{hint}
+									</div>
+								) : null}
+								{(spec.derived ?? []).map((d, i) => (
+									<DerivedRow
+										key={i}
+										value={d}
+										keys={(spec.measures ?? []).map(m => m.as)}
+										keyLabel={keyLabel}
+										onChange={v =>
 											setSpec(s => ({
 												...s,
-												sort: [
+												derived: v
+													? s.derived!.map((e, j) => (j === i ? v : e))
+													: s.derived!.filter((_, j) => j !== i),
+											}))
+										}
+									/>
+								))}
+								{(spec.measures?.length ?? 0) >= 2 &&
+								(spec.derived?.length ?? 0) < 2 ? (
+									<button
+										type="button"
+										className="_rpBtn"
+										onClick={() =>
+											setSpec(s => ({
+												...s,
+												derived: [
+													...(s.derived ?? []),
 													{
-														by: s.sort![0].by,
-														dir: e.target.value as 'ASC' | 'DESC',
+														as: uniqueAs('ratio', takenAs()),
+														ratio: [
+															s.measures![0].as,
+															s.measures![1].as,
+														],
 													},
 												],
 											}))
 										}
 									>
-										<option value="DESC">Largest first</option>
-										<option value="ASC">Smallest first</option>
-									</select>
-								</label>
-							) : null}
-							<label className="_rpLabel">
-								Limit
-								<input
-									className="_rpInput"
-									type="number"
-									min={1}
-									max={500}
-									placeholder="All"
-									value={spec.limit ?? ''}
-									onChange={e =>
-										setSpec(
-											s => ({
-												...s,
-												limit: e.target.value
-													? Math.max(1, Number(e.target.value))
-													: undefined,
-											}),
-											'limit',
-										)
-									}
-								/>
-							</label>
-						</div>
-						<div className="_rpLine">
-							<label className="_rpLabel" style={{ flex: 1 }}>
-								Compare with
-								<select
-									className="_rpSelect"
-									value={spec.compare?.to ?? ''}
-									title={blocker}
-									onChange={e =>
-										setSpec(s => {
-											const to = e.target.value as CompareTo | '';
-											const { compare: _c, ...rest } = s;
-											return to ? { ...rest, compare: { to } } : rest;
-										})
-									}
-								>
-									<option value="">Nothing</option>
-									{(Object.keys(COMPARE_LABELS) as CompareTo[]).map(c => (
-										<option key={c} value={c} disabled={!!blocker}>
-											{COMPARE_LABELS[c]}
-										</option>
-									))}
-								</select>
-							</label>
-							<label className="_rpLabel" style={{ flex: 1 }}>
-								Auto refresh
-								<select
-									className="_rpSelect"
-									value={refreshMin}
-									onChange={e => commit({ refreshMin: Number(e.target.value) })}
-								>
-									{REFRESH_CHOICES.map(m => (
-										<option key={m} value={m}>
-											{m ? `Every ${m} min` : 'Off'}
-										</option>
-									))}
-								</select>
-							</label>
-						</div>
-						{blocker && spec.compare ? <div className="_rpMuted">{blocker}</div> : null}
-					</div>
-				</>
-			)}
-
-			<div className="_rpEditorSide">
-				{aiSummary && aiSummary.key === JSON.stringify(spec) ? (
-					<div className="_rpSummary" role="status">
-						{aiSummary.text}
-					</div>
-				) : null}
-				<div className="_rpEditorPreview">
-					{check.status !== 'error' && check.spec ? (
-						<ReportWidgetView
-							transport={transport}
-							runFunction={runFunction}
-							catalog={catalog}
-							spec={check.spec}
-							name={name || 'Preview'}
-							editable
-							onSpecChange={s => setSpec(() => s)}
-						/>
-					) : (
-						<div className="_rpWidget">
-							<div className="_rpState _rpMuted">
-								{check.status === 'checking'
-									? 'Checking'
-									: check.status === 'error'
-										? 'Fix the report to see a preview'
-										: ''}
+										Add a calculation
+									</button>
+								) : null}
+								<div className="_rpLine">
+									<label className="_rpLabel" style={{ flex: 1 }}>
+										Sort by
+										<select
+											className="_rpSelect"
+											value={spec.sort?.[0]?.by ?? ''}
+											onChange={e =>
+												setSpec(s => ({
+													...s,
+													sort: e.target.value
+														? [
+																{
+																	by: e.target.value,
+																	dir: s.sort?.[0]?.dir ?? 'DESC',
+																},
+															]
+														: undefined,
+												}))
+											}
+										>
+											<option value="">Natural order</option>
+											{valueKeys.map(k => (
+												<option key={k} value={k}>
+													{keyLabel(k)}
+												</option>
+											))}
+											{(spec.groupBy ?? []).map(g => (
+												<option key={g.as} value={g.as}>
+													{fieldLabelOf(g.field)}
+												</option>
+											))}
+										</select>
+									</label>
+									{spec.sort?.[0] ? (
+										<label className="_rpLabel">
+											Order
+											<select
+												className="_rpSelect"
+												value={spec.sort[0].dir}
+												onChange={e =>
+													setSpec(s => ({
+														...s,
+														sort: [
+															{
+																by: s.sort![0].by,
+																dir: e.target.value as
+																	'ASC' | 'DESC',
+															},
+														],
+													}))
+												}
+											>
+												<option value="DESC">Largest first</option>
+												<option value="ASC">Smallest first</option>
+											</select>
+										</label>
+									) : null}
+									<label className="_rpLabel">
+										Limit
+										<input
+											className="_rpInput"
+											type="number"
+											min={1}
+											max={500}
+											placeholder="All"
+											value={spec.limit ?? ''}
+											onChange={e =>
+												setSpec(
+													s => ({
+														...s,
+														limit: e.target.value
+															? Math.max(1, Number(e.target.value))
+															: undefined,
+													}),
+													'limit',
+												)
+											}
+										/>
+									</label>
+								</div>
+								<div className="_rpLine">
+									<label className="_rpLabel" style={{ flex: 1 }}>
+										Compare with
+										<select
+											className="_rpSelect"
+											value={spec.compare?.to ?? ''}
+											title={blocker}
+											onChange={e =>
+												setSpec(s => {
+													const to = e.target.value as CompareTo | '';
+													const { compare: _c, ...rest } = s;
+													return to ? { ...rest, compare: { to } } : rest;
+												})
+											}
+										>
+											<option value="">Nothing</option>
+											{(Object.keys(COMPARE_LABELS) as CompareTo[]).map(c => (
+												<option key={c} value={c} disabled={!!blocker}>
+													{COMPARE_LABELS[c]}
+												</option>
+											))}
+										</select>
+									</label>
+									<label className="_rpLabel" style={{ flex: 1 }}>
+										Auto refresh
+										<select
+											className="_rpSelect"
+											value={refreshMin}
+											onChange={e =>
+												commit({ refreshMin: Number(e.target.value) })
+											}
+										>
+											{REFRESH_CHOICES.map(m => (
+												<option key={m} value={m}>
+													{m ? `Every ${m} min` : 'Off'}
+												</option>
+											))}
+										</select>
+									</label>
+								</div>
+								{blocker && spec.compare ? (
+									<div className="_rpMuted">{blocker}</div>
+								) : null}
 							</div>
-						</div>
+						</>
 					)}
+					<div className="_rpEditorSide">
+						<div className="_rpGroup">
+							<div className="_rpGroupTitle">Style</div>
+							<StylePanel
+								type={spec.view.type}
+								style={spec.view.style ?? {}}
+								onChange={st =>
+									setSpec(
+										s => ({
+											...s,
+											view: {
+												...s.view,
+												style: Object.keys(st).length ? st : undefined,
+											},
+										}),
+										'style',
+									)
+								}
+								measures={measuresInResult}
+							/>
+						</div>
+					</div>
 				</div>
-				<div className="_rpGroup">
-					<div className="_rpGroupTitle">Show as</div>
-					<ChartTypePicker
-						shape={shape}
-						value={spec.view.type}
-						onPick={(t: ViewType) =>
-							setSpec(s => ({ ...s, view: { ...s.view, type: t } }))
-						}
-					/>
-				</div>
-				<details className="_rpGroup">
-					<summary className="_rpGroupTitle">Style</summary>
-					<StylePanel
-						type={spec.view.type}
-						style={spec.view.style ?? {}}
-						onChange={st =>
-							setSpec(
-								s => ({
-									...s,
-									view: {
-										...s.view,
-										style: Object.keys(st).length ? st : undefined,
-									},
-								}),
-								'style',
-							)
-						}
-						measures={measuresInResult}
-					/>
-				</details>
-			</div>
-
-			<div className="_rpLine" style={{ gridColumn: '1 / -1' }}>
+			</details>
+			<div className="_rpBuilderFoot">
 				{check.status === 'error' ? (
 					<div className="_rpError" role="alert" style={{ flex: '1 1 100%' }}>
 						{errorText(check.error, spec.source)}
@@ -1122,35 +1220,86 @@ export function ReportEditorView({
 					className="_rpBtn"
 					onClick={() => (onCancel ? onCancel() : setHist(historyInit(start)))}
 				>
-					Discard
+					{onCancel ? 'Cancel' : 'Start over'}
 				</button>
-				{extra}
-				{onSaveAsNew ? (
-					<button
-						type="button"
-						className="_rpBtn"
-						disabled={!canSave}
-						onClick={() => doSave(onSaveAsNew)}
-					>
-						Save as new
-					</button>
-				) : null}
 				<button
 					type="button"
 					className="_rpBtn _primary"
 					disabled={!canSave}
-					title={
-						!name.trim()
-							? 'Give it a name'
-							: check.status !== 'ok'
-								? 'Fix the report first'
-								: undefined
+					title={check.status !== 'ok' ? 'Fix the report first' : undefined}
+					onClick={() =>
+						setSaveDialog({
+							name: name.trim() || spec.view.title || autoName(spec, catalog),
+						})
 					}
-					onClick={() => doSave(onSave)}
 				>
-					{saveLabel ?? 'Save'}
+					Save
 				</button>
 			</div>
+			{saveDialog ? (
+				<Dialog kind="modal" label="Save report" onClose={() => setSaveDialog(undefined)}>
+					<form
+						style={{ display: 'contents' }}
+						onSubmit={e => {
+							e.preventDefault();
+							void confirmSave(onSave);
+						}}
+					>
+						<div className="_rpDrawerHead">
+							<span>Save report</span>
+							<button
+								type="button"
+								className="_rpIconBtn"
+								aria-label="Close"
+								title="Close"
+								onClick={() => setSaveDialog(undefined)}
+							>
+								<Icon name="fa-xmark" />
+							</button>
+						</div>
+						<div className="_rpDrawerBody">
+							<label className="_rpLabel">
+								Name
+								<input
+									className="_rpInput"
+									autoFocus
+									maxLength={80}
+									value={saveDialog.name}
+									onChange={e => setSaveDialog({ name: e.target.value })}
+								/>
+							</label>
+							{extra}
+						</div>
+						<div className="_rpDrawerFoot">
+							<button
+								type="button"
+								className="_rpBtn"
+								onClick={() => setSaveDialog(undefined)}
+							>
+								Cancel
+							</button>
+							{onSaveAsNew ? (
+								<button
+									type="button"
+									className="_rpBtn"
+									disabled={!saveDialog.name.trim() || saving}
+									onClick={() => void confirmSave(onSaveAsNew)}
+								>
+									Save as new
+								</button>
+							) : null}
+							<button
+								type="submit"
+								className="_rpBtn _primary"
+								disabled={!saveDialog.name.trim() || saving}
+							>
+								{saving ? <Icon name="fa-spinner fa-spin" /> : null}
+								{saveLabel ?? 'Save'}
+							</button>
+						</div>
+					</form>
+				</Dialog>
+			) : null}
 			{drag ? (
 				<div
 					className="_rpDragPill"
