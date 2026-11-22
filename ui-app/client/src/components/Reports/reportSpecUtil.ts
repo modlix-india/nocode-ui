@@ -293,13 +293,17 @@ export function effectiveSpec(
 	const skipped: string[] = [];
 	let next = cloneSpec(spec);
 	const d = opts.dashboard;
-	const isFunction = opts.catalog?.sources?.[spec.source]?.kind === 'FUNCTION';
-	if (d?.period && isFunction) skipped.push('Period');
+	const source = opts.catalog?.sources?.[spec.source];
+	const isFunction = source?.kind === 'FUNCTION';
+	const periodFilter = (field: string): ReportFilter =>
+		d?.period === 'CUSTOM'
+			? { field, period: 'CUSTOM', from: d.from, to: d.to }
+			: { field, period: d!.period! };
+	// A function source with periodParams (CONTRACT 8.7 R2) takes the period as its one filter.
+	if (d?.period && isFunction && source?.periodParams)
+		next.filters = [periodFilter(source.periodParams.field || 'period')];
+	else if (d?.period && isFunction) skipped.push('Period');
 	if (d?.period && !isFunction) {
-		const periodFilter = (field: string): ReportFilter =>
-			d.period === 'CUSTOM'
-				? { field, period: 'CUSTOM', from: d.from, to: d.to }
-				: { field, period: d.period };
 		const filters = next.filters ?? [];
 		if (filters.some(f => f.period)) {
 			next.filters = filters.map(f => (f.period ? periodFilter(f.field) : f));

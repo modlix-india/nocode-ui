@@ -102,7 +102,12 @@ describe('shape rules (CONTRACT section 1)', () => {
 			groupBy: [{ field: 'bookedAt', as: 'm', bucket: 'MONTH' }],
 			view: { type: 'LINE' },
 		};
-		expect(shapeOf(spec)).toEqual({ groupBy: 1, measures: 2, firstIsDate: true });
+		expect(shapeOf(spec)).toEqual({
+			groupBy: 1,
+			measures: 2,
+			specMeasures: 1,
+			firstIsDate: true,
+		});
 		const fn = shapeOf(
 			{ v: 1, source: 'money', view: { type: 'TABLE' } },
 			{ sources: { money: { kind: 'FUNCTION' } } },
