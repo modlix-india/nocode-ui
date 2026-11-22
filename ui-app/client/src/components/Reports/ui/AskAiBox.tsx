@@ -19,6 +19,8 @@ export interface AskAiBoxProps {
 	onSpec: (spec: ReportSpec, summary: string, group?: AiGroup, period?: AiPeriod) => void;
 	/** For tests. */
 	fetchImpl?: typeof fetch;
+	/** Sent once when the box opens (a prompt typed on the list). */
+	initialPrompt?: string;
 }
 
 export function AskAiBox(props: Readonly<AskAiBoxProps>) {
@@ -35,6 +37,7 @@ export function AskAiBox(props: Readonly<AskAiBoxProps>) {
 	onSpecRef.current = onSpec;
 
 	useEffect(() => () => ctl.current?.abort(), []);
+	const sentInitial = useRef(false);
 
 	const ask = async (text: string) => {
 		const t = text.trim();
@@ -76,6 +79,14 @@ export function AskAiBox(props: Readonly<AskAiBoxProps>) {
 		};
 		await streamReportBuild(endpoint, body, handle, { signal: c.signal, fetchImpl });
 	};
+
+	useEffect(() => {
+		if (sentInitial.current || !props.initialPrompt?.trim()) return;
+		sentInitial.current = true;
+		void ask(props.initialPrompt);
+		// Once, on open.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const stop = () => {
 		ctl.current?.abort();

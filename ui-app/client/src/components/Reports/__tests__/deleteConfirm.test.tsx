@@ -66,6 +66,14 @@ test('library Delete asks first; Cancel keeps the widget, Delete removes it', as
 	const before = rows();
 	expect(before).toBeGreaterThan(0);
 	const del = () => buttons().filter(b => b.textContent?.trim() === 'Delete');
+	// Delete sits in the card's menu.
+	const openMenu = () =>
+		act(() =>
+			(
+				document.body.querySelector('button[aria-label^="More for"]') as HTMLButtonElement
+			).click(),
+		);
+	openMenu();
 	act(() => del()[0].click());
 	const modal = document.body.querySelector('._rpModal[aria-label="Delete widget"]');
 	expect(modal?.textContent).toMatch(/Delete the widget .+\? It goes from the dashboard/);
@@ -78,6 +86,7 @@ test('library Delete asks first; Cancel keeps the widget, Delete removes it', as
 	expect(document.body.querySelector('._rpModal')).toBeNull();
 	expect(rows()).toBe(before);
 
+	openMenu();
 	act(() => del()[0].click());
 	act(() => del().pop()!.click());
 	await settle();
