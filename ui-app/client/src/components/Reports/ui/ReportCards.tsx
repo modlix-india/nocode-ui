@@ -16,6 +16,7 @@ import { DASHBOARD_CAPS, DashboardDoc, ReportCatalog } from '../reportTypes';
 import { Icon, useDismiss } from './common';
 import { EditorValue } from './ReportEditorView';
 import { ReportWidgetView } from './ReportWidgetView';
+import { askPlaceholder } from './AskAiBox';
 import { Pop } from './portal';
 
 /**
@@ -265,7 +266,10 @@ export function ReportCards({
 }
 
 /** "Describe the report you want" on the list: the prompt opens the builder, which asks the AI. */
-export function ListAsk({ onAsk }: Readonly<{ onAsk: (prompt: string) => void }>) {
+export function ListAsk({
+	onAsk,
+	example,
+}: Readonly<{ onAsk: (prompt: string) => void; example?: string }>) {
 	const [text, setText] = useState('');
 	const send = () => {
 		const t = text.trim();
@@ -285,7 +289,7 @@ export function ListAsk({ onAsk }: Readonly<{ onAsk: (prompt: string) => void }>
 					className="_rpInput"
 					rows={1}
 					aria-label="Describe the report you want"
-					placeholder="Describe the report you want, e.g. bookings by RM this quarter"
+					placeholder={askPlaceholder(example)}
 					value={text}
 					onChange={e => setText(e.target.value)}
 					onKeyDown={e => {

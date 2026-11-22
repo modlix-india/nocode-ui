@@ -73,6 +73,9 @@ function digits(r: Resolved, n: number, fallbackMax: number): Intl.NumberFormatO
 		return r.style === 'compact'
 			? { maximumFractionDigits: r.decimals }
 			: { minimumFractionDigits: r.decimals, maximumFractionDigits: r.decimals };
+	// A small ratio (CTR 0.0234, CONTRACT 8.7 R5) keeps 3 significant digits instead of
+	// rounding to 0.02 or 0; values from 0.1 up are shown as before.
+	if (n !== 0 && Math.abs(n) < 0.1) return { maximumSignificantDigits: 3 };
 	if (r.style === 'compact') return { maximumFractionDigits: Math.abs(n) >= 1000 ? 1 : 2 };
 	return { maximumFractionDigits: fallbackMax };
 }

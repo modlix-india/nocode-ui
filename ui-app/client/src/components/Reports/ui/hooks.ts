@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { loadCatalog, onCatalogInvalidated, ReportTransport, transportFor } from '../reportApi';
+import {
+	loadCatalog,
+	loadMeasureCaps,
+	onCatalogInvalidated,
+	ReportTransport,
+	transportFor,
+} from '../reportApi';
 import { ReportCatalog } from '../reportTypes';
 
 /** The server transport, or the sample data one (loaded as its own chunk) when asked. */
@@ -45,6 +51,7 @@ export function useCatalog(
 		}
 		let alive = true;
 		setState(s => ({ ...s, loading: true, error: undefined }));
+		void loadMeasureCaps(transport);
 		loadCatalog(transport, catalogFunction).then(
 			catalog => alive && setState({ catalog, loading: false }),
 			e =>

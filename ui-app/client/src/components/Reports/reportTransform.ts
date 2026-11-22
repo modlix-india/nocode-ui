@@ -39,6 +39,27 @@ export function chartAxes(out: Pick<ReportSuccess, 'columns'>, view: ReportView 
 	return { x, ys, series };
 }
 
+/**
+ * Measures whose value is 0 when the period has no rows (COUNT, COUNT DISTINCT, SUM): the runner
+ * then answers no row, or leaves the null out of the row. Ratios, AVG, MIN and MAX of nothing stay
+ * undefined ("-"). With compare, their `_cmp` values too.
+ */
+export function zeroWhenEmpty(spec: ReportSpec | undefined): Set<string> {
+	const out = new Set<string>();
+	for (const m of spec?.measures ?? [])
+		if (m.fn === 'COUNT' || m.fn === 'COUNT_DISTINCT' || m.fn === 'SUM') {
+			out.add(m.as);
+			out.add(`${m.as}_cmp`);
+		}
+	return out;
+}
+
+/** A row value, 0 for a zero-when-empty measure the runner left out (null or missing). */
+export function valueOrZero(row: Record<string, any>, key: string, zero: Set<string>): any {
+	const v = row?.[key];
+	return (v === null || v === undefined) && zero.has(key) ? 0 : v;
+}
+
 /** Whether a measure's values add up (COUNT and SUM). Unknown measures (function sources) are taken as additive. */
 export function isAdditive(spec: ReportSpec | undefined, key: string): boolean {
 	const m = spec?.measures?.find(e => e.as === key);
@@ -59,7 +80,7 @@ function recomputeDerived(spec: ReportSpec | undefined, row: Record<string, any>
 		}
 		if (d.difference) row[d.as] = a - b;
 		else if (b === 0) row[d.as] = null;
-		else row[d.as] = d.percent ? (100 * a) / b : a / b;
+		else row[d.as] = d.percent ? (100 * a) / b : (a * (d.ratio && d.scale ? d.scale : 1)) / b;
 	}
 }
 

@@ -608,7 +608,9 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 							</>
 						) : null}
 					</div>
-					{editable && cat.catalog?.ai ? <ListAsk onAsk={p => openNew(p)} /> : null}
+					{editable && cat.catalog?.ai ? (
+						<ListAsk onAsk={p => openNew(p)} example={cat.catalog?.aiExample} />
+					) : null}
 				</>
 			) : (
 				<div className="_rpBar">
