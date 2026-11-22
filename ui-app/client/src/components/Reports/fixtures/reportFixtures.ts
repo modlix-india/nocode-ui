@@ -260,8 +260,16 @@ export function fixtureRun(spec: ReportSpec, dryRun = false): ReportOutput {
 		return fail('UNKNOWN_SEGMENT', `Unknown segment ${spec.segment}`, 'segment');
 	const measures = spec.measures ?? [];
 	const groupBy = spec.groupBy ?? [];
-	if (measures.length > SPEC_CAPS.measures)
-		return fail('TOO_MANY', 'At most 3 measures', 'measures');
+	// TABLE takes 6 measures, every other view 3 (CONTRACT 8.7).
+	const cap = (spec.view?.type ?? 'TABLE') === 'TABLE' ? 6 : SPEC_CAPS.measures;
+	if (measures.length > cap)
+		return fail(
+			'TOO_MANY',
+			cap === 6
+				? 'At most 6 measures'
+				: `Only a table takes more than 3 measures (up to 6); this ${String(spec.view?.type).toLowerCase()} has ${measures.length}.`,
+			'measures',
+		);
 	if (groupBy.length > SPEC_CAPS.groupBy)
 		return fail('TOO_MANY', 'At most 2 group bys', 'groupBy');
 	if ((spec.filters?.length ?? 0) > SPEC_CAPS.filters)
@@ -540,6 +548,13 @@ export const fixtureTransport: ReportTransport = {
 		if (/reportCatalog$/.test(fn))
 			return [{ name: 'output', result: { result: fixtureCatalog() } }];
 		if (/reportDataset(Save|List|Delete)$/.test(fn)) return datasetCall(fn, args);
+		if (fn === 'CoreServices.Report.ViewTypes')
+			return [
+				{
+					name: 'output',
+					result: { result: { v: 1, measureCaps: { TABLE: 6, other: 3 } } },
+				},
+			];
 		// A stand-in for <ns>.reportPdf until the core's Report.Pdf answers (CONTRACT 8.2).
 		if (/reportPdf$/.test(fn))
 			return [

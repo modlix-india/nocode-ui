@@ -2,6 +2,7 @@ import axios from 'axios';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import { getDataFromPath } from '../../context/StoreContext';
 import { ReportCatalog, ReportOutput, ReportSpec } from './reportTypes';
+import { setMeasureCaps } from './shapeRules';
 
 /**
  * Calls an app's report functions (`<ns>.reportRun`, `<ns>.reportCatalog`) the way the page
@@ -287,9 +288,49 @@ export function loadCatalog(
 	return p;
 }
 
+const capsCache = new Map<ReportTransport, Promise<void>>();
+
+/** The runner's shape rules function; its `measureCaps` set each view's measure cap (CONTRACT 8.7). */
+export const VIEW_TYPES_FUNCTION = 'CoreServices.Report.ViewTypes';
+
+function findKey(v: any, key: string, depth = 0): any {
+	if (!v || typeof v !== 'object' || depth > 4) return undefined;
+	if (key in v) return v[key];
+	for (const x of Object.values(v)) {
+		const r = findKey(x, key, depth + 1);
+		if (r !== undefined) return r;
+	}
+	return undefined;
+}
+
+/**
+ * Loads the runner's measure caps once per page (CONTRACT 8.7). A runner that does not answer
+ * them, or a failed call, leaves every view at 3.
+ */
+export function loadMeasureCaps(transport: ReportTransport): Promise<void> {
+	let p = capsCache.get(transport);
+	if (!p) {
+		p = (async () => {
+			try {
+				const data = await withTimeout(
+					transport.call(VIEW_TYPES_FUNCTION, {}),
+					REPORT_TIMEOUT_MS,
+				);
+				const caps = findKey(eventResults(data), 'measureCaps');
+				if (caps && typeof caps === 'object') setMeasureCaps(caps);
+			} catch {
+				/* every view keeps 3 */
+			}
+		})();
+		capsCache.set(transport, p);
+	}
+	return p;
+}
+
 /** For tests: forget cached catalogs. */
 export function clearCatalogCache() {
 	catalogCache.clear();
+	capsCache.clear();
 }
 
 const catalogListeners = new Set<() => void>();

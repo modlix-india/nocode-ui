@@ -3,7 +3,7 @@ import { startPointerDrag } from '../../../functions/usePointerDrag';
 import { errorText, ReportTransport, runReport } from '../reportApi';
 import { labelOf } from '../reportFormat';
 import { bySize, cloneSpec, compareBlocker, reportSources, valuesSpec } from '../reportSpecUtil';
-import { checkView, shapeOf, suggestView } from '../shapeRules';
+import { checkView, measureCap, shapeOf, suggestView } from '../shapeRules';
 import {
 	accepts,
 	addToShelf,
@@ -407,10 +407,19 @@ export function ReportEditorView({
 				filters: [...shelves.filters, filterOfField(field, fieldMap.get(field))],
 			});
 		}
+		// Up to the table's cap: a chart past 3 measures then reads "not fitting" and the
+		// editor turns it into a table (tidySpec); nothing is dropped.
+		const cap = Math.max(measureCap('TABLE'), measureCap(spec.view.type));
 		const r =
 			payload.kind === 'field'
-				? addToShelf(shelves, to, itemOfField(payload.field, fieldMap.get(payload.field)))
-				: moveOnShelves(shelves, payload, to);
+				? addToShelf(
+						shelves,
+						to,
+						itemOfField(payload.field, fieldMap.get(payload.field)),
+						undefined,
+						cap,
+					)
+				: moveOnShelves(shelves, payload, to, undefined, cap);
 		if (!r.ok) return setHint(r.reason);
 		setHint('');
 		setShelves(r.shelves);
@@ -535,7 +544,7 @@ export function ReportEditorView({
 	};
 	const measuresInResult = [
 		...(spec.measures ?? []).map(m => ({ key: m.as, label: keyLabel(m.as) })),
-		...(spec.derived ?? []).map(d => ({ key: d.as, label: d.as })),
+		...(spec.derived ?? []).map(d => ({ key: d.as, label: d.label ?? d.as })),
 	];
 
 	const shelfRow = (sh: ShelfName) => {
@@ -739,6 +748,7 @@ export function ReportEditorView({
 			{ai && catalog?.ai ? (
 				<AskAiBox
 					endpoint={ai.endpoint}
+					example={catalog?.aiExample}
 					group={ai.group}
 					groups={ai.groups}
 					fetchImpl={ai.fetchImpl}
@@ -1417,7 +1427,13 @@ function DerivedRow({
 		string,
 	];
 	const set = (k: string, p: [string, string]) =>
-		onChange({ as: value.as, [k]: p } as ReportDerived);
+		// Keep the label, and the scale on a ratio (CONTRACT 8.7 R5).
+		onChange({
+			as: value.as,
+			...(value.label ? { label: value.label } : {}),
+			[k]: p,
+			...(k === 'ratio' && value.scale ? { scale: value.scale } : {}),
+		} as ReportDerived);
 	const pick = (v: string, on: (v: string) => void, label: string) => (
 		<select
 			className="_rpSelect"
