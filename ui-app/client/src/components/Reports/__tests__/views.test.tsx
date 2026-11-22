@@ -187,7 +187,7 @@ test('the dashboard seeds the app defaults on a first visit and saves them', asy
 		b.textContent?.includes('Library'),
 	) as HTMLButtonElement;
 	act(() => lib.click());
-	expect(document.body.querySelectorAll('._rpLibRow').length).toBe(4);
+	expect(document.body.querySelectorAll('._rpCard').length).toBe(4);
 	save.mockRestore();
 });
 
@@ -203,27 +203,35 @@ test('the editor validates with a dry run, previews, and saves', async () => {
 			/>,
 		),
 	);
+	const save = () =>
+		[...document.body.querySelectorAll('._rpBuilderFoot button')].find(
+			b => b.textContent === 'Save',
+		) as HTMLButtonElement;
+	// Not before the dry run passed.
+	expect(save().disabled).toBe(true);
 	await settle(700);
-	const save = [...document.body.querySelectorAll('button')].find(
-		b => b.textContent === 'Save',
-	) as HTMLButtonElement;
-	expect(save.disabled).toBe(true);
-	const name = document.body.querySelector('input._rpInput') as HTMLInputElement;
+	expect(document.body.querySelector('._rpEditorPreview ._rpKpiValue')).not.toBeNull();
+	expect(save().disabled).toBe(false);
+	// Save asks for the name (prefilled from the report in plain words).
+	await act(async () => save().click());
+	const name = document.body.querySelector('._rpModal input._rpInput') as HTMLInputElement;
+	expect(name.value).toBe('Count of cases');
 	await act(async () => {
 		const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!;
 		setter.call(name, 'My count');
 		name.dispatchEvent(new Event('input', { bubbles: true }));
 	});
-	await settle(700);
-	expect(document.body.querySelector('._rpEditorPreview ._rpKpiValue')).not.toBeNull();
-	expect(save.disabled).toBe(false);
-	await act(async () => save.click());
+	const confirm = document.body.querySelector(
+		'._rpModal button[type="submit"]',
+	) as HTMLButtonElement;
+	await act(async () => confirm.click());
 	expect(onSave).toHaveBeenCalledWith(
 		expect.objectContaining({
 			name: 'My count',
 			spec: expect.objectContaining({ source: 'cases' }),
 		}),
 	);
+	expect(document.body.querySelector('._rpModal')).toBeNull();
 });
 
 test('tidySpec keeps view keys valid and the type fitting', () => {

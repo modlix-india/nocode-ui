@@ -202,6 +202,26 @@ describe('Ask AI box in the editor', () => {
 	const button = (text: string) =>
 		[...document.body.querySelectorAll('button')].find(b => b.textContent?.trim() === text) as
 			HTMLButtonElement | undefined;
+	/** The name the editor would save with: the save dialog's prefilled name (then closed). */
+	async function savedName() {
+		await settle(300, 4);
+		await act(async () =>
+			(
+				[...document.body.querySelectorAll('._rpBuilderFoot button')].find(
+					b => b.textContent === 'Save',
+				) as HTMLButtonElement
+			).click(),
+		);
+		const v = (document.body.querySelector('._rpModal input') as HTMLInputElement)?.value;
+		act(() =>
+			(
+				[...document.body.querySelectorAll('._rpModal button')].find(
+					b => b.textContent === 'Cancel',
+				) as HTMLButtonElement
+			).click(),
+		);
+		return v;
+	}
 	function type(text: string) {
 		const ta = document.body.querySelector(
 			'textarea[aria-label="Ask AI for a report"]',
@@ -290,9 +310,7 @@ describe('Ask AI box in the editor', () => {
 		);
 		// Loaded into the shelves and the name.
 		expect(document.body.querySelector('[data-shelf="columns"]')?.textContent).toContain('RM');
-		expect((document.body.querySelector('input._rpInput') as HTMLInputElement).value).toBe(
-			'Bookings by RM',
-		);
+		expect(await savedName()).toBe('Bookings by RM');
 		expect(onGroup).toHaveBeenCalledWith({ label: 'Personal', new: true });
 
 		type('make it a line');
@@ -304,9 +322,7 @@ describe('Ask AI box in the editor', () => {
 		});
 		expect(document.body.querySelector('._rpSummary')?.textContent).toBe('As a line');
 		// The name the AI filled in follows the new answer (a typed name would stay).
-		expect((document.body.querySelector('input._rpInput') as HTMLInputElement).value).toBe(
-			'Bookings by month',
-		);
+		expect(await savedName()).toBe('Bookings by month');
 	});
 
 	it('an error shows; nothing is loaded', async () => {

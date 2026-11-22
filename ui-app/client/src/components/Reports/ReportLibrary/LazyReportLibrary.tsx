@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageStoreExtractor, UrlDetailsExtractor } from '../../../context/StoreContext';
 import { ComponentProps } from '../../../types/common';
 import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
 import { HelperComponent } from '../../HelperComponents/HelperComponent';
 import useDefinition from '../../util/useDefinition';
 import { datasetFunctions } from '../datasetApi';
-import { defaultCatalogFunction, defaultRunFunction } from '../reportApi';
-import { Icon } from '../ui/common';
+import { defaultCatalogFunction, defaultRunFunction, namespaceOf } from '../reportApi';
+import { clearNotice, openBuilder, registerLibrary, useReportsPage } from '../reportsPage';
 import { DatasetListDialog, dayOrderFor } from '../ui/Datasets';
 import { DashboardView } from '../ui/DashboardView';
 import { useCatalog, useTransport } from '../ui/hooks';
@@ -38,17 +38,21 @@ export default function LazyReportLibrary(props: Readonly<ComponentProps>) {
 	const [showData, setShowData] = useState(false);
 	const catalogFunction = (properties.catalogFunction as string) || defaultCatalogFunction(ns);
 	const { catalog } = useCatalog(fns ? transport : undefined, catalogFunction);
+	// With a ReportEditor of the same app on the page, this list is what the page opens on;
+	// New report and Edit open that editor, and the list steps aside meanwhile (reportsPage.ts).
+	const pageNs = ns || namespaceOf(runFunction) || 'reports';
+	const page = useReportsPage(pageNs);
+	useEffect(() => registerLibrary(pageNs), [pageNs]);
+	const withBuilder = page.editors > 0;
+	if (withBuilder && page.open)
+		return (
+			<div className="comp compReportLibrary" style={resolvedStyles.comp ?? {}}>
+				<HelperComponent context={context} definition={definition} />
+			</div>
+		);
 	return (
 		<div className="comp compReportLibrary" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={context} definition={definition} />
-			{fns ? (
-				<div className="_rpBar" style={{ marginBottom: 8 }}>
-					<span className="_rpSpacer" />
-					<button type="button" className="_rpBtn" onClick={() => setShowData(true)}>
-						<Icon name="fa-database" /> Your data
-					</button>
-				</div>
-			) : null}
 			{fns && transport && showData ? (
 				<DatasetListDialog
 					transport={transport}
@@ -56,6 +60,11 @@ export default function LazyReportLibrary(props: Readonly<ComponentProps>) {
 					dayOrder={dayOrderFor(catalog?.locale)}
 					onClose={() => setShowData(false)}
 				/>
+			) : null}
+			{page.notice ? (
+				<div className="_rpMuted" role="status" style={{ marginBottom: 8 }}>
+					{page.notice}
+				</div>
 			) : null}
 			<DashboardView
 				key={group}
@@ -69,6 +78,15 @@ export default function LazyReportLibrary(props: Readonly<ComponentProps>) {
 				lockMode
 				showFilters={false}
 				title={properties.title}
+				onYourData={fns ? () => setShowData(true) : undefined}
+				onOpenBuilder={
+					withBuilder
+						? req => {
+								clearNotice(pageNs);
+								openBuilder(pageNs, { group, ...req });
+							}
+						: undefined
+				}
 			/>
 		</div>
 	);
