@@ -294,6 +294,15 @@ test('the shelves editor: tap a field, pick a shelf, undo with Ctrl+Z, Save as n
 	act(() => (document.body.querySelector('[aria-label^="Redo"]') as HTMLButtonElement).click());
 	await settle(700);
 	expect(document.body.querySelector('[data-shelf="columns"]')!.textContent).toContain('Project');
+	// Save opens the save dialog (name prefilled); Save as new is there.
+	await act(async () =>
+		(
+			[...document.body.querySelectorAll('._rpBuilderFoot button')].find(
+				b => b.textContent === 'Save',
+			) as HTMLButtonElement
+		).click(),
+	);
+	expect((document.body.querySelector('._rpModal input') as HTMLInputElement).value).toBe('Mine');
 	await act(async () => button('Save as new')!.click());
 	expect(onSaveAsNew).toHaveBeenCalledWith(
 		expect.objectContaining({
@@ -305,8 +314,8 @@ test('the shelves editor: tap a field, pick a shelf, undo with Ctrl+Z, Save as n
 		}),
 	);
 	expect(onSave).not.toHaveBeenCalled();
-	// Discard (no close handler here) puts the editor back to where it started.
-	act(() => button('Discard')!.click());
+	// Start over (no close handler here) puts the editor back to where it started.
+	act(() => button('Start over')!.click());
 	await settle(700);
 	expect(document.body.querySelector('[data-shelf="columns"]')!.textContent).not.toContain(
 		'Project',
@@ -327,7 +336,7 @@ test('import a widget file into the library: checked, kept with the reason when 
 		),
 	);
 	await settle();
-	const before = document.body.querySelectorAll('._rpLibRow').length;
+	const before = document.body.querySelectorAll('._rpCard').length;
 	const file = reportFile('CxZump', [
 		{ id: 'a', name: 'Good one', spec: kpi },
 		{ id: 'b', name: 'Bad one', spec: { ...kpi, source: 'nowhere' } },
@@ -344,7 +353,7 @@ test('import a widget file into the library: checked, kept with the reason when 
 	expect(dialog.textContent).toContain('Kept, not available: Unknown source nowhere');
 	act(() => button('Import')!.click());
 	await settle();
-	expect(document.body.querySelectorAll('._rpLibRow').length).toBe(before + 2);
+	expect(document.body.querySelectorAll('._rpCard').length).toBe(before + 2);
 	expect(document.body.textContent).toContain('Imported 2 widgets.');
 	expect(document.body.textContent).toContain('Not available: Unknown source nowhere');
 });

@@ -143,9 +143,20 @@ test('the editor shows inputs for a function source and writes spec.params', asy
 	setValue(q('status'), q('status').options[1].value);
 	setValue(q('productId'), q('productId').options[1].value);
 	await settle(600);
-	const save = [...document.body.querySelectorAll('button')].find(
-		b => b.textContent === 'Save',
-	) as HTMLButtonElement;
+	// Save, then Save in the save dialog.
+	const save = {
+		click: async () => {
+			(
+				[...document.body.querySelectorAll('._rpBuilderFoot button')].find(
+					b => b.textContent === 'Save',
+				) as HTMLButtonElement
+			).click();
+			await Promise.resolve();
+			(
+				document.body.querySelector('._rpModal button[type="submit"]') as HTMLButtonElement
+			).click();
+		},
+	};
 	await act(async () => save.click());
 	expect(saved[0].params).toEqual({
 		mine: false,

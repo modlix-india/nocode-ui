@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
 	getPathFromLocation,
 	PageStoreExtractor,
@@ -10,12 +10,13 @@ import { processComponentStylePseudoClasses } from '../../../util/styleProcessor
 import { HelperComponent } from '../../HelperComponents/HelperComponent';
 import useDefinition from '../../util/useDefinition';
 import { datasetFunctions } from '../datasetApi';
-import { addWidget } from '../dashboardModel';
+import { addWidget, editWidget } from '../dashboardModel';
 import { readyDoc, updateEntry, useDashboardDoc } from '../dashboardStore';
 import { catalogForGroup, labelError } from '../groupsModel';
 import { useReportGroups } from '../groupsStore';
 import { usePageEvents } from '../pageEvents';
 import { aiUrl, specFromQuery } from '../reportAi';
+import { closeBuilder, openBuilder, registerEditor, useReportsPage } from '../reportsPage';
 import { defaultCatalogFunction, defaultRunFunction, namespaceOf } from '../reportApi';
 import { useCatalog, useTransport } from '../ui/hooks';
 import { ReportEditorView } from '../ui/ReportEditorView';
@@ -73,6 +74,27 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 	);
 	/** A new group the AI suggested: made only when the user picks it and saves. */
 	const [aiGroup, setAiGroup] = useState<string | undefined>(undefined);
+	// With a ReportLibrary of the same app on the page, the page opens on that list and this
+	// editor shows only while a report is made or edited (reportsPage.ts).
+	const pageNs = ns || namespaceOf(runFunction) || 'reports';
+	const page = useReportsPage(pageNs);
+	useEffect(() => registerEditor(pageNs), [pageNs]);
+	const listMode = page.libraries > 0;
+	const open = listMode ? page.open : undefined;
+	const editingId = open?.id;
+	const urlOpened = useRef(false);
+	useEffect(() => {
+		if (!listMode || !urlSpec || urlOpened.current) return;
+		urlOpened.current = true;
+		openBuilder(pageNs, {
+			group: initialGroup,
+			value: { name: urlSpec.view.title ?? '', spec: urlSpec, refreshMin: 0 },
+		});
+	}, [listMode]); // eslint-disable-line react-hooks/exhaustive-deps
+	useEffect(() => {
+		if (open?.group) setTarget(open.group);
+		setAiGroup(undefined);
+	}, [open?.seq]); // eslint-disable-line react-hooks/exhaustive-deps
 	const path = definition.bindingPath
 		? getPathFromLocation(definition.bindingPath, locationHistory, pageExtractor)
 		: undefined;
@@ -89,6 +111,33 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 		refreshMin?: number;
 	}): Promise<{ error: string; id?: string; group?: string }> => {
 		if (!transport) return { error: 'Not ready yet.' };
+		if (editingId && open) {
+			// Edit from the list: the saved widget changes in place, in its own group.
+			let error = '';
+			try {
+				const entry = await readyDoc(
+					transport,
+					open.group,
+					catalogForGroup(cat.catalog, open.group),
+				);
+				updateEntry(entry, d => {
+					const r = editWidget(
+						d,
+						editingId,
+						{ name: v.name, spec: v.spec, refreshMin: v.refreshMin },
+						catalogForGroup(cat.catalog, open.group),
+					);
+					if (!r.ok) {
+						error = r.error;
+						return d;
+					}
+					return r.doc;
+				});
+			} catch (e: any) {
+				error = e?.message ?? 'That group could not be loaded.';
+			}
+			return { error, id: error ? undefined : editingId, group: open.group };
+		}
 		let group = target;
 		if (target === NEW_GROUP) {
 			const err = labelError(newLabel, groups.user, groups.app);
@@ -147,18 +196,24 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 	else
 		body = (
 			<ReportEditorView
-				key={round}
+				key={listMode ? `open${open?.seq ?? 0}` : round}
 				transport={transport}
 				catalog={cat.catalog}
 				runFunction={runFunction}
-				saveLabel="Save widget"
+				saveLabel="Save"
+				heading={editingId ? 'Edit report' : 'New report'}
+				onCancel={listMode ? () => closeBuilder(pageNs) : undefined}
+				backLabel={listMode ? 'Back to list' : undefined}
 				initial={
-					round === 0 && urlSpec
-						? { name: urlSpec.view.title ?? '', spec: urlSpec, refreshMin: 0 }
-						: undefined
+					listMode
+						? open?.value
+						: round === 0 && urlSpec
+							? { name: urlSpec.view.title ?? '', spec: urlSpec, refreshMin: 0 }
+							: undefined
 				}
 				ai={{
 					endpoint: aiUrl(properties.aiEndpoint as string | undefined),
+					initialPrompt: open?.prompt,
 					group: target === NEW_GROUP ? undefined : target,
 					groups: groupOptions.map(g => ({
 						id: g.id,
@@ -181,67 +236,73 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 					properties.allowDataImport ? datasetFunctions(ns, runFunction) : undefined
 				}
 				extra={
-					<>
-						<label className="_rpLabel">
-							Save to group
-							<select
-								className="_rpSelect"
-								value={target}
-								onChange={e => setTarget(e.target.value)}
-							>
-								{groupOptions.map(g => (
-									<option key={g.id} value={g.id}>
-										{g.label}
-									</option>
-								))}
-								{groups.status === 'ready' ? (
-									<option value={NEW_GROUP}>New group</option>
-								) : null}
-							</select>
-						</label>
-						{aiGroup && target !== NEW_GROUP ? (
-							<div className="_rpLine" role="status">
-								<span className="_rpMuted">AI suggests a new group: {aiGroup}</span>
-								<button
-									type="button"
-									className="_rpBtn"
-									onClick={() => {
-										setTarget(NEW_GROUP);
-										setNewLabel(aiGroup);
-										setAiGroup(undefined);
-									}}
-								>
-									Use it
-								</button>
-								<button
-									type="button"
-									className="_rpBtn"
-									onClick={() => setAiGroup(undefined)}
-								>
-									No thanks
-								</button>
-							</div>
-						) : null}
-						{target === NEW_GROUP ? (
+					editingId ? (
+						<span className="_rpMuted">In {labelOfGroup(open!.group)}</span>
+					) : (
+						<>
 							<label className="_rpLabel">
-								New group name
-								<input
-									className="_rpInput"
-									maxLength={40}
-									value={newLabel}
-									onChange={e => setNewLabel(e.target.value)}
-								/>
+								Save to group
+								<select
+									className="_rpSelect"
+									value={target}
+									onChange={e => setTarget(e.target.value)}
+								>
+									{groupOptions.map(g => (
+										<option key={g.id} value={g.id}>
+											{g.label}
+										</option>
+									))}
+									{groups.status === 'ready' ? (
+										<option value={NEW_GROUP}>New group</option>
+									) : null}
+								</select>
 							</label>
-						) : null}
-						<label className="_rpCheck">
-							<input
-								type="checkbox"
-								checked={addIt}
-								onChange={e => setToDashboard(e.target.checked)}
-							/>
-							Add to my dashboard
-						</label>
-					</>
+							{aiGroup && target !== NEW_GROUP ? (
+								<div className="_rpLine" role="status">
+									<span className="_rpMuted">
+										AI suggests a new group: {aiGroup}
+									</span>
+									<button
+										type="button"
+										className="_rpBtn"
+										onClick={() => {
+											setTarget(NEW_GROUP);
+											setNewLabel(aiGroup);
+											setAiGroup(undefined);
+										}}
+									>
+										Use it
+									</button>
+									<button
+										type="button"
+										className="_rpBtn"
+										onClick={() => setAiGroup(undefined)}
+									>
+										No thanks
+									</button>
+								</div>
+							) : null}
+							{target === NEW_GROUP ? (
+								<label className="_rpLabel">
+									New group name
+									<input
+										className="_rpInput"
+										maxLength={40}
+										value={newLabel}
+										onChange={e => setNewLabel(e.target.value)}
+									/>
+								</label>
+							) : null}
+							<label className="_rpCheck">
+								<input
+									type="checkbox"
+									checked={addIt}
+									onChange={e => setToDashboard(e.target.checked)}
+								/>
+								Add to my dashboard
+							</label>
+						</>
+					)
 				}
 				onSave={async v => {
 					const newName = target === NEW_GROUP ? newLabel.trim() : '';
@@ -252,9 +313,13 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 					}
 					const saved = { id: r.id };
 					const where = newName || labelOfGroup(r.group!);
-					setMessage({
-						text: `Saved "${v.name}" to ${where}${addIt ? '' : ' (library only)'}.`,
-					});
+					const text = editingId
+						? `Saved "${v.name}".`
+						: `Saved "${v.name}" to ${where}${addIt ? '' : ' (library only)'}.`;
+					if (listMode) {
+						setMessage(undefined);
+						closeBuilder(pageNs, text);
+					} else setMessage({ text });
 					if (path)
 						setData(
 							path,
@@ -265,6 +330,14 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 					setRound(r => r + 1);
 				}}
 			/>
+		);
+
+	// On a page with the list: nothing until a report is opened.
+	if (listMode && !open)
+		return (
+			<div className="comp compReportEditor" style={resolvedStyles.comp ?? {}}>
+				<HelperComponent context={context} definition={definition} />
+			</div>
 		);
 
 	return (
