@@ -42,6 +42,8 @@ export interface Entry {
 	migrated?: boolean;
 	/** The group was deleted: never saved again. */
 	dropped?: boolean;
+	/** The save on its way, if any. */
+	saving?: Promise<void>;
 }
 
 const entries = new Map<ReportTransport, Map<string, Entry>>();
@@ -99,14 +101,68 @@ export function entryFor(transport: ReportTransport, dashboardName: string | und
 async function save(e: Entry) {
 	if (e.timer) clearTimeout(e.timer);
 	e.timer = undefined;
+	// A save already on its way finishes first, so an older document never lands after a newer one.
+	if (e.saving) await e.saving.catch(() => undefined);
 	if (!e.dirty || !e.doc || e.status !== 'ready' || e.dropped) return;
 	e.dirty = false;
-	try {
-		await e.transport.saveDoc(e.name, e.doc);
-	} catch {
-		// Kept dirty: the next change (or leaving the page) tries again.
-		e.dirty = true;
+	const done = (async () => {
+		try {
+			await e.transport.saveDoc(e.name, e.doc!);
+		} catch {
+			// Kept dirty: the next change (or leaving the page) tries again.
+			e.dirty = true;
+		}
+	})();
+	e.saving = done;
+	await done;
+	if (e.saving === done) e.saving = undefined;
+}
+
+export interface PersistResult {
+	ok: boolean;
+	error?: string;
+}
+
+/**
+ * Saves the document NOW and says whether the server took it. The page must not announce
+ * "Saved" before this returns ok: the 2 second save used to fail silently (a reload or a lost
+ * connection in that window dropped the change while the page already said "Saved").
+ * When it fails and `undo` is given (the document before the change), the change is taken back so
+ * Save can be pressed again without a second copy; `wasDirty` says whether earlier changes were
+ * still waiting to be saved.
+ */
+export async function persistEntry(
+	e: Entry,
+	undo?: { doc: DashboardDoc | undefined; wasDirty: boolean },
+): Promise<PersistResult> {
+	if (e.timer) clearTimeout(e.timer);
+	e.timer = undefined;
+	if (!e.doc || e.status !== 'ready' || e.dropped)
+		return { ok: false, error: 'That group is not ready to save.' };
+	if (e.saving) await e.saving.catch(() => undefined);
+	const sent = e.doc;
+	let error: string | undefined;
+	const done = (async () => {
+		try {
+			await e.transport.saveDoc(e.name, sent);
+		} catch (err: any) {
+			error = err?.response?.data?.message || err?.message || 'The server did not take it.';
+		}
+	})();
+	e.saving = done;
+	await done;
+	if (e.saving === done) e.saving = undefined;
+	if (!error) {
+		// Anything changed while the save was on its way is still waiting for its own save.
+		if (e.doc === sent) e.dirty = false;
+		return { ok: true };
 	}
+	if (undo?.doc && e.doc === sent) {
+		e.doc = undo.doc;
+		e.dirty = undo.wasDirty;
+		notify(e);
+	} else e.dirty = true;
+	return { ok: false, error };
 }
 
 function schedule(e: Entry) {
