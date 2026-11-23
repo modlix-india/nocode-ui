@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 /**
@@ -121,17 +121,27 @@ export interface PopPosition {
 	maxHeight: number;
 }
 
-/** Where a popover goes: under its anchor (above when there is no room), inside the window. */
+/** What a popover is assumed to need below its anchor before its real height is measured. */
+const UNMEASURED_NEED = 220;
+
+/**
+ * Where a popover goes: under its anchor, above only when it does not fit below and there is
+ * more room above, inside the window. `height` is the popover's own content height when known
+ * (a three dots menu of three rows is about 130px: it fits under a button with 190px of room
+ * below it, so it must not flip up, ADZ-2178); without it a 220px need is assumed.
+ */
 export function popPosition(
 	box: { top: number; bottom: number; left: number; right: number },
 	align: 'left' | 'right',
 	vw: number,
 	vh: number,
+	height?: number,
 ): PopPosition {
 	const gap = 4;
 	const below = vh - box.bottom - gap - 8;
 	const above = box.top - gap - 8;
-	const down = below >= 220 || below >= above;
+	const need = height && height > 0 ? Math.min(520, Math.ceil(height)) : UNMEASURED_NEED;
+	const down = below >= need || below >= above;
 	const maxHeight = Math.max(120, Math.min(520, down ? below : above));
 	// Upward, pin the bottom edge to the anchor: placing the top at `anchor - maxHeight` left a menu
 	// shorter than maxHeight floating far above its button (ADZ-2173).
@@ -167,6 +177,15 @@ export function Pop({
 	children: React.ReactNode;
 }>) {
 	const [pos, setPos] = useState<PopPosition | undefined>(undefined);
+	const own = useRef<HTMLDivElement | null>(null);
+	const setRef = useCallback(
+		(el: HTMLDivElement | null) => {
+			own.current = el;
+			if (typeof popRef === 'function') popRef(el);
+			else if (popRef) (popRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+		},
+		[popRef],
+	);
 	useIsoLayoutEffect(() => {
 		const place = () => {
 			const vw = window.innerWidth || document.documentElement.clientWidth || 1024;
@@ -188,7 +207,7 @@ export function Pop({
 	return (
 		<RpPortal>
 			<div
-				ref={popRef}
+				ref={setRef}
 				className={`_rpPop _rpPopFixed${className ? ' ' + className : ''}`}
 				role={role}
 				aria-label={label}

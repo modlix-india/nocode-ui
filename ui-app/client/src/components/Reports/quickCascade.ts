@@ -1,6 +1,7 @@
 import { valuesSpec } from './reportSpecUtil';
 import type { PickOption } from './ui/common';
 import { ReportCatalog, ReportSpec } from './reportTypes';
+import { labelOf } from './reportFormat';
 
 /**
  * Cascading quick filters (ADZ-2164). A catalog may say that a quick filter's choices depend
@@ -101,4 +102,52 @@ export async function pruneQuick(
 		queue = [...queue, ...quickDependents(catalog, field)];
 	}
 	return { quick: next, dropped };
+}
+
+/** The function that lists the choices of `field` with its connected assets, if the catalog has one. */
+export function quickOptionsFunction(
+	catalog: ReportCatalog | undefined,
+	field: string,
+): string | undefined {
+	const fn = catalog?.quickFilterOptions?.[field];
+	return typeof fn === 'string' && fn.includes('.') ? fn : undefined;
+}
+
+/**
+ * The choices of a quick filter from the runner's rows (values that have data) and the connected
+ * assets (ADZ-2164): every connected asset is listed, the ones without a row are flagged
+ * `noData`; a value with rows that is not connected (an archived product) is kept. Order: the
+ * ones with data in the runner's order, then the ones without data by name. Two assets with the
+ * same name get their external id appended so they can be told apart.
+ */
+export function mergeQuickOptions(
+	rows: Array<Record<string, any>>,
+	connected: Array<Record<string, any>>,
+): PickOption[] {
+	const withData = new Map<string, PickOption>();
+	rows.forEach(row => {
+		const key = String(row.k);
+		if (!withData.has(key)) withData.set(key, { value: row.k, label: labelOf(row, 'k') });
+	});
+	const assets = connected.filter(a => a?._id !== undefined && a._id !== null && a._id !== '');
+	const names = new Map<string, number>();
+	assets.forEach(a => {
+		const n = String(a.name ?? a._id);
+		names.set(n, (names.get(n) ?? 0) + 1);
+	});
+	const seen = new Set<string>();
+	const noData: PickOption[] = [];
+	assets.forEach(a => {
+		const key = String(a._id);
+		if (seen.has(key)) return;
+		seen.add(key);
+		const name = String(a.name ?? a._id);
+		const label =
+			(names.get(name) ?? 0) > 1 && a.externalId ? `${name} (${a.externalId})` : name;
+		const hit = withData.get(key);
+		if (hit) withData.set(key, { value: hit.value, label });
+		else noData.push({ value: a._id, label, noData: true });
+	});
+	noData.sort((a, b) => a.label.localeCompare(b.label));
+	return [...withData.values(), ...noData];
 }
