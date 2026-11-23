@@ -258,6 +258,7 @@ export function reportCss(prefix: string): string {
 	${P} ._rpCards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
 	${P} ._rpCard { display: flex; flex-direction: column; min-width: 0; background: var(--rp-surface); border: 1px solid var(--rp-border); border-radius: var(--rp-radius); overflow: hidden; }
 	${P} ._rpCardMini { height: 128px; padding: 8px 8px 0; pointer-events: none; overflow: hidden; background: var(--rp-soft); }
+	${P} ._rpCardMini ._rpTableWrap, ${P} ._rpCardMini ._rpList { pointer-events: auto; overscroll-behavior: contain; }
 	${P} ._rpCardMini ._rpWidget._mini { min-height: 0; height: 100%; border: none; border-radius: 0; background: transparent; }
 	${P} ._rpCardMini ._rpWidget._mini ._rpBody { padding: 0; }
 	${P} ._rpCardMini ._rpKpiValue { font-size: 28px; }
