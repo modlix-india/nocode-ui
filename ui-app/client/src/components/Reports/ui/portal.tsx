@@ -112,7 +112,10 @@ export function Dialog({
 }
 
 export interface PopPosition {
-	top: number;
+	/** Set when the popover opens downward. */
+	top?: number;
+	/** Set when it opens upward: its bottom edge sits just above the anchor, whatever its height. */
+	bottom?: number;
 	left?: number;
 	right?: number;
 	maxHeight: number;
@@ -130,9 +133,11 @@ export function popPosition(
 	const above = box.top - gap - 8;
 	const down = below >= 220 || below >= above;
 	const maxHeight = Math.max(120, Math.min(520, down ? below : above));
-	const top = down ? box.bottom + gap : Math.max(8, box.top - gap - maxHeight);
-	if (align === 'right') return { top, right: Math.max(8, vw - box.right), maxHeight };
-	return { top, left: Math.max(8, Math.min(box.left, vw - 200)), maxHeight };
+	// Upward, pin the bottom edge to the anchor: placing the top at `anchor - maxHeight` left a menu
+	// shorter than maxHeight floating far above its button (ADZ-2173).
+	const v = down ? { top: box.bottom + gap } : { bottom: Math.max(8, vh - box.top + gap) };
+	if (align === 'right') return { ...v, right: Math.max(8, vw - box.right), maxHeight };
+	return { ...v, left: Math.max(8, Math.min(box.left, vw - 200)), maxHeight };
 }
 
 /**
@@ -189,7 +194,8 @@ export function Pop({
 				aria-label={label}
 				style={{
 					...style,
-					top: pos?.top ?? -9999,
+					top: pos ? pos.top : -9999,
+					bottom: pos?.bottom,
 					left: pos?.left,
 					right: pos?.right,
 					maxHeight: pos?.maxHeight,

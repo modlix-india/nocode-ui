@@ -110,6 +110,15 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		updateColumnsAtTimerRef.current = setTimeout(() => setUpdateColumnsAt(Date.now()), 50);
 	}, []);
 
+	const dynamicColumnNamesKey = useMemo(() => {
+		const allKeys = new Set<string>();
+		for (const row of (props.context.table?.data ?? [])) {
+			if (!row) continue;
+			for (const k of Object.keys(row)) allKeys.add(k);
+		}
+		return Array.from(allKeys).sort().join('\x00');
+	}, [props.context.table?.data]);
+
 	useEffect(() => {
 		if (!context.table.personalizationBindingPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
@@ -181,6 +190,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	}, [
 		pageDefinition,
 		updateColumnsAt,
+		dynamicColumnNamesKey,
 		context.table.personalizationBindingPath,
 		context.table.enablePersonalization,
 		context.table.key,

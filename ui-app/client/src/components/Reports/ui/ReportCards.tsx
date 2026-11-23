@@ -58,7 +58,7 @@ function Mini(
 	const ref = useRef<HTMLDivElement>(null);
 	const near = useNearScreen(ref);
 	return (
-		<div ref={ref} className="_rpCardMini" aria-hidden="true">
+		<div ref={ref} className="_rpCardMini">
 			{near ? (
 				<ReportWidgetView
 					transport={props.transport}
