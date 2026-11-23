@@ -66,6 +66,29 @@ export function bucketRange(
 	return { from: isoDay(from), to: isoDay(end) };
 }
 
+/**
+ * A bucket's range cut to the explicit date range the spec already has on that field (a drill, a
+ * "Keep only" or a custom dashboard period). Without it the week of 26 Oct inside Oct 2026 drilled
+ * to 26 Oct - 1 Nov, and the days of November showed under an October bar; Keep only on the first
+ * week of a month widened the range back into the month before. Named periods ("Last 12 months")
+ * carry no dates here, so they are left alone. An empty overlap leaves the range as it was.
+ */
+export function clampRange(
+	range: { from: string; to: string },
+	filters: ReportFilter[] | undefined,
+	field: string,
+): { from: string; to: string } {
+	const parent = (filters ?? []).find(
+		f => f.field === field && f.period === 'CUSTOM' && f.from && f.to,
+	);
+	if (!parent) return range;
+	const pf = String(parent.from).slice(0, 10);
+	const pt = String(parent.to).slice(0, 10);
+	const from = range.from > pf ? range.from : pf;
+	const to = range.to < pt ? range.to : pt;
+	return from > to ? range : { from, to };
+}
+
 export function nextLevel(bucket: Bucket | undefined): Bucket | undefined {
 	if (!bucket) return undefined;
 	const i = DRILL_LEVELS.indexOf(bucket);
@@ -141,7 +164,8 @@ export function markActions(
 	const xLabel = target.x.label ?? gx.field;
 	if (value === undefined || value === '__other__') return res;
 	if (gx.bucket) {
-		const range = bucketRange(value, gx.bucket);
+		const whole = bucketRange(value, gx.bucket);
+		const range = whole ? clampRange(whole, spec.filters, gx.field) : undefined;
 		if (range) {
 			res.keep = [
 				{
