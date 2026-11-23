@@ -48,7 +48,9 @@ const rows = [
 async function load(field: string, quick: Record<string, any[]>): Promise<PickOption[]> {
 	const vs = quickValuesSpec(catalog, field, quick)!;
 	const live = rows.filter(r =>
-		(vs.filters ?? []).every(f => (f.values ?? []).map(String).includes(String((r as any)[f.field]))),
+		(vs.filters ?? []).every(f =>
+			(f.values ?? []).map(String).includes(String((r as any)[f.field])),
+		),
 	);
 	return [...new Set(live.map(r => (r as any)[field]))].map(v => ({ value: v, label: `L ${v}` }));
 }
@@ -63,7 +65,9 @@ describe('which filters depend on which', () => {
 		const plain = { ...catalog, quickFilterDepends: undefined };
 		expect(quickDepends(plain, 'adAccountId')).toEqual([]);
 		expect(quickDependents(plain, 'platform')).toEqual([]);
-		expect(quickValuesSpec(plain, 'adAccountId', { platform: ['GOOGLE'] })!.filters).toBeUndefined();
+		expect(
+			quickValuesSpec(plain, 'adAccountId', { platform: ['GOOGLE'] })!.filters,
+		).toBeUndefined();
 	});
 	test('dependents of a filter', () => {
 		expect(quickDependents(catalog, 'platform')).toEqual(['adAccountId', 'productId']);
@@ -103,11 +107,15 @@ describe('the choices spec', () => {
 				},
 			},
 		};
-		expect(quickValuesSpec(lean, 'adAccountId', { platform: ['META'] })!.filters).toBeUndefined();
+		expect(
+			quickValuesSpec(lean, 'adAccountId', { platform: ['META'] })!.filters,
+		).toBeUndefined();
 	});
 	test('the options key changes only when a dependency pick changes', () => {
 		const a = quickOptionsKey(catalog, 'adAccountId', { platform: ['META'] });
-		expect(quickOptionsKey(catalog, 'adAccountId', { platform: ['META'], productId: ['p1'] })).toBe(a);
+		expect(
+			quickOptionsKey(catalog, 'adAccountId', { platform: ['META'], productId: ['p1'] }),
+		).toBe(a);
 		expect(quickOptionsKey(catalog, 'adAccountId', { platform: ['GOOGLE'] })).not.toBe(a);
 		expect(quickOptionsKey(catalog, 'adAccountId', { platform: [] })).toBe(
 			quickOptionsKey(catalog, 'adAccountId', {}),
@@ -164,7 +172,12 @@ describe('dropping picks that no longer fit', () => {
 	});
 	test('values compare as text (ids may be numbers or strings)', async () => {
 		const numeric = async () => [{ value: 7, label: 'seven' }];
-		const r = await pruneQuick(catalog, { platform: ['META'], adAccountId: ['7'] }, 'platform', numeric);
+		const r = await pruneQuick(
+			catalog,
+			{ platform: ['META'], adAccountId: ['7'] },
+			'platform',
+			numeric,
+		);
 		expect(r.quick.adAccountId).toEqual(['7']);
 	});
 	test('a failed load keeps that field and never throws', async () => {

@@ -225,10 +225,7 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 	const loaders = useMemo(
 		() =>
 			new Map(
-				(catalog?.quickFilters ?? []).map(f => [
-					f,
-					() => loadValues(f, filters.quick),
-				]),
+				(catalog?.quickFilters ?? []).map(f => [f, () => loadValues(f, filters.quick)]),
 			),
 		[catalog, loadValues, filters.quick],
 	);
@@ -827,7 +824,9 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 			)}
 			{notice ? (
 				<div
-					className={/^(Imported|Copied|Moved|Cleared)/.test(notice) ? '_rpMuted' : '_rpError'}
+					className={
+						/^(Imported|Copied|Moved|Cleared)/.test(notice) ? '_rpMuted' : '_rpError'
+					}
 					role="alert"
 				>
 					{notice}
