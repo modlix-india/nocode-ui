@@ -18,7 +18,7 @@ import {
 	resolveWidget,
 	withLayout,
 } from '../dashboardModel';
-import { readyDoc, updateEntry, useDashboardDoc } from '../dashboardStore';
+import { persistEntry, readyDoc, updateEntry, useDashboardDoc } from '../dashboardStore';
 import { catalogForGroup, GroupInfo } from '../groupsModel';
 import { useReportGroups } from '../groupsStore';
 import {
@@ -482,6 +482,7 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 				target.id,
 				catalogForGroup(cat.catalog, target.id),
 			);
+			const undo = { doc: entry.doc, wasDirty: entry.dirty };
 			updateEntry(entry, d => {
 				const r = copyWidgetTo(doc, t.id, catalog, d);
 				if (!r.ok) {
@@ -492,6 +493,14 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 				return r.doc;
 			});
 			if (!error && !placed) error = 'That group could not be changed.';
+			// Copied or Moved only once the server has the other group's document.
+			if (!error) {
+				const stored = await persistEntry(entry, undo);
+				if (!stored.ok)
+					error = `Not saved: check your connection and try again${
+						stored.error ? ` (${stored.error})` : ''
+					}.`;
+			}
 		} catch (e: any) {
 			error = e?.message ?? 'That group could not be loaded.';
 		}
@@ -586,7 +595,11 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 			{mode === 'library' ? (
 				<>
 					<div className="_rpBar _rpListHead">
-						{props.title ? <div className="_rpTitle">{props.title}</div> : null}
+						{props.title ? (
+							<div className="_rpTitle _rpPageTitle" title={props.title}>
+								{props.title}
+							</div>
+						) : null}
 						<div className="_rpSpacer" />
 						{editable ? (
 							<>
@@ -669,7 +682,11 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 				</>
 			) : (
 				<div className="_rpBar">
-					{props.title ? <div className="_rpTitle">{props.title}</div> : null}
+					{props.title ? (
+						<div className="_rpTitle _rpPageTitle" title={props.title}>
+							{props.title}
+						</div>
+					) : null}
 					{props.showFilters !== false && mode === 'dashboard' ? (
 						<>
 							<label className="_rpLabel">

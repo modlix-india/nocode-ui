@@ -160,3 +160,15 @@ describe('simple builder model', () => {
 		expect(describeSpec(fn, C)).toBe(label ? `${label} from money summary` : 'Money summary');
 	});
 });
+test('a report on a deleted dataset reads plainly, not as raw field names', () => {
+	const gone: ReportSpec = {
+		v: 1,
+		source: 'dataset:abc',
+		measures: [{ fn: 'SUM', field: 'n1', as: 'n1' }],
+		groupBy: [{ field: 'd1', as: 'd1', bucket: 'MONTH' }],
+		view: { type: 'LINE' },
+	};
+	expect(describeSpec(gone, C)).toBe('On data that was deleted');
+	// A source the catalog does not know and that is not a dataset keeps its words.
+	expect(describeSpec({ ...gone, source: 'nope' }, C)).toMatch(/^Sum of n1/);
+});
