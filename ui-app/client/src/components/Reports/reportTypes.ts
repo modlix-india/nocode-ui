@@ -492,6 +492,11 @@ export interface ReportCatalog {
 	/** An example prompt for the Ask AI box ("bookings by RM this quarter"); none when not set. */
 	aiExample?: string;
 	quickFilters?: string[];
+	/**
+	 * Quick filters whose choices depend on other quick filters: `{ adAccountId: ['platform'] }`
+	 * lists only the ad accounts that exist for the picked platforms. Absent: no cascade.
+	 */
+	quickFilterDepends?: Record<string, string[]>;
 	hierarchies?: Record<string, CatalogHierarchy>;
 	sources: Record<string, CatalogSource>;
 	defaults?: CatalogDefault[];

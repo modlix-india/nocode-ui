@@ -45,6 +45,13 @@ import {
 import { labelOf } from '../reportFormat';
 import { fieldLabel, valuesSpec } from '../reportSpecUtil';
 import {
+	QuickPicks,
+	pruneQuick,
+	quickDependents,
+	quickOptionsKey,
+	quickValuesSpec,
+} from '../quickCascade';
+import {
 	DashboardDoc,
 	DashboardFilters,
 	DASHBOARD_CAPS,
@@ -203,9 +210,11 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 		[docState],
 	);
 
+	// A quick filter's choices: the values that exist together with what is picked in the
+	// filters it depends on (catalog.quickFilterDepends, ADZ-2164).
 	const loadValues = useCallback(
-		(field: string) => async (): Promise<PickOption[]> => {
-			const vs = valuesSpec(catalog, field);
+		async (field: string, quick?: QuickPicks): Promise<PickOption[]> => {
+			const vs = quickValuesSpec(catalog, field, quick);
 			if (!vs || !transport) return [];
 			const r = await runReport(transport, runFunction, vs);
 			if (!r.ok) throw new Error(errorText(r.error));
@@ -214,8 +223,48 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 		[catalog, transport, runFunction],
 	);
 	const loaders = useMemo(
-		() => new Map((catalog?.quickFilters ?? []).map(f => [f, loadValues(f)])),
-		[catalog, loadValues],
+		() =>
+			new Map(
+				(catalog?.quickFilters ?? []).map(f => [
+					f,
+					() => loadValues(f, filters.quick),
+				]),
+			),
+		[catalog, loadValues, filters.quick],
+	);
+	// Picking a quick filter drops the picks of the filters that depend on it which no longer
+	// fit (a Meta ad account after the platform became Google Ads), so no conflicting pair stays.
+	const quickSeq = useRef(0);
+	const setQuick = useCallback(
+		(field: string, v: any[]) => {
+			const next: QuickPicks = { ...(filters.quick ?? {}), [field]: v };
+			setFilters(s => ({ ...s, quick: { ...(s.quick ?? {}), [field]: v } }));
+			setNotice(n => (n.startsWith('Cleared') ? '' : n));
+			if (!quickDependents(catalog, field).some(d => next[d]?.length)) return;
+			const seq = ++quickSeq.current;
+			pruneQuick(catalog, next, field, loadValues).then(({ quick, dropped }) => {
+				if (seq !== quickSeq.current || !Object.keys(dropped).length) return;
+				setFilters(s => ({
+					...s,
+					quick: Object.fromEntries(
+						Object.entries(s.quick ?? {}).map(([f, vals]) => [
+							f,
+							dropped[f]
+								? vals.filter(
+										x => !dropped[f].some((d: any) => String(d) === String(x)),
+									)
+								: vals,
+						]),
+					),
+				}));
+				setNotice(
+					`Cleared ${Object.keys(dropped)
+						.map(f => fieldLabel(catalog, f).toLowerCase())
+						.join(' and ')} that did not match`,
+				);
+			});
+		},
+		[catalog, filters.quick, loadValues],
 	);
 
 	const dashFilters = useMemo<DashboardFilters | undefined>(() => {
@@ -671,12 +720,8 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 										label={fieldLabel(catalog, f)}
 										values={filters.quick?.[f] ?? []}
 										loadOptions={loaders.get(f)!}
-										onChange={v =>
-											setFilters(s => ({
-												...s,
-												quick: { ...(s.quick ?? {}), [f]: v },
-											}))
-										}
+										optionsKey={quickOptionsKey(catalog, f, filters.quick)}
+										onChange={v => setQuick(f, v)}
 									/>
 								) : null,
 							)}
@@ -782,7 +827,7 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 			)}
 			{notice ? (
 				<div
-					className={/^(Imported|Copied|Moved)/.test(notice) ? '_rpMuted' : '_rpError'}
+					className={/^(Imported|Copied|Moved|Cleared)/.test(notice) ? '_rpMuted' : '_rpError'}
 					role="alert"
 				>
 					{notice}
