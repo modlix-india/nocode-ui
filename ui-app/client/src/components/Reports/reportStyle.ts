@@ -148,6 +148,8 @@ export function reportCss(prefix: string): string {
 	${P} ._rpMenuItem:hover:not(:disabled), ${P} ._rpMenuItem._on { background: var(--rp-soft); }
 	${P} ._rpMenuItem:disabled { opacity: 0.45; cursor: default; }
 	${P} ._rpMenuItem small { margin-left: auto; color: var(--rp-muted); }
+	${P} ._rpMenuItem._rpNoData { color: var(--rp-muted); }
+	${P} ._rpMenuItem._rpNoData small { flex-shrink: 0; white-space: nowrap; }
 	${P} ._rpMenuSep { height: 1px; margin: 4px 0; background: var(--rp-border); }
 	${P} ._rpTypes { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 4px; width: min(360px, calc(100vw - 48px)); }
 	${P} ._rpType { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border: 1px solid transparent; border-radius: 6px; background: transparent; cursor: pointer; font: var(--rp-small-font); text-align: center; }
