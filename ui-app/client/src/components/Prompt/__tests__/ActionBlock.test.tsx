@@ -126,6 +126,29 @@ test('an approved card reads as approved', () => {
 	expect(buttons()).toHaveLength(0);
 });
 
+test('a change card shows each new value, and no stored id as a Name (LZ-527)', () => {
+	render(
+		card({
+			toolName: 'item_update',
+			displayName: 'Update Item',
+			message: 'Update item TST-3: change status to In review.',
+			details: {
+				id: '01SAMPLEITEMID000000000003',
+				changes: { status: 'inReview', labels: ['a', 'b'] },
+			},
+		}),
+	);
+	const lines = Array.from(container.querySelectorAll('li')).map(li => li.textContent);
+	expect(lines).toEqual(['status: inReview', 'labels: a, b']);
+	expect(container.textContent).toContain('Update item TST-3: change status to In review.');
+	expect(container.textContent).not.toContain('01SAMPLEITEMID000000000003');
+});
+
+test('a card without changes still shows its id as Name', () => {
+	render(card({ details: { id: 'abc' } }));
+	expect(container.textContent).toContain('Name: abc');
+});
+
 describe('markConfirmationExpired', () => {
 	const msgs = () => [
 		{ id: 'a', confirmationActions: [card(), card({ confirmationId: 'confirm_u2' })] },
