@@ -168,10 +168,26 @@ interface ActionBlockProps {
 	onRespond: (confirmationId: string, approved: boolean, selectedValue: string) => void;
 }
 
+// What a field's new value reads like on the card: text as is, a list joined,
+// an empty value as "(cleared)", anything else as short JSON.
+function formatChangeValue(value: any): string {
+	if (value === null || value === undefined || value === '') return '(cleared)';
+	if (Array.isArray(value))
+		return value.length ? value.map(formatChangeValue).join(', ') : '(cleared)';
+	const text = typeof value === 'object' ? JSON.stringify(value) : String(value);
+	return text.length > 80 ? `${text.slice(0, 77)}...` : text;
+}
+
 function formatDetails(details: Record<string, any>): string[] {
 	const lines: string[] = [];
 	const objType = details.object_type;
-	const name = details.name || details.page_name || details.id || '';
+	// A change card (item_update: {id, changes}) shows its values below, so the
+	// stored id is no use as a "Name" (LZ-527).
+	const changes =
+		details.changes && typeof details.changes === 'object' && !Array.isArray(details.changes)
+			? (details.changes as Record<string, any>)
+			: undefined;
+	const name = details.name || details.page_name || (changes ? '' : details.id) || '';
 
 	if (objType) lines.push(`Type: ${objType}`);
 	if (name) lines.push(`Name: ${name}`);
@@ -187,6 +203,12 @@ function formatDetails(details: Record<string, any>): string[] {
 
 	if (details.event_function) {
 		lines.push(`Event: ${details.event_function.function_name || '?'}`);
+	}
+
+	if (changes) {
+		for (const [field, value] of Object.entries(changes)) {
+			lines.push(`${field}: ${formatChangeValue(value)}`);
+		}
 	}
 
 	if (details.definition) lines.push('Includes definition update');
