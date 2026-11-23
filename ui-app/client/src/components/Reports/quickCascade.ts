@@ -113,6 +113,12 @@ export function quickOptionsFunction(
 	return typeof fn === 'string' && fn.includes('.') ? fn : undefined;
 }
 
+/** A 10 digit Google Ads customer id reads 123-456-7890, as on the Ad accounts screen. */
+function idText(id: any): string {
+	const t = String(id);
+	return /^\d{10}$/.test(t) ? `${t.slice(0, 3)}-${t.slice(3, 6)}-${t.slice(6)}` : t;
+}
+
 /**
  * The choices of a quick filter from the runner's rows (values that have data) and the connected
  * assets (ADZ-2164): every connected asset is listed, the ones without a row are flagged
@@ -143,7 +149,7 @@ export function mergeQuickOptions(
 		seen.add(key);
 		const name = String(a.name ?? a._id);
 		const label =
-			(names.get(name) ?? 0) > 1 && a.externalId ? `${name} (${a.externalId})` : name;
+			(names.get(name) ?? 0) > 1 && a.externalId ? `${name} (${idText(a.externalId)})` : name;
 		const hit = withData.get(key);
 		if (hit) withData.set(key, { value: hit.value, label });
 		else noData.push({ value: a._id, label, noData: true });

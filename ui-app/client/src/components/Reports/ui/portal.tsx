@@ -194,7 +194,10 @@ export function Pop({
 				? { top: at.y, bottom: at.y, left: at.x, right: at.x }
 				: anchor?.getBoundingClientRect();
 			if (!box) return;
-			setPos(popPosition(box, align, vw, vh));
+			// scrollHeight is the menu's own content height, whatever maxHeight clips it to.
+			const el = own.current;
+			const h = el ? el.scrollHeight + (el.offsetHeight - el.clientHeight) : undefined;
+			setPos(popPosition(box, align, vw, vh, h));
 		};
 		place();
 		window.addEventListener('resize', place);

@@ -88,7 +88,7 @@ describe('mergeQuickOptions', () => {
 		const out = mergeQuickOptions(
 			[],
 			[
-				{ _id: 'g1', name: 'Modlix', externalId: '588-975-8158' },
+				{ _id: 'g1', name: 'Modlix', externalId: '5889758158' },
 				{ _id: 'g2', name: 'Modlix', externalId: '446-197-2633' },
 				{ _id: 'g3', name: 'Other', externalId: '1' },
 			],
