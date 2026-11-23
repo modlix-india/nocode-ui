@@ -302,6 +302,8 @@ export function Crosstab({
 export interface PickOption {
 	value: any;
 	label: string;
+	/** A connected asset that has no rows yet: listed greyed and tagged, still selectable. */
+	noData?: boolean;
 }
 
 /** A dropdown of checkboxes (quick filters, filter values). Options load on first open. */
@@ -396,7 +398,10 @@ export function MultiPick({
 							</div>
 						) : null}
 						{options?.map(o => (
-							<label key={String(o.value)} className="_rpMenuItem _rpCheck">
+							<label
+								key={String(o.value)}
+								className={`_rpMenuItem _rpCheck${o.noData ? ' _rpNoData' : ''}`}
+							>
 								<input
 									type="checkbox"
 									checked={selected.has(String(o.value))}
@@ -409,6 +414,7 @@ export function MultiPick({
 									}
 								/>
 								{o.label}
+								{o.noData ? <small>no data yet</small> : null}
 							</label>
 						))}
 					</div>

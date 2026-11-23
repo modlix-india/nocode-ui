@@ -12,7 +12,7 @@ import { getRenderData } from '../util/getRenderData';
 import { getSelectedKeys } from '../util/getSelectedKeys';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
-import { propertiesDefinition, stylePropertiesDefinition } from './buttonBarproperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './buttonBarProperties';
 import ButtonBarStyle from './ButtonBarStyle';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getTranslations } from '../util/getTranslations';

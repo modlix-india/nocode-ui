@@ -26,6 +26,7 @@ import {
 	errorText,
 	namespaceOf,
 	ReportTransport,
+	runQuickOptions,
 	runReport,
 } from '../reportApi';
 import {
@@ -47,7 +48,9 @@ import { fieldLabel, valuesSpec } from '../reportSpecUtil';
 import {
 	QuickPicks,
 	pruneQuick,
+	mergeQuickOptions,
 	quickDependents,
+	quickOptionsFunction,
 	quickOptionsKey,
 	quickValuesSpec,
 } from '../quickCascade';
@@ -216,6 +219,12 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 		async (field: string, quick?: QuickPicks): Promise<PickOption[]> => {
 			const vs = quickValuesSpec(catalog, field, quick);
 			if (!vs || !transport) return [];
+			// One request: the values with data plus every connected asset (no data yet ones flagged).
+			const optionsFn = quickOptionsFunction(catalog, field);
+			if (optionsFn) {
+				const a = await runQuickOptions(transport, optionsFn, field, vs, quick ?? {});
+				return mergeQuickOptions(a.rows, a.connected);
+			}
 			const r = await runReport(transport, runFunction, vs);
 			if (!r.ok) throw new Error(errorText(r.error));
 			return r.rows.map(row => ({ value: row.k, label: labelOf(row, 'k') }));
