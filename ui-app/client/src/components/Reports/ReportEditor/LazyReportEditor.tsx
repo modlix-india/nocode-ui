@@ -11,7 +11,7 @@ import { HelperComponent } from '../../HelperComponents/HelperComponent';
 import useDefinition from '../../util/useDefinition';
 import { datasetFunctions } from '../datasetApi';
 import { addWidget, editWidget } from '../dashboardModel';
-import { readyDoc, updateEntry, useDashboardDoc } from '../dashboardStore';
+import { persistEntry, readyDoc, updateEntry, useDashboardDoc } from '../dashboardStore';
 import { catalogForGroup, labelError } from '../groupsModel';
 import { useReportGroups } from '../groupsStore';
 import { usePageEvents } from '../pageEvents';
@@ -120,6 +120,7 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 					open.group,
 					catalogForGroup(cat.catalog, open.group),
 				);
+				const undo = { doc: entry.doc, wasDirty: entry.dirty };
 				updateEntry(entry, d => {
 					const r = editWidget(
 						d,
@@ -133,6 +134,12 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 					}
 					return r.doc;
 				});
+				// "Saved" only once the server has it.
+				if (!error) {
+					const stored = await persistEntry(entry, undo);
+					if (!stored.ok)
+						error = SAVE_FAILED + (stored.error ? ` (${stored.error})` : '');
+				}
 			} catch (e: any) {
 				error = e?.message ?? 'That group could not be loaded.';
 			}
@@ -153,6 +160,7 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 		let id: string | undefined;
 		try {
 			const entry = await readyDoc(transport, group, catalogForGroup(cat.catalog, group));
+			const undo = { doc: entry.doc, wasDirty: entry.dirty };
 			updateEntry(entry, d => {
 				const r = addWidget(
 					d,
@@ -166,6 +174,15 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 				id = r.id;
 				return r.doc;
 			});
+			// "Saved" only once the server has it: a lost connection or a reload within the 2 second
+			// save used to drop the widget while the page already said Saved.
+			if (!error && id) {
+				const stored = await persistEntry(entry, undo);
+				if (!stored.ok) {
+					error = SAVE_FAILED + (stored.error ? ` (${stored.error})` : '');
+					id = undefined;
+				}
+			}
 		} catch (e: any) {
 			error = e?.message ?? 'That group could not be loaded.';
 		}
@@ -358,3 +375,5 @@ export default function LazyReportEditor(props: Readonly<ComponentProps>) {
 }
 
 const NEW_GROUP = '__new__';
+
+const SAVE_FAILED = 'The report was not saved. Check your connection and press Save again.';
