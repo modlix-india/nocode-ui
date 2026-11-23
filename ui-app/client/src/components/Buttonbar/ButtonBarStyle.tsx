@@ -11,7 +11,7 @@ import {
 	styleProperties,
 	stylePropertiesForTheme,
 } from './buttonBarStyleProperties';
-import { propertiesDefinition } from './buttonBarproperties';
+import { propertiesDefinition } from './buttonBarProperties';
 
 const PREFIX = '.comp.compButtonBar';
 const NAME = 'ButtonBar';

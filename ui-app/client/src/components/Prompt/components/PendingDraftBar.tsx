@@ -242,21 +242,28 @@ export function PendingDraftBar({
 	const publish = useCallback(
 		async (appCode: string) => {
 			setError('');
+			setConfirming('');
 			setBusy(`publish:${appCode}`);
 			try {
 				const headers = getAuthHeaders();
-				// Both services again, and sequentially: the second is not a retry of
-				// the first and a failure in either leaves the other's work published,
-				// which the refresh below then shows honestly.
-				const ui = await axios.post(`/api/ui/publish/app/${appCode}`, {}, { headers });
+				// Core first: pages going live against an unpublished storage or server
+				// function break. Stop if core refuses anything before touching ui.
 				const core = await axios.post(`/api/core/publish/app/${appCode}`, {}, { headers });
+				const coreAttempted = core.data?.attempted ?? 0;
+				const corePublished = core.data?.published ?? 0;
+				if (coreAttempted > corePublished) {
+					setError(
+						`Published ${corePublished} of ${coreAttempted} data/function objects. Pages were not published.`,
+					);
+					await refresh();
+					return;
+				}
 
-				// A partial publish answers 200. Both services report `attempted` and
-				// `published`, and when they disagree the difference is the whole
-				// story: the refresh below re-lists what is left, but without this
-				// the person sees a shorter list and no reason for it.
-				const attempted = (ui.data?.attempted ?? 0) + (core.data?.attempted ?? 0);
-				const published = (ui.data?.published ?? 0) + (core.data?.published ?? 0);
+				const ui = await axios.post(`/api/ui/publish/app/${appCode}`, {}, { headers });
+				const uiAttempted = ui.data?.attempted ?? 0;
+				const uiPublished = ui.data?.published ?? 0;
+				const attempted = coreAttempted + uiAttempted;
+				const published = corePublished + uiPublished;
 				if (attempted > published) {
 					setError(
 						`Published ${published} of ${attempted}. What is still listed below did not go live.`,
@@ -281,14 +288,20 @@ export function PendingDraftBar({
 			try {
 				const headers = getAuthHeaders();
 				const rows = pending[appCode] ?? [];
+				const failed: string[] = [];
 				// One DELETE per draft: the platform has no app-level discard, only
 				// `DELETE {api}/{id}/draft`.
 				for (const row of rows) {
 					const api = PENDING_API[`${row.service}:${row.objectType}`];
 					if (!api) continue;
-					await axios
-						.delete(`${api}/${row.objectId}/draft`, { headers })
-						.catch(() => undefined);
+					try {
+						await axios.delete(`${api}/${row.objectId}/draft`, { headers });
+					} catch {
+						failed.push(`${kindLabel(row.objectType)} ${row.name}`.trim());
+					}
+				}
+				if (failed.length) {
+					setError(`Could not discard: ${failed.join(', ')}.`);
 				}
 				await refresh();
 			} catch (e: any) {
@@ -308,7 +321,8 @@ export function PendingDraftBar({
 		<>
 			{apps.map(appCode => {
 				const rows = pending[appCode];
-				const isConfirming = confirming === appCode;
+				const isConfirmingDiscard = confirming === `discard:${appCode}`;
+				const isConfirmingPublish = confirming === `publish:${appCode}`;
 				return (
 					<div className="_promptPendingBar" key={appCode}>
 						<div className="_promptPendingHead">
@@ -324,7 +338,32 @@ export function PendingDraftBar({
 								.join(' · ')}
 						</div>
 						{error && <div className="_promptPendingError">{error}</div>}
-						{isConfirming ? (
+						{isConfirmingPublish ? (
+							<div className="_promptPendingActions">
+								<span className="_promptPendingConfirmText">
+									Publish all {rows.length}{' '}
+									{rows.length === 1 ? 'change' : 'changes'} to{' '}
+									<strong>{appCode}</strong>?
+								</span>
+								<button
+									type="button"
+									className="_promptPendingBtn _primary"
+									onClick={() => publish(appCode)}
+									disabled={!!busy}
+								>
+									<i className={publishIcon} aria-hidden="true" />
+									<span>Publish</span>
+								</button>
+								<button
+									type="button"
+									className="_promptPendingBtn"
+									onClick={() => setConfirming('')}
+									disabled={!!busy}
+								>
+									Not yet
+								</button>
+							</div>
+						) : isConfirmingDiscard ? (
 							<div className="_promptPendingActions">
 								<span className="_promptPendingConfirmText">
 									Discard all {rows.length} and go back to what is published?
@@ -376,19 +415,17 @@ export function PendingDraftBar({
 								<button
 									type="button"
 									className="_promptPendingBtn _primary"
-									onClick={() => publish(appCode)}
-									disabled={busy === `publish:${appCode}`}
+									onClick={() => setConfirming(`publish:${appCode}`)}
+									disabled={!!busy}
 									title="Make these changes live"
 								>
 									<i className={publishIcon} aria-hidden="true" />
-									<span>
-										{busy === `publish:${appCode}` ? 'Publishing…' : 'Publish'}
-									</span>
+									<span>Publish</span>
 								</button>
 								<button
 									type="button"
 									className="_promptPendingBtn"
-									onClick={() => setConfirming(appCode)}
+									onClick={() => setConfirming(`discard:${appCode}`)}
 									disabled={!!busy}
 									title="Throw these changes away"
 								>

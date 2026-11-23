@@ -497,6 +497,15 @@ export interface ReportCatalog {
 	 * lists only the ad accounts that exist for the picked platforms. Absent: no cascade.
 	 */
 	quickFilterDepends?: Record<string, string[]>;
+	/**
+	 * Quick filters whose dropdown lists ALL connected assets, not only the values that have rows
+	 * (ADZ-2164): `{ adAccountId: 'AdZumpV2.reportQuickOptions' }`. The function takes
+	 * `{ field, spec, picks }` (the values spec, the current quick picks) and answers
+	 * `{ ok, rows, connected }`: `rows` is the runner's answer to the spec (the values that have
+	 * data), `connected` the assets `[{ _id, name, externalId? }]`. A connected asset without a row is
+	 * shown as "no data yet". Absent: the dropdown lists the values that have rows, as before.
+	 */
+	quickFilterOptions?: Record<string, string>;
 	hierarchies?: Record<string, CatalogHierarchy>;
 	sources: Record<string, CatalogSource>;
 	defaults?: CatalogDefault[];

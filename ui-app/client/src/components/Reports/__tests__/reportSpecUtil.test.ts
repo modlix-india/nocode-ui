@@ -71,6 +71,75 @@ test('a click on a date bucket offers Keep only (range) and Drill down, not Excl
 	});
 });
 
+describe('a drilled or kept range never reaches outside the range it was clicked in', () => {
+	// Oct 2026 drilled to weeks: the filter on the date field is the month's own range.
+	const inOct: ReportSpec = {
+		...byMonth,
+		groupBy: [{ field: 'bookedAt', as: 'month', bucket: 'WEEK' }],
+		filters: [{ field: 'bookedAt', period: 'CUSTOM', from: '2026-10-01', to: '2026-10-31' }],
+	};
+	const x = { key: 'month', label: 'Booked on', kind: 'DATE' as const };
+
+	test('the last week of a month drills to the days of that month only', () => {
+		// The week of 26 Oct runs to 1 Nov, and 1 Nov is a November day: it must not show.
+		const a = markActions(inOct, { row: { month: '2026-10-26', n: 228 }, x });
+		expect(a.drill).toMatchObject({ level: 'DAY', from: '2026-10-26', to: '2026-10-31' });
+		expect(a.keep![0]).toMatchObject({ from: '2026-10-26', to: '2026-10-31' });
+		const d = applyDrill(inOct, [a.drill!]);
+		expect(d.filters).toContainEqual({
+			field: 'bookedAt',
+			period: 'CUSTOM',
+			from: '2026-10-26',
+			to: '2026-10-31',
+		});
+	});
+
+	test('the first week of a month starts on the first day of that month', () => {
+		// The week of 28 Sep holds 1 to 4 Oct inside October: Keep only must not widen back into September.
+		const a = markActions(inOct, { row: { month: '2026-09-28', n: 40 }, x });
+		expect(a.drill).toMatchObject({ level: 'DAY', from: '2026-10-01', to: '2026-10-04' });
+		expect(a.keep![0]).toMatchObject({ from: '2026-10-01', to: '2026-10-04' });
+	});
+
+	test('a week inside the month is not changed', () => {
+		const a = markActions(inOct, { row: { month: '2026-10-12', n: 5 }, x });
+		expect(a.drill).toMatchObject({ from: '2026-10-12', to: '2026-10-18' });
+	});
+
+	test('a quarter drilled to months, and a year to quarters, stay inside their parent', () => {
+		const q = (bucket: 'QUARTER' | 'MONTH', from: string, to: string): ReportSpec => ({
+			...byMonth,
+			groupBy: [{ field: 'bookedAt', as: 'month', bucket }],
+			filters: [{ field: 'bookedAt', period: 'CUSTOM', from, to }],
+		});
+		// A whole year: every quarter keeps its own full range.
+		const year = markActions(q('QUARTER', '2026-01-01', '2026-12-31'), {
+			row: { month: '2026-10-01', n: 1 },
+			x,
+		});
+		expect(year.drill).toMatchObject({ level: 'MONTH', from: '2026-10-01', to: '2026-12-31' });
+		// A part year (from 1 Mar): the first quarter is cut to March, not January.
+		const part = markActions(q('QUARTER', '2026-03-01', '2026-12-31'), {
+			row: { month: '2026-01-01', n: 1 },
+			x,
+		});
+		expect(part.drill).toMatchObject({ level: 'MONTH', from: '2026-03-01', to: '2026-03-31' });
+	});
+
+	test('a named period carries no dates, so the bucket range is left whole', () => {
+		const a = markActions(byMonth, { row: { month: '2026-11-01', n: 3 }, x });
+		expect(a.drill).toMatchObject({ from: '2026-11-01', to: '2026-11-30' });
+	});
+
+	test('children of a drilled week add up to the week: the day ranges tile the clamped range', () => {
+		const week = markActions(inOct, { row: { month: '2026-10-26', n: 228 }, x }).drill!;
+		const days = applyDrill(inOct, [week]).filters!.find(f => f.period === 'CUSTOM')!;
+		const span =
+			(Date.parse(days.to as string) - Date.parse(days.from as string)) / 86400000 + 1;
+		expect(span).toBe(6); // 26, 27, 28, 29, 30, 31 Oct
+	});
+});
+
 test('a click on a dimension offers Keep only and Exclude; a series click keeps both values', () => {
 	const spec: ReportSpec = {
 		...byMonth,

@@ -174,6 +174,33 @@ function pickOutput(results: Record<string, any>): any {
 	return only ?? results;
 }
 
+/** The answer of a catalog `quickFilterOptions` function (ADZ-2164): data rows + connected assets. */
+export interface QuickOptionsAnswer {
+	rows: Array<Record<string, any>>;
+	connected: Array<Record<string, any>>;
+}
+
+/** Calls a quick filter options function once. Throws a ReportCallError when it fails. */
+export async function runQuickOptions(
+	transport: ReportTransport,
+	fn: string,
+	field: string,
+	spec: ReportSpec,
+	picks: Record<string, any[]>,
+): Promise<QuickOptionsAnswer> {
+	const data = await withTimeout(transport.call(fn, { field, spec, picks }), REPORT_TIMEOUT_MS);
+	const out = pickOutput(eventResults(data));
+	if (out?.ok === false)
+		throw new ReportCallError(
+			String(out.error?.code ?? 'SOURCE_FAILED'),
+			String(out.error?.message ?? 'The choices could not be loaded.'),
+		);
+	return {
+		rows: Array.isArray(out?.rows) ? out.rows : [],
+		connected: Array.isArray(out?.connected) ? out.connected : [],
+	};
+}
+
 export function defaultRunFunction(appNamespace: string | undefined) {
 	return appNamespace ? `${appNamespace}.reportRun` : '';
 }
