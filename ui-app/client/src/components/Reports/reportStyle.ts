@@ -283,7 +283,8 @@ export function reportCss(prefix: string): string {
 	@media (max-width: 720px) {
 		${P} ._rpBuilderMain { grid-template-columns: minmax(0, 1fr); }
 		${P} ._rpBuilder ._rpEditorSide ._rpEditorPreview { height: 320px; }
-		${P} ._rpCards { grid-template-columns: minmax(0, 1fr); }
+		${P} ._rpCards { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+		${P} ._rpColumn { gap: 16px; }
 		${P} ._rpEditor { grid-template-columns: minmax(0, 1fr); }
 		${P} ._rpEditor._shelves { grid-template-columns: minmax(0, 1fr); }
 		${P} ._rpEditorPreview { position: relative; height: 320px; }
