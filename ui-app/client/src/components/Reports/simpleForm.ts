@@ -1,3 +1,4 @@
+import { isDatasetSource } from './datasetModel';
 import { reportSources } from './reportSpecUtil';
 import { checkView, ResultShape } from './shapeRules';
 import {
@@ -291,6 +292,8 @@ function fmtDate(iso: string | undefined): string {
 /** A spec in plain words: "Count of bookings by RM, this quarter". */
 export function describeSpec(spec: ReportSpec, catalog?: ReportCatalog): string {
 	const src = catalog?.sources?.[spec.source];
+	// The data was deleted: its field names ("n1", "d1") mean nothing now, so say so in plain words.
+	if (!src && catalog?.sources && isDatasetSource(spec.source)) return 'On data that was deleted';
 	if (src?.kind === 'FUNCTION' || !spec.measures?.length) {
 		// A function source: the value shown, from where ("Agreement value from money summary").
 		const y = spec.view.y?.[0];
