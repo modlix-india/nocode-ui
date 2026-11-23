@@ -311,23 +311,39 @@ export function MultiPick({
 	onChange,
 	loadOptions,
 	placeholder,
+	optionsKey,
 }: Readonly<{
 	label: string;
 	values: any[];
 	onChange: (v: any[]) => void;
 	loadOptions: () => Promise<PickOption[]>;
 	placeholder?: string;
+	/** When this changes the choices are stale (a cascading filter): they load again on the next open. */
+	optionsKey?: string;
 }>) {
 	const [open, setOpen] = useState(false);
 	const [options, setOptions] = useState<PickOption[] | undefined>(undefined);
 	const [failed, setFailed] = useState(false);
+	// Labels seen so far, so a pick still reads as its name while the choices reload.
+	const seenLabels = useRef(new Map<string, string>());
+	const lastKey = useRef(optionsKey);
 	const popRef = useRef<HTMLDivElement>(null);
 	const ref = useDismiss(open, () => setOpen(false), popRef);
+	useEffect(() => {
+		if (lastKey.current === optionsKey) return;
+		lastKey.current = optionsKey;
+		setOptions(undefined);
+		setFailed(false);
+	}, [optionsKey]);
 	useEffect(() => {
 		if (!open || options) return;
 		let alive = true;
 		loadOptions().then(
-			o => alive && setOptions(o),
+			o => {
+				if (!alive) return;
+				o.forEach(e => seenLabels.current.set(String(e.value), e.label));
+				setOptions(o);
+			},
 			() => alive && setFailed(true),
 		);
 		return () => {
@@ -338,6 +354,7 @@ export function MultiPick({
 	const text = values.length
 		? values.length === 1
 			? (options?.find(o => String(o.value) === String(values[0]))?.label ??
+				seenLabels.current.get(String(values[0])) ??
 				String(values[0]))
 			: `${values.length} selected`
 		: (placeholder ?? 'All');
