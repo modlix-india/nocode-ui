@@ -103,6 +103,8 @@ export function reportCss(prefix: string): string {
 	${P} ._rpHead { display: flex; align-items: center; gap: 4px; padding: 8px 8px 4px 12px; min-height: 40px; }
 	${P} ._rpHead._drag { cursor: grab; touch-action: none; user-select: none; }
 	${P} ._rpTitle { flex: 1; min-width: 0; font: var(--rp-title-font); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	/* A page or group heading takes the width its words need (the spacer beside it took half and cut long names to "My nu..."); only a name wider than the line wraps. */
+	${P} ._rpTitle._rpPageTitle { flex: 0 1 auto; max-width: 100%; overflow: visible; text-overflow: clip; white-space: normal; overflow-wrap: anywhere; }
 	${P} ._rpBadge { flex: none; font: var(--rp-small-font); padding: 2px 8px; border-radius: 10px; background: var(--rp-accent); color: var(--rp-accent-text); }
 	${P} ._rpNewBar { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--rp-soft); font: var(--rp-small-font); }
 	${P} ._rpNewBar span { flex: 1; }
