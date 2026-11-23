@@ -822,6 +822,11 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 											onClick={() => {
 												setConfirmReset(false);
 												apply(d => resetDoc(d, catalog));
+												// The dashboard is back to how it first opened: the
+												// widgets AND the session filters (period, quick picks,
+												// chart clicks). apply() has already cleared any notice.
+												setFilters({});
+												setCross([]);
 											}}
 										>
 											Reset
