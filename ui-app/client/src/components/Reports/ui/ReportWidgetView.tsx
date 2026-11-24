@@ -22,6 +22,8 @@ import {
 	countLinkOf,
 	fillLink,
 	linkProps,
+	listValues,
+	markLinkOf,
 	Navigator,
 	openInApp,
 	rowLinkOf,
@@ -397,11 +399,21 @@ export function ReportWidgetView(props: Readonly<ReportWidgetViewProps>) {
 
 	// Click-through (CONTRACT 8.0): what the links' placeholders read.
 	const linkCtx = useMemo(
-		() => ({ filters: singleValues(eff.spec), period: out?.period }),
-		[eff.spec, out?.period],
+		() => ({
+			filters: singleValues(eff.spec),
+			lists: listValues(eff.spec),
+			period: out?.period,
+			timeZone: catalog?.timeZone,
+		}),
+		[eff.spec, out?.period, catalog?.timeZone],
 	);
 	const rowHref = source?.link
 		? (row: Record<string, any>) => rowLinkOf(source.link, row, linkCtx)
+		: undefined;
+	// A chart mark's "Open": the default widget's own link, else the source's row link.
+	const markLink = markLinkOf(catalog, source, props.defaultId);
+	const markHref = markLink
+		? (row: Record<string, any>) => rowLinkOf(markLink, row, linkCtx)
 		: undefined;
 	// "View all" belongs under a list of rows (the old dashboard's lists), not under a chart.
 	const moreHref =
@@ -1017,12 +1029,12 @@ export function ReportWidgetView(props: Readonly<ReportWidgetViewProps>) {
 								}}
 							/>
 						) : null}
-						{rowHref && rowHref(mark.target.row) ? (
+						{markHref && markHref(mark.target.row) ? (
 							<MenuItem
 								icon="fa-arrow-up-right-from-square"
 								label="Open"
 								onClick={() => {
-									const href = rowHref(mark.target.row)!;
+									const href = markHref(mark.target.row)!;
 									setMark(undefined);
 									navigate(href);
 								}}
