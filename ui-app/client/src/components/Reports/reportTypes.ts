@@ -469,6 +469,11 @@ export interface CatalogDefault {
 	refreshMin?: number;
 	/** The KPI tile opens this (CONTRACT 8.0); wins over the segment's. */
 	countLink?: CatalogLink;
+	/**
+	 * A chart mark (a slice, a bar) opens this from its menu; its row keys are the clicked mark's
+	 * columns. Wins over the source's row link, which is for records and tables.
+	 */
+	markLink?: CatalogLink;
 	/** The app group this default seeds (CONTRACT 9); missing = "dashboard". */
 	group?: string;
 }
