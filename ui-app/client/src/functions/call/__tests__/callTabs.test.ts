@@ -518,8 +518,10 @@ describe('call sounds and alerts across tabs', () => {
 		await b.session.answer(undefined, true);
 		sdk.emit({ status: 'connected' });
 		await later(3000);
+		// Only the brief setup tone, in the call tab; once connected the network ring back plays
+		// alone (LZT-2665) and the other tab never plays a tone.
 		expect(a.out.played).toEqual(['ringBack']);
-		expect(a.out.loop).toBe('ringBack');
+		expect(a.out.loop).toBeUndefined();
 		expect(b.last()).toMatchObject({ status: 'connected', ringBack: true });
 
 		await b.session.sound({ ringBack: false });
@@ -694,7 +696,8 @@ describe('one ring per call across tabs (LZT-2125)', () => {
 		await b.session.answer(undefined, true);
 		sdk.emit({ status: 'connected' });
 		await later(5000);
-		expect(b.out.loop).toBe('ringBack');
+		expect(b.out.loop).toBeUndefined();
+		expect(b.out.played).toEqual(['ringBack']);
 		expect(a.out.played).toEqual([]);
 		expect(a.out.loop).toBeUndefined();
 	});

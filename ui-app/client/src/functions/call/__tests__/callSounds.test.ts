@@ -157,7 +157,11 @@ describe('tones', () => {
 		expect(
 			loopFor({ status: 'ringing', direction: 'inbound', ringBack: true, muted: false }),
 		).toBe('ringBack');
-		expect(loopFor({ status: 'connected', ringBack: true, muted: false })).toBe('ringBack');
+		// LZT-2665: a connected leg carries the provider's own ring back, so we add none.
+		expect(loopFor({ status: 'connected', ringBack: true, muted: false })).toBeUndefined();
+		expect(
+			loopFor({ status: 'connected', direction: 'outbound', ringBack: true, muted: false }),
+		).toBeUndefined();
 		expect(loopFor({ status: 'connected', muted: false })).toBeUndefined();
 		expect(loopFor({ status: 'ended', muted: false })).toBeUndefined();
 		expect(loopFor({ status: 'ready', muted: false })).toBeUndefined();
@@ -237,14 +241,19 @@ describe('ring back', () => {
 	test('a placed call: ring back through the answered browser leg until the far end answers', async () => {
 		await ring();
 		await exec(new Answer(), { ringBack: true });
+		expect(out.loop).toBe('ringBack');
 		adapter.emit({ status: 'connected' });
 		await after(4000);
-		expect(out.loop).toBe('ringBack');
+		// The leg is connected: the network ring back plays alone, we play nothing (LZT-2665).
+		expect(out.loop).toBeUndefined();
+		expect(last()).toMatchObject({ status: 'connected', ringBack: true });
+		expect(out.played).toEqual(['ringBack']);
 
 		await exec(new Sound(), { ringBack: false });
 		await flush();
 		expect(out.loop).toBeUndefined();
 		expect(last()).toMatchObject({ status: 'connected', ringBack: false });
+		expect(out.played).toEqual(['ringBack']);
 
 		adapter.emit({ status: 'ended' });
 		await flush();
