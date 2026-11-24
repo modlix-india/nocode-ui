@@ -1,7 +1,10 @@
 import {
 	countLinkOf,
 	fillLink,
+	isRowKey,
 	linkProps,
+	listValues,
+	markLinkOf,
 	placeholdersOf,
 	rowLinkOf,
 	singleValues,
@@ -64,6 +67,50 @@ describe('link placeholders (CONTRACT 8.0)', () => {
 		expect(countLinkOf(FIXTURE_CATALOG, kpi)?.path).toBe(COUNT);
 		expect(countLinkOf(FIXTURE_CATALOG, { ...kpi, segment: 'eois' })).toBeUndefined();
 		expect(countLinkOf(FIXTURE_CATALOG, { ...kpi, segment: undefined })).toBeUndefined();
+	});
+
+	test('period as epoch seconds in the catalog zone, and every selected value of a field', () => {
+		const path = '/deals?datePair={period.fromEpoch},{period.toEpoch}&p={filters.productId}';
+		expect(placeholdersOf(path)).toEqual([
+			'period.fromEpoch',
+			'period.toEpoch',
+			'filters.productId',
+		]);
+		// 2026-10-26 00:00 and 2026-11-24 23:59:59 in Asia/Kolkata (UTC+5:30).
+		expect(
+			fillLink(path, {
+				period: { from: '2026-10-26', to: '2026-11-24' },
+				timeZone: 'Asia/Kolkata',
+				lists: { productId: ['a', 'b'] },
+			}),
+		).toBe('/deals?datePair=1792953000,1795544999&p=a%2Cb');
+		// No period or no list: empty, never a half pair.
+		expect(fillLink(path, {})).toBe('/deals?datePair=,&p=');
+		expect(isRowKey('filters.productId')).toBe(false);
+		const spec: ReportSpec = {
+			v: 1,
+			source: 'cases',
+			filters: [
+				{ field: 'productId', op: 'IN', values: ['a', 'b'] },
+				{ field: 'assignedUserId', op: 'EQ', values: ['u1'] },
+				{ field: 'bookedAt', period: 'THIS_MONTH' },
+				{ field: 'unitId', op: 'EQ', values: ['x'] },
+				{ field: 'unitId', op: 'NE', values: ['y'] },
+			],
+			view: { type: 'KPI' },
+		};
+		expect(listValues(spec)).toEqual({ productId: ['a', 'b'], assignedUserId: ['u1'] });
+	});
+
+	test('a chart mark opens the default widget markLink, else the source row link', () => {
+		const cat: any = {
+			defaults: [{ id: 'bySource', markLink: { path: '/deals?source={source}' } }],
+		};
+		const src = { link: { path: '/dealProfile/{code}' } };
+		expect(markLinkOf(cat, src, 'bySource')?.path).toBe('/deals?source={source}');
+		expect(markLinkOf(cat, src, 'other')?.path).toBe('/dealProfile/{code}');
+		expect(markLinkOf(cat, src)?.path).toBe('/dealProfile/{code}');
+		expect(markLinkOf(cat, undefined, 'bySource')?.path).toBe('/deals?source={source}');
 	});
 
 	test('keyboard: Enter and Space open, other keys do not; Ctrl opens a new tab', () => {
