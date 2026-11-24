@@ -69,6 +69,21 @@ describe('link placeholders (CONTRACT 8.0)', () => {
 		expect(countLinkOf(FIXTURE_CATALOG, { ...kpi, segment: undefined })).toBeUndefined();
 	});
 
+	test('a bracketed part is dropped whole when a placeholder in it is empty', () => {
+		const path =
+			'/deals?[datePair={period.fromEpoch},{period.toEpoch}][&p={filters.productId}][&t={filter.tpl}]';
+		const ctx = {
+			period: { from: '2026-10-26', to: '2026-11-24' },
+			timeZone: 'Asia/Kolkata',
+			filters: { tpl: '385' },
+		};
+		expect(fillLink(path, ctx)).toBe('/deals?datePair=1792953000,1795544999&t=385');
+		expect(fillLink(path, { ...ctx, lists: { productId: ['a b', 'c'] } })).toBe(
+			'/deals?datePair=1792953000,1795544999&p=a%20b%2Cc&t=385',
+		);
+		expect(fillLink(path, {})).toMatch(/^\/deals\?datePair=0,\d{10}$/);
+	});
+
 	test('period as epoch seconds in the catalog zone, and every selected value of a field', () => {
 		const path = '/deals?datePair={period.fromEpoch},{period.toEpoch}&p={filters.productId}';
 		expect(placeholdersOf(path)).toEqual([
@@ -84,8 +99,10 @@ describe('link placeholders (CONTRACT 8.0)', () => {
 				lists: { productId: ['a', 'b'] },
 			}),
 		).toBe('/deals?datePair=1792953000,1795544999&p=a%2Cb');
-		// No period or no list: empty, never a half pair.
-		expect(fillLink(path, {})).toBe('/deals?datePair=,&p=');
+		// No period (all time): from the epoch to the end of today, never a half pair.
+		expect(fillLink(path, { timeZone: 'Asia/Kolkata' })).toMatch(
+			/^\/deals\?datePair=0,\d{10}&p=$/,
+		);
 		expect(isRowKey('filters.productId')).toBe(false);
 		const spec: ReportSpec = {
 			v: 1,
@@ -100,6 +117,14 @@ describe('link placeholders (CONTRACT 8.0)', () => {
 			view: { type: 'KPI' },
 		};
 		expect(listValues(spec)).toEqual({ productId: ['a', 'b'], assignedUserId: ['u1'] });
+		// A catalog default may carry one `value` instead of `values`.
+		const one: any = {
+			v: 1,
+			source: 'cases',
+			filters: [{ field: 'tpl', op: 'EQ', value: 't1' }],
+		};
+		expect(singleValues(one)).toEqual({ tpl: 't1' });
+		expect(listValues(one)).toEqual({ tpl: ['t1'] });
 	});
 
 	test('a chart mark opens the default widget markLink, else the source row link', () => {
