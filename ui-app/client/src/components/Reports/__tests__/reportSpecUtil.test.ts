@@ -377,3 +377,147 @@ test('a drill or a Keep only date range replaces the field period (the runner ke
 		{ field: 'bookedAt', period: 'CUSTOM', from: '2026-11-01', to: '2026-11-30' },
 	]);
 });
+
+describe('a quick filter on a field the card already filters (LZT-2700)', () => {
+	const cat: ReportCatalog = {
+		quickFilters: ['productTemplateId', 'productId', 'assignedUserId'],
+		sources: {
+			deals: {
+				kind: 'STORAGE',
+				fields: {
+					createdAt: { kind: 'DATE', label: 'Created on' },
+					productTemplateId: { kind: 'DIMENSION', label: 'Template' },
+					productId: { kind: 'DIMENSION', label: 'Product' },
+					assignedUserId: { kind: 'DIMENSION', label: 'Owner' },
+				},
+			},
+			calls: { kind: 'STORAGE', fields: { callAt: { kind: 'DATE', label: 'Call time' } } },
+		},
+	};
+	const own = (extra: ReportSpec['filters'] = []): ReportSpec => ({
+		v: 1,
+		source: 'deals',
+		measures: [{ fn: 'COUNT', as: 'n' }],
+		filters: [{ field: 'createdAt', period: 'LAST_30_DAYS' }, ...extra],
+		view: { type: 'KPI', y: ['n'] },
+	});
+	const oldest = { field: 'productTemplateId', op: 'EQ' as const, value: 't-old' };
+
+	test('an app default: the quick template replaces the card own template filter', () => {
+		const e = effectiveSpec(own([oldest]), {
+			catalog: cat,
+			appDefault: true,
+			dashboard: { quick: { productTemplateId: ['t-new'] } },
+		});
+		expect(e.spec.filters).toEqual([
+			{ field: 'createdAt', period: 'LAST_30_DAYS' },
+			{ field: 'productTemplateId', op: 'IN', values: ['t-new'] },
+		]);
+		expect(e.skipped).toEqual([]);
+	});
+
+	test('an app default replaces a NOT_NULL fallback filter too, and keeps the period', () => {
+		const e = effectiveSpec(own([{ field: 'productTemplateId', op: 'NOT_NULL' }]), {
+			catalog: cat,
+			appDefault: true,
+			dashboard: { period: 'TODAY', quick: { productTemplateId: ['t-new'] } },
+		});
+		expect(e.spec.filters).toEqual([
+			{ field: 'createdAt', period: 'TODAY' },
+			{ field: 'productTemplateId', op: 'IN', values: ['t-new'] },
+		]);
+	});
+
+	test('no quick pick (All): the card own template filter stays', () => {
+		const picks: Array<Record<string, any[]> | undefined> = [
+			undefined,
+			{},
+			{ productTemplateId: [] },
+		];
+		for (const quick of picks) {
+			const e = effectiveSpec(own([oldest]), {
+				catalog: cat,
+				appDefault: true,
+				dashboard: { period: 'TODAY', quick },
+			});
+			expect(e.spec.filters).toEqual([{ field: 'createdAt', period: 'TODAY' }, oldest]);
+		}
+	});
+
+	test('a card without its own filter on the field gets the quick one', () => {
+		const e = effectiveSpec(own(), {
+			catalog: cat,
+			appDefault: true,
+			dashboard: { quick: { productTemplateId: ['t-new'] } },
+		});
+		expect(e.spec.filters).toEqual([
+			{ field: 'createdAt', period: 'LAST_30_DAYS' },
+			{ field: 'productTemplateId', op: 'IN', values: ['t-new'] },
+		]);
+	});
+
+	test('Product and Owner behave the same way, and only the picked field is replaced', () => {
+		const spec = own([
+			oldest,
+			{ field: 'productId', op: 'EQ', value: 'p-old' },
+			{ field: 'assignedUserId', op: 'EQ', value: 'u-old' },
+		]);
+		const e = effectiveSpec(spec, {
+			catalog: cat,
+			appDefault: true,
+			dashboard: { quick: { productId: ['p1', 'p2'], assignedUserId: ['u1'] } },
+		});
+		expect(e.spec.filters).toEqual([
+			{ field: 'createdAt', period: 'LAST_30_DAYS' },
+			oldest,
+			{ field: 'productId', op: 'IN', values: ['p1', 'p2'] },
+			{ field: 'assignedUserId', op: 'IN', values: ['u1'] },
+		]);
+		const none = effectiveSpec(spec, { catalog: cat, appDefault: true, dashboard: {} });
+		expect(none.spec.filters).toEqual(spec.filters);
+	});
+
+	test('a user-built or edited widget keeps its own filter and the quick pick narrows it (AND)', () => {
+		const e = effectiveSpec(own([oldest]), {
+			catalog: cat,
+			dashboard: { quick: { productTemplateId: ['t-new'] } },
+		});
+		expect(e.spec.filters).toEqual([
+			{ field: 'createdAt', period: 'LAST_30_DAYS' },
+			oldest,
+			{ field: 'productTemplateId', op: 'IN', values: ['t-new'] },
+		]);
+	});
+
+	test('a card whose source lacks the field keeps its filters and reports Not applied', () => {
+		const onCalls: ReportSpec = {
+			v: 1,
+			source: 'calls',
+			measures: [{ fn: 'COUNT', as: 'n' }],
+			filters: [oldest],
+			view: { type: 'KPI', y: ['n'] },
+		};
+		const e = effectiveSpec(onCalls, {
+			catalog: cat,
+			appDefault: true,
+			dashboard: { quick: { productTemplateId: ['t-new'] } },
+		});
+		expect(e.spec.filters).toEqual([oldest]);
+		expect(e.skipped).toEqual(['Template']);
+	});
+
+	test('the replaced filter frees room under the 8 filter cap', () => {
+		const filler = Array.from({ length: 6 }, (_, i) => ({
+			field: 'productId',
+			op: 'NE' as const,
+			values: [`z${i}`],
+		}));
+		const e = effectiveSpec(own([oldest, ...filler]), {
+			catalog: cat,
+			appDefault: true,
+			dashboard: { quick: { productTemplateId: ['t-new'] } },
+		});
+		expect(e.spec.filters).toHaveLength(8);
+		expect(e.skipped).toEqual([]);
+	});
+});
