@@ -201,6 +201,37 @@ test('dashboard period replaces the spec period; quick filters only where the so
 	expect(byMonth.filters).toEqual([{ field: 'bookedAt', period: 'LAST_12_MONTHS' }]);
 });
 
+test('a quick filter the card source lacks is named by the label the bar shows, not the field id', () => {
+	const cat: ReportCatalog = {
+		quickFilters: ['productTemplateId', 'assignedUserId', 'source'],
+		sources: {
+			deals: {
+				kind: 'STORAGE',
+				fields: {
+					productTemplateId: { kind: 'DIMENSION', label: 'Template' },
+					assignedUserId: { kind: 'DIMENSION', label: 'Owner' },
+					source: { kind: 'DIMENSION', label: 'Source' },
+				},
+			},
+			calls: { kind: 'STORAGE', fields: { callAt: { kind: 'DATE', label: 'Call time' } } },
+		},
+	};
+	const onCalls: ReportSpec = {
+		v: 1,
+		source: 'calls',
+		measures: [{ fn: 'COUNT', as: 'n' }],
+		view: { type: 'KPI', y: ['n'] },
+	};
+	const e = effectiveSpec(onCalls, {
+		catalog: cat,
+		dashboard: {
+			quick: { productTemplateId: ['t1'], assignedUserId: ['u1'], source: ['web'] },
+		},
+	});
+	expect(e.skipped).toEqual(['Template', 'Owner', 'Source']);
+	expect(e.spec.filters).toBeUndefined();
+});
+
 test('a spec without a period gets one on its date field; function sources are left alone', () => {
 	const noPeriod = { ...byMonth, filters: [] };
 	expect(
