@@ -33,6 +33,13 @@ function day(v: any): string | undefined {
 	return m ? m[1] : undefined;
 }
 
+/** A filter's values: `values`, or the single `value` a catalog default may carry. */
+function valuesOf(f: ReportFilter): any[] {
+	if (f.values) return f.values;
+	const one = (f as { value?: any }).value;
+	return isEmpty(one) ? [] : [one];
+}
+
 /** True for a placeholder that reads the row (anything but `filter.`, `filters.` and `period.`). */
 export function isRowKey(name: string): boolean {
 	return (
@@ -49,9 +56,13 @@ function epochOf(
 	zone: string | undefined,
 	end: boolean,
 ): string | undefined {
-	if (!d) return undefined;
-	const t = DateTime.fromISO(d, { zone: zone || 'utc' });
+	// An open end of the period (the run had none, as with "All time") is the earliest moment, or
+	// the end of today: the pair never comes out half empty, which a date range page rejects.
+	const t = d
+		? DateTime.fromISO(d, { zone: zone || 'utc' })
+		: DateTime.now().setZone(zone || 'utc');
 	if (!t.isValid) return undefined;
+	if (!d && !end) return '0';
 	return String(Math.floor((end ? t.endOf('day') : t.startOf('day')).toSeconds()));
 }
 
@@ -74,13 +85,32 @@ function valueOf(name: string, ctx: LinkContext): any {
 	return name ? ctx.row?.[name] : undefined;
 }
 
-/** The template with every placeholder filled (URI encoded); unknown or empty ones become ''. */
-export function fillLink(path: string, ctx: LinkContext): string {
-	return String(path ?? '').replace(PLACEHOLDER, (_, raw: string) => {
+const OPTIONAL = /\[([^[\]]*)\]/g;
+
+function fillOne(path: string, ctx: LinkContext): { text: string; empty: boolean } {
+	let empty = false;
+	const text = path.replace(PLACEHOLDER, (_, raw: string) => {
 		const v = valueOf(raw.trim(), ctx);
-		if (isEmpty(v) || typeof v === 'object') return '';
+		if (isEmpty(v) || typeof v === 'object') {
+			empty = true;
+			return '';
+		}
 		return encodeURIComponent(String(v));
 	});
+	return { text, empty };
+}
+
+/**
+ * The template with every placeholder filled (URI encoded); unknown or empty ones become ''.
+ * A part in square brackets, like `[&product={filter.productId}]`, is left out whole when any
+ * placeholder in it is empty, so a page that treats `product=` as a value is not handed one.
+ */
+export function fillLink(path: string, ctx: LinkContext): string {
+	const kept = String(path ?? '').replace(OPTIONAL, (_, inner: string) => {
+		const r = fillOne(inner, ctx);
+		return r.empty ? '' : r.text;
+	});
+	return fillOne(kept, ctx).text;
 }
 
 /**
@@ -111,8 +141,9 @@ export function singleValues(spec: ReportSpec | undefined): Record<string, any> 
 	for (const f of spec?.filters ?? []) seen.set(f.field, (seen.get(f.field) ?? 0) + 1);
 	for (const f of spec?.filters ?? ([] as ReportFilter[])) {
 		if (f.period || (seen.get(f.field) ?? 0) > 1) continue;
-		if ((f.op === 'EQ' || f.op === 'IN') && f.values?.length === 1 && !isEmpty(f.values[0]))
-			out[f.field] = f.values[0];
+		const vs = valuesOf(f);
+		if ((f.op === 'EQ' || f.op === 'IN') && vs.length === 1 && !isEmpty(vs[0]))
+			out[f.field] = vs[0];
 	}
 	return out;
 }
@@ -127,8 +158,8 @@ export function listValues(spec: ReportSpec | undefined): Record<string, any[]> 
 	for (const f of spec?.filters ?? []) seen.set(f.field, (seen.get(f.field) ?? 0) + 1);
 	for (const f of spec?.filters ?? ([] as ReportFilter[])) {
 		if (f.period || (seen.get(f.field) ?? 0) > 1) continue;
-		if ((f.op === 'EQ' || f.op === 'IN') && f.values?.length) {
-			const vs = f.values.filter(v => !isEmpty(v) && typeof v !== 'object');
+		if (f.op === 'EQ' || f.op === 'IN') {
+			const vs = valuesOf(f).filter(v => !isEmpty(v) && typeof v !== 'object');
 			if (vs.length) out[f.field] = vs;
 		}
 	}
