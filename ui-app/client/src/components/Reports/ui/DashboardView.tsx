@@ -381,6 +381,7 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 				compact={item.w <= 3 || item.h <= 2}
 				isNew={item.isNew}
 				defaultId={r.defaultId}
+				appDefault={r.byReference}
 				cross={cross.length ? cross : undefined}
 				onCrossFilter={addCross}
 				pdfFunction={pdfFunction}

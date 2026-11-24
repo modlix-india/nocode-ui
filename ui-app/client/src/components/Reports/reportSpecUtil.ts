@@ -302,6 +302,13 @@ function hasField(catalog: ReportCatalog | undefined, spec: ReportSpec, field: s
  * The spec a widget runs with: its own, then the dashboard filters (period replaces every
  * period filter the spec has; quick filters AND in where the source has the field), then the
  * explore filters (Keep only / Exclude), all within the 8 filter cap.
+ *
+ * `appDefault` marks a spec that is the app's own unedited default card. Such a card may carry
+ * its own filter on a quick filter's field (the LeadZump defaults are bound to the oldest
+ * template); a quick pick on that field then REPLACES the card's own filter instead of being
+ * ANDed to it (ANDed, any other template gave zero). A user-built or edited widget keeps AND:
+ * its own filter is the user's choice and the bar only narrows it. With no quick pick on the
+ * field the card's own filter stays either way.
  */
 export function effectiveSpec(
 	spec: ReportSpec,
@@ -312,6 +319,8 @@ export function effectiveSpec(
 		drill?: DrillStep[];
 		/** "Filter dashboard" clicks on other widgets (CONTRACT 8.1); applied where the source has the field. */
 		cross?: SessionFilter[];
+		/** The spec is an unedited app default: a quick pick replaces its own filter on that field. */
+		appDefault?: boolean;
 	},
 ): EffectiveSpec {
 	const skipped: string[] = [];
@@ -355,6 +364,8 @@ export function effectiveSpec(
 			skipped.push(fieldLabel(opts.catalog, field));
 			continue;
 		}
+		if (opts.appDefault && next.filters?.some(f => f.field === field && !f.period))
+			next.filters = next.filters.filter(f => f.field !== field || !!f.period);
 		extra.push({ field, op: 'IN', values });
 	}
 	for (const f of opts.cross ?? []) {
