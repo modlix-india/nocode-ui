@@ -351,7 +351,8 @@ export function effectiveSpec(
 			continue;
 		}
 		if (!hasField(opts.catalog, spec, field)) {
-			skipped.push(opts.catalog?.sources?.[spec.source]?.fields?.[field]?.label ?? field);
+			// The name the bar shows for this quick filter (Template, Deal owner, Source ...), not the field id.
+			skipped.push(fieldLabel(opts.catalog, field));
 			continue;
 		}
 		extra.push({ field, op: 'IN', values });
