@@ -2,7 +2,8 @@ import { getDataFromPath } from '../../context/StoreContext';
 import { CallState } from './types';
 
 /**
- * Call sounds: the incoming ring, the ring back while the far end is being dialled and a short
+ * Call sounds: the incoming ring, the ring back while the browser leg of a call is being set up
+ * (never over a connected leg: the provider's own ring back plays there) and a short
  * tone when a call ends. One controller per tab, driven by the call session on every state
  * change, so the sound follows the call on every page and never depends on what a page shows.
  *
@@ -299,12 +300,20 @@ export function userKey(prefix: string = SOUND_KEY): string {
 	return id === undefined || id === null || id === '' ? prefix : `${prefix}.${id}`;
 }
 
-/** The loop a call state asks for, before the incoming delay and the answer quiet. */
+/**
+ * The loop a call state asks for, before the incoming delay and the answer quiet.
+ *
+ * We play a tone only where nothing else does: the incoming ring, and a ring back while the
+ * browser leg itself is still being set up (status `ringing`). Once the leg is `connected` the
+ * provider's audio flows in it, and TeleCMI streams the real network ring back (and the busy or
+ * switched off announcements) over it, so a generated ring back then would be a second ring
+ * (LZT-2665). `ringBack` stays in the state (the call card still says "Calling"), it only no
+ * longer makes a sound once the leg is connected.
+ */
 export function loopFor(state: CallState | undefined): Tone | undefined {
 	if (!state) return undefined;
 	if (state.status === 'ringing')
 		return state.ringBack || state.direction === 'outbound' ? 'ringBack' : 'incoming';
-	if (state.status === 'connected' && state.ringBack) return 'ringBack';
 	return undefined;
 }
 
