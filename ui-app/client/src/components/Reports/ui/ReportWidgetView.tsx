@@ -118,6 +118,8 @@ export interface ReportWidgetViewProps {
 	className?: string;
 	/** The catalog default this widget follows (its KPI count link, CONTRACT 8.0). */
 	defaultId?: string;
+	/** An unedited app default: a dashboard quick pick replaces its own filter on that field. */
+	appDefault?: boolean;
 	/** Opens an app link; default: the Navigate step's navigation. */
 	onNavigate?: Navigator;
 	/** "Filter dashboard" filters from other widgets (applied where this source has the field). */
@@ -202,12 +204,29 @@ export function ReportWidgetView(props: Readonly<ReportWidgetViewProps>) {
 		const { compare: _saved, ...plain } = spec;
 		const e = effectiveSpec(
 			{ ...plain, view: baseView },
-			{ catalog, dashboard, session, drill: steps, cross: props.cross },
+			{
+				catalog,
+				dashboard,
+				session,
+				drill: steps,
+				cross: props.cross,
+				appDefault: props.appDefault,
+			},
 		);
 		// Compare is the widget's session toggle; it needs one period that is not All time.
 		if (compare && !compareBlocker(e.spec, catalog)) e.spec.compare = { to: compare };
 		return e;
-	}, [spec, baseView, catalog, dashboard, session, steps, props.cross, compare]);
+	}, [
+		spec,
+		baseView,
+		catalog,
+		dashboard,
+		session,
+		steps,
+		props.cross,
+		props.appDefault,
+		compare,
+	]);
 	const blocker = useMemo(() => {
 		const { compare: _c, ...plain } = eff.spec;
 		return compareBlocker(plain, catalog);
