@@ -132,6 +132,8 @@ describe('UIEngine.Call', () => {
 			audioBlocked: false,
 			alertsOffer: false,
 			collapsed: false,
+			// LZT-2731: Connect's answer (not the stored state) says Expect takes callLogId.
+			exactLog: true,
 		});
 		expect(adapter.load).toHaveBeenCalled();
 		expect(adapter.credentials).toEqual({ user: 'agent1', password: 'pw-123' });

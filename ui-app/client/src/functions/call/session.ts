@@ -337,6 +337,90 @@ let expectUntil = 0;
 let ownLeg: string | undefined;
 
 /**
+ * LZT-2731: the server call (callLogId) the page says this browser call is, when it knows it: the
+ * id the click to call function returned for an outgoing call, the id in the push for an incoming
+ * one. An exact id beats the time windows (heardAsThisCall, bindable) that otherwise decide which
+ * server call is the call up here, and those windows stay the way for a call the page gave no id
+ * for. `call` is the callSince it attached to ('undefined' while no call has come up for it yet).
+ */
+interface ExpectedLog {
+	id: string;
+	/** When the page told the engine (epoch ms). */
+	at: number;
+	/** The callSince of the call it attached to. */
+	call?: number;
+}
+let expectedLog: ExpectedLog | undefined;
+/** The binding in boundLog came from an expected id (not from a time window), and since when. */
+let boundExact = false;
+let boundAt = 0;
+/** How long an id waits for its call to come up here before it is dropped as stale. */
+export const EXPECTED_LOG_TTL_MS = 30000;
+/** An id told after its call came up still binds it when the call came up this recently (outgoing). */
+export const EXPECTED_LOG_LATE_MS = 20000;
+/** The same for an incoming call, which the push and the ring reach the page about together. */
+export const EXPECTED_LOG_LATE_IN_MS = 5000;
+/**
+ * An exact binding whose server call this tab never heard of within this long gives way to the
+ * time windows again (a wrong or lost id must not leave the call with no server call at all).
+ */
+export const EXPECTED_LOG_WAIT_MS = 15000;
+
+function bindExact(id: string, session: Session) {
+	boundLog = id;
+	boundExact = true;
+	boundAt = Date.now();
+	heldBack.delete(id);
+	if (expectedLog) expectedLog.call = callSince;
+	// What the tab stamped from the call it had taken this one for never carries over to it.
+	const stamped = session.state.callLogId;
+	if ((stamped || session.state.talkAt) && stamped !== id) {
+		const { talkAt, callLogId, ...rest } = session.state;
+		session.state = rest;
+		write(session);
+	}
+	guard(() => writeDisplay(session));
+}
+
+/** A call has just come up here: an id told before it (and not stale) is its server call. */
+function adoptExpected(session: Session) {
+	const e = expectedLog;
+	if (!e) return;
+	if (e.call === undefined && Date.now() - e.at <= EXPECTED_LOG_TTL_MS) {
+		boundLog = e.id;
+		boundExact = true;
+		boundAt = Date.now();
+		e.call = callSince;
+		return;
+	}
+	// Told for an earlier call, or too long ago: it never binds this one.
+	expectedLog = undefined;
+}
+
+/**
+ * The page says which server call the call here is. Before the call came up here the id waits for
+ * it (EXPECTED_LOG_TTL_MS); when the call is already up, the id arrived after it (the server
+ * function answers after the agent's leg rang), so it binds that call, unless the call is already
+ * bound to another id this way. A call bound by a time window is rebound to the id.
+ */
+function setExpectedLog(session: Session, id: string) {
+	const now = Date.now();
+	expectedLog = { id, at: now };
+	if (session.role === 'follower' || !IN_CALL.has(session.state.status)) return;
+	// A call is up and this id does not belong to it (another call's push, or a call that is not
+	// the one just placed): it must not wait to bind the next call.
+	const inbound = session.state.direction === 'inbound';
+	const bound = boundExact && boundLog !== id ? boundLog : undefined;
+	const keeps = !!bound && (heard.has(bound) || now - boundAt <= EXPECTED_LOG_WAIT_MS);
+	const late = inbound ? EXPECTED_LOG_LATE_IN_MS : EXPECTED_LOG_LATE_MS;
+	if (keeps || (inbound && session.state.status !== 'ringing') || callSince < now - late) {
+		expectedLog = undefined;
+		return;
+	}
+	bindExact(id, session);
+}
+
+/**
  * The agent's own leg of a call being placed (LZT-2160): the first ring after Expect is marked
  * outbound, and a later event of that leg never turns it back into an incoming call.
  */
@@ -409,6 +493,8 @@ function apply(session: Session, reported: CallStatePatch) {
 	if (IN_CALL.has(next.status) && (!IN_CALL.has(prev.status) || newCall)) {
 		callSince = Date.now();
 		boundLog = undefined;
+		boundExact = false;
+		adoptExpected(session);
 		// The stamps of the last call never carry over to this one (LZT-2256).
 		delete next.talkAt;
 		delete next.callLogId;
@@ -416,6 +502,9 @@ function apply(session: Session, reported: CallStatePatch) {
 
 	if (!IN_CALL.has(next.status)) {
 		boundLog = undefined;
+		boundExact = false;
+		// An id that belonged to the call now over never binds another call.
+		if (expectedLog?.call !== undefined) expectedLog = undefined;
 		if (endTimer) clearTimeout(endTimer);
 		endTimer = undefined;
 		ownLeg = undefined;
@@ -448,9 +537,20 @@ async function answerOwnLeg(session: Session) {
  * The page is placing a call (`on` true) or the placing failed (`on` false). With `on`, the next
  * call that rings within OUTBOUND_CLAIM_MS is the agent's own leg of it.
  */
-export async function expectOutbound(on = true): Promise<CallState> {
+export async function expectOutbound(on = true, callLogId?: string): Promise<CallState> {
 	if (inDesigner()) return designerState();
 	const session = current();
+	const id = callLogId ? String(callLogId).trim() : '';
+	if (id) {
+		// LZT-2731: only tells which server call the call here is; the claim window is not touched.
+		if (session.role === 'follower') {
+			await toOwner(session, 'expect', { on, callLogId: id });
+			return session.state;
+		}
+		if (on) setExpectedLog(session, id);
+		else if (expectedLog?.id === id) expectedLog = undefined;
+		return session.state;
+	}
 	// The microphone is asked for at the press, in the tab the user pressed Call in (LZT-2208).
 	// Asked first when the agent's own leg rang, in the tab holding the phone (often one in the
 	// background), the browser's prompt waited unseen while TeleCMI rang that leg, so the first
@@ -644,7 +744,7 @@ async function runForTab(session: Session, m: any) {
 		} else if (m.op === 'dismiss') dismissEnded(session, m.callId || undefined);
 		else if (m.op === 'mute') await mute(!!m.on);
 		else if (m.op === 'hold') await hold(!!m.on);
-		else if (m.op === 'expect') await expectOutbound(m.on !== false);
+		else if (m.op === 'expect') await expectOutbound(m.on !== false, m.callLogId || undefined);
 		else if (m.op === 'dtmf') await sendDtmf(String(m.digit ?? ''));
 		else if (m.op === 'available') await setAvailability(m.on !== false);
 		else if (m.op === 'view') {
@@ -1315,6 +1415,8 @@ export async function disconnect(): Promise<CallState> {
 		await session.adapter?.disconnect();
 	} finally {
 		closeTabs(session);
+		expectedLog = undefined;
+		boundExact = false;
 		sounds.reset();
 		alerts.reset();
 		session.state = idleState();
@@ -1555,7 +1657,21 @@ function applyLive(report: LiveReport, own: boolean) {
 function serverEnd(report: LiveReport, merged: LiveReport) {
 	const session = active;
 	if (!session || session.role === 'follower' || !IN_CALL.has(session.state.status)) return;
-	if (!boundLog && bindable(report, merged)) boundLog = report.callLogId;
+	if (
+		boundExact &&
+		boundLog &&
+		!heard.has(boundLog) &&
+		Date.now() - boundAt > EXPECTED_LOG_WAIT_MS
+	) {
+		// The id the page gave never showed up: the time windows decide, as for a call with no id.
+		boundLog = undefined;
+		boundExact = false;
+		expectedLog = undefined;
+	}
+	if (!boundLog && bindable(report, merged)) {
+		boundLog = report.callLogId;
+		boundExact = false;
+	}
 	if (!merged.terminal || !boundLog || boundLog !== merged.callLogId || endTimer) return;
 	// LZT-2731: with sdkFirst an incoming call ends on the browser phone's own end; the server's
 	// end waits SERVER_END_FLOOR_MS (the phone's end clears the timer) so a lost BYE cannot keep

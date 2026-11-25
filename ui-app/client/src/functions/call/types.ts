@@ -63,6 +63,11 @@ export interface CallState {
 	 */
 	alertsOffer?: boolean;
 	/**
+	 * LZT-2731: true only in the answer of `UIEngine.Call.Connect` of a bundle whose
+	 * `UIEngine.Call.Expect` takes `callLogId`; never in the stored state. A page passes the id only when it is true.
+	 */
+	exactLog?: boolean;
+	/**
 	 * True while the agent chose to be away (`UIEngine.Call.Availability` with `available` false):
 	 * the browser phone is signed out, status is `idle`, and the provider sends calls to the
 	 * agent's phone instead. Remembered per user in this browser and the same in every tab.
