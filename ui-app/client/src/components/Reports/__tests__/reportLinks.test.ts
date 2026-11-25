@@ -84,6 +84,34 @@ describe('link placeholders (CONTRACT 8.0)', () => {
 		expect(fillLink(path, {})).toMatch(/^\/deals\?datePair=0,\d{10}$/);
 	});
 
+	test('the My dashboard catalog links never leave a literal bracket or an empty value', () => {
+		const optional =
+			'[&productTemplateId={filter.productTemplateId}][&productId={filters.productId}][&assignedUserId={filters.assignedUserId}]';
+		const links = [
+			`/deals?[datePair={period.fromEpoch},{period.toEpoch}]${optional}`,
+			`/deals?source={source}[&datePair={period.fromEpoch},{period.toEpoch}]${optional}`,
+			'/deals?stage={stage}[&productTemplateId={filter.productTemplateId}]',
+			'/deals?stage={stage}&assignedUserId={owner}[&productTemplateId={filter.productTemplateId}]',
+			'/deals?reInquiryOpen=true',
+		];
+		const contexts = [
+			{},
+			{ timeZone: 'Asia/Kolkata' },
+			{
+				period: { from: '2026-10-26', to: '2026-11-24' },
+				timeZone: 'Asia/Kolkata',
+				filters: { productTemplateId: '385' },
+				lists: { productId: ['p1', 'p2'], assignedUserId: ['u1', 'u2'] },
+			},
+		];
+		for (const l of links)
+			for (const c of contexts) {
+				const out = fillLink(l, { ...c, row: { source: 'Social Media', stage: '7', owner: '9' } });
+				expect(out).not.toMatch(/[[\]{}]/);
+				expect(out).not.toMatch(/=(&|$)/);
+			}
+	});
+
 	test('period as epoch seconds in the catalog zone, and every selected value of a field', () => {
 		const path = '/deals?datePair={period.fromEpoch},{period.toEpoch}&p={filters.productId}';
 		expect(placeholdersOf(path)).toEqual([

@@ -1,4 +1,4 @@
-import { kindWord, savedNoticeLines } from '../savedNotice';
+import { isBuilderObject, kindWord, savedNoticeLines } from '../savedNotice';
 
 describe('savedNoticeLines', () => {
 	it('says which objects wait for Publish and which were created live', () => {
@@ -61,5 +61,28 @@ describe('savedNoticeLines', () => {
 		).toEqual([
 			'New, so its first version is live (a new object cannot wait in a draft): server function QaDraftTest.ping',
 		]);
+	});
+
+	it('is about app builder objects only, not the page signals other agents send (ADZ-2242)', () => {
+		for (const kind of [
+			'page',
+			'theme',
+			'serverfunction',
+			'storage',
+			'uripath',
+			'profile',
+			'user',
+		])
+			expect(isBuilderObject(kind)).toBe(true);
+		for (const kind of [
+			'productPick',
+			'targeting',
+			'campaignPlan',
+			'productReview',
+			'creative',
+			'draftResume',
+			'',
+		])
+			expect(isBuilderObject(kind)).toBe(false);
 	});
 });
