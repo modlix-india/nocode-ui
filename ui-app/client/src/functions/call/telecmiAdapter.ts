@@ -138,6 +138,8 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 	let status: CallStatus = 'idle';
 	let direction: 'inbound' | 'outbound' | undefined;
 	let signingOut = false;
+	/** TeleCMI signed this agent out (`sbc_logout`): the SDK's `logout` after it is a real sign out. */
+	let signedOutByProvider = false;
 	let pendingLogin: { resolve: () => void; reject: (e: Error) => void } | undefined;
 	/** Set while sendDtmf runs: the SDK's refusal of that tone, if it reports one at once. */
 	let dtmfRefusal: string | undefined;
@@ -185,17 +187,23 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 			// The SDK reconnects on its own; until then the agent cannot take calls.
 			if (!signingOut && status === 'ready') emit({ status: 'registering' });
 		});
-		on('connected', () => {
-			if (status === 'registering' && !pendingLogin) emit({ status: 'ready' });
-		});
+		// `connected` is the socket only: the agent can take calls again at the SDK's `login`
+		// (REGISTER done), never before (LZT-2731, step 1b).
 		on('sbc_logout', (d: any) => {
+			signedOutByProvider = true;
 			emit({
 				status: 'error',
 				error: `TeleCMI signed this agent out: ${text(d?.reason) ?? 'signed in elsewhere'}`,
 			});
 		});
+		// A transport drop sends `disconnected`, `logout`, `connected`, `login` in that order and the
+		// SDK signs back in by itself, so a `logout` is a sign out (idle) only when this adapter
+		// asked for it (signingOut: disconnect has already set idle) or after `sbc_logout`.
+		// Otherwise the agent waits in `registering` for the `login`, and a call that is up stays.
 		on('logout', () => {
-			if (!signingOut) emit({ status: 'idle' });
+			if (signingOut) return;
+			if (signedOutByProvider) emit({ status: 'idle' });
+			else if (status === 'ready') emit({ status: 'registering' });
 		});
 
 		on('inComingCall', (d: any) => {
@@ -329,6 +337,7 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 			});
 			sdk = p;
 			signingOut = false;
+			signedOutByProvider = false;
 			answered = false;
 			attach(p);
 			emit({ status: 'registering' });

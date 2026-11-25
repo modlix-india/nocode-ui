@@ -106,6 +106,11 @@ interface Session {
 	/** The signed in user at Connect ('' when unknown); another user means sign out (LZT-2163). */
 	user: string;
 	factory: CallAdapterFactory;
+	/**
+	 * LZT-2731: the browser phone's own end is the end of an incoming call (see serverEnd). Off
+	 * unless the page asked for it in Connect.
+	 */
+	sdkFirst?: boolean;
 	pending: Map<string, { resolve: () => void; reject: (e: Error) => void; timer: any }>;
 	gotOwnerState?: () => void;
 	/** A follower while it waits for the owner's first state (a new tab or a reload). */
@@ -125,6 +130,11 @@ let boundLog: string | undefined;
 let endTimer: ReturnType<typeof setTimeout> | undefined;
 /** After the server says the call ended, how long the browser phone gets to say so itself. */
 export const SERVER_END_GRACE_MS = 2000;
+/**
+ * With `sdkFirst`, for an incoming call: how long the browser phone gets to say the call ended
+ * after the server did, before the server's end hangs up (a hang up the SDK lost, LZT-2731).
+ */
+export const SERVER_END_FLOOR_MS = 30000;
 let commandSeq = 0;
 
 /** This tab, for `soundTab`. */
@@ -928,6 +938,12 @@ export interface ConnectOptions {
 	credentialsArgs?: Record<string, any>;
 	/** Where the call bar's display values are written (LZT-2161), for example `Store.callDisplay`. */
 	displayPath?: string;
+	/**
+	 * LZT-2731: true when the browser phone's own events end an incoming call, so the server's
+	 * report of its end no longer hangs the call up after SERVER_END_GRACE_MS (only after
+	 * SERVER_END_FLOOR_MS as a floor). Absent or false: unchanged.
+	 */
+	sdkFirst?: boolean;
 }
 
 let authStop: (() => void) | undefined;
@@ -981,6 +997,7 @@ export async function connect(
 		: identityOf(name, credentials!);
 	if (active && sameSession(active, identity)) {
 		const session = active;
+		session.sdkFirst = options.sdkFirst === true;
 		const displayPath = options.displayPath?.trim() ?? '';
 		if (
 			session.statePath !== statePath ||
@@ -1021,6 +1038,7 @@ export async function connect(
 		user,
 		source,
 		factory,
+		...(options.sdkFirst === true ? { sdkFirst: true } : {}),
 	};
 	active = session;
 	watchAuth();
@@ -1539,10 +1557,19 @@ function serverEnd(report: LiveReport, merged: LiveReport) {
 	if (!session || session.role === 'follower' || !IN_CALL.has(session.state.status)) return;
 	if (!boundLog && bindable(report, merged)) boundLog = report.callLogId;
 	if (!merged.terminal || !boundLog || boundLog !== merged.callLogId || endTimer) return;
+	// LZT-2731: with sdkFirst an incoming call ends on the browser phone's own end; the server's
+	// end waits SERVER_END_FLOOR_MS (the phone's end clears the timer) so a lost BYE cannot keep
+	// the card up for good. An outgoing call (and the agent's own leg of a click to call, which
+	// is marked outbound) keeps the short grace: the SDK does not always report the customer
+	// ending it.
+	const wait =
+		session.sdkFirst === true && session.state.direction === 'inbound'
+			? SERVER_END_FLOOR_MS
+			: SERVER_END_GRACE_MS;
 	endTimer = setTimeout(() => {
 		endTimer = undefined;
 		void endByServer(session);
-	}, SERVER_END_GRACE_MS);
+	}, wait);
 }
 
 /**
