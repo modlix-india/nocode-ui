@@ -40,6 +40,28 @@ export function kindWord(kind: string): string {
 	return KIND_WORDS[kind] ?? kind;
 }
 
+/**
+ * The kinds the notice is about: the platform objects the app builder writes (the kinds
+ * nocode-ai's draft registry names from a definition API path). Other agents use the same
+ * `object_changed` event as a page signal with their own kinds (AdZump: productPick,
+ * targeting, campaignPlan, ...), and those are not app definitions saved live, so they get
+ * no notice (ADZ-2242: "The product is X" in the AdZump chat showed "Saved live, with no
+ * Publish step: productPick X").
+ */
+const BUILDER_KINDS = new Set<string>([
+	...Object.keys(KIND_WORDS),
+	'profile',
+	'role',
+	'user',
+	'client',
+	'department',
+	'designation',
+]);
+
+export function isBuilderObject(kind: string): boolean {
+	return BUILDER_KINDS.has(kind);
+}
+
 function list(objects: SavedObject[]): string {
 	return objects.map(o => `${kindWord(o.kind)} ${o.name}`.trim()).join(', ');
 }
