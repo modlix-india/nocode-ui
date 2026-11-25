@@ -306,7 +306,12 @@ describe('LZT-2731: sdkFirst on Connect', () => {
 			const sdk = a.adapters[0];
 			const t0 = Date.now();
 			frame(a, { callLogId: 'L1', status: 'RINGING', at: t0 });
-			sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'c1', from: '+918143118272' });
+			sdk.emit({
+				status: 'ringing',
+				direction: 'inbound',
+				callId: 'c1',
+				from: '+918143118272',
+			});
 			sdk.emit({ status: 'connected' });
 			frame(a, { callLogId: 'L1', status: 'IN_PROGRESS', at: t0 + 2000 });
 			await settle(11_000);
@@ -347,7 +352,12 @@ describe('LZT-2731: sdkFirst on Connect', () => {
 			await settle(30_000);
 			expect(a.display().phase).toBe('talking');
 
-			frame(a, { direction: 'outbound', status: 'COMPLETED', terminal: true, talkDuration: 31 });
+			frame(a, {
+				direction: 'outbound',
+				status: 'COMPLETED',
+				terminal: true,
+				talkDuration: 31,
+			});
 			await settle(10);
 			expect(a.display()).toMatchObject({ phase: 'ended', final: true, talkSec: 31 });
 			expect(a.adapters[0].hangup).not.toHaveBeenCalled();
