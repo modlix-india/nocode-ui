@@ -50,7 +50,7 @@ import { CraftRenderer } from './components/CraftRenderer';
 import { InlineDataRenderer } from './components/InlineDataRenderer';
 import AttachmentThumb from './components/AttachmentThumb';
 import { Attachment, splitTurnAttachments, toChatAttachments } from './attachments';
-import { SavedObject, savedNoticeLines } from './savedNotice';
+import { SavedObject, isBuilderObject, savedNoticeLines } from './savedNotice';
 import { newSteerId, postSteer } from './steer';
 import { NOT_SEEN, sessionChange } from './sessionWatch';
 import { PendingDraftBar } from './components/PendingDraftBar';
@@ -2014,13 +2014,18 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			const draft = data.draft === true;
 			// A POST is a create: the one write that cannot go to a draft.
 			const created = String(data.operation ?? '').toUpperCase() === 'POST';
-			setSavedObjects(prev =>
-				prev.some(
-					o => o.kind === data.kind && o.name === (data.name ?? '') && o.draft === draft,
-				)
-					? prev
-					: [...prev, { kind: data.kind, name: data.name ?? '', draft, created }],
-			);
+			// The notice is the app builder's; a page signal kind (AdZump's productPick) is not a saved definition.
+			if (isBuilderObject(data.kind))
+				setSavedObjects(prev =>
+					prev.some(
+						o =>
+							o.kind === data.kind &&
+							o.name === (data.name ?? '') &&
+							o.draft === draft,
+					)
+						? prev
+						: [...prev, { kind: data.kind, name: data.name ?? '', draft, created }],
+				);
 			// A drafted change needs somewhere to be reviewed from. A surface with
 			// editor tabs has one already; this remembers the app so a surface
 			// WITHOUT tabs can show a review bar, and remembers it in LocalStore so
