@@ -265,9 +265,9 @@ export function reportCss(prefix: string): string {
 	${P} ._rpCardMini ._rpTableWrap, ${P} ._rpCardMini ._rpList { pointer-events: auto; overscroll-behavior: contain; }
 	${P} ._rpCardMini ._rpWidget._mini { min-height: 0; height: 100%; border: none; border-radius: 0; background: transparent; }
 	${P} ._rpCardMini ._rpWidget._mini ._rpBody { padding: 0; }
-	${P} ._rpCardMini ._rpKpiValue { font-size: 28px; }
-	${P} ._rpCardBody { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; min-width: 0; }
-	${P} ._rpCardName { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	${P} ._rpCardMini:has(._rpKpi) { height: 88px; }
+	${P} ._rpCardBody { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 8px 12px; min-width: 0; }
+	${P} ._rpCardName { font: var(--rp-title-font); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 	${P} ._rpCardFoot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 8px 8px 12px; border-top: 1px solid var(--rp-border); }
 	${P} ._rpSwitch { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font: var(--rp-small-font); user-select: none; }
 	${P} ._rpSwitch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
