@@ -6,7 +6,8 @@ describe('readPendingPrompt (ADZ-2307)', () => {
 	});
 
 	it('sends text and shows display for a handed-over brief', () => {
-		const brief = 'Campaign brief from the setup panel (pass these values to campaign_brief). Product: X';
+		const brief =
+			'Campaign brief from the setup panel (pass these values to campaign_brief). Product: X';
 		expect(readPendingPrompt({ text: brief, display: 'Draft the campaign' })).toEqual({
 			text: brief,
 			display: 'Draft the campaign',

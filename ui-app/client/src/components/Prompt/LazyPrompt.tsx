@@ -277,7 +277,10 @@ export function mapHistoryToMessages(history: any[], pending?: PendingChoice | n
 		last?.role === 'assistant' &&
 		(pending.turn === undefined || pending.turn === last.turnNumber)
 	) {
-		last.suggestions = { options: pending.options, mode: pending.mode === 'multi' ? 'multi' : 'single' };
+		last.suggestions = {
+			options: pending.options,
+			mode: pending.mode === 'multi' ? 'multi' : 'single',
+		};
 	}
 	return msgs;
 }
