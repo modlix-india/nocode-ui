@@ -10,6 +10,7 @@ interface LocationMapProps {
 		product_name?: string | null;
 		coordinates?: { lat: number; lng: number } | null;
 		location_found?: boolean;
+		map_id?: string | null;
 	};
 	onConfirm: (coords: { lat: number; lng: number } | null, address?: string) => void;
 	confirmed?: boolean;
@@ -17,24 +18,10 @@ interface LocationMapProps {
 	disabled?: boolean;
 }
 
-// Clean monochrome static-map styles (grayscale, no POIs).
-const STATIC_STYLES = [
-	'feature:poi|visibility:off',
-	'feature:transit|visibility:off',
-	'feature:administrative.land_parcel|visibility:off',
-	'feature:administrative.neighborhood|visibility:off',
-	'feature:road|element:labels.icon|visibility:off',
-	'feature:road.local|element:labels|visibility:off',
-	'element:labels.text.stroke|color:0xffffff',
-	'element:labels.text.fill|color:0x757575',
-	'feature:landscape|element:geometry|color:0xf5f5f5',
-	'feature:road|element:geometry|color:0xffffff',
-	'feature:road.arterial|element:geometry|color:0xe8e8e8',
-	'feature:road.highway|element:geometry|color:0xdadada',
-	'feature:water|element:geometry|color:0xeaeaea',
-];
-
-function staticMapUrl(lat: number, lng: number, apiKey: string): string {
+// ADZ-2251: the map never carries its own style list. With a map id (GOOGLE_MAP_ID, the same one the
+// MapPicker maps use) the map id's Google Cloud style draws it; without one it is plain Google styling.
+// Either way place, area and road names show when zoomed in.
+export function staticMapUrl(lat: number, lng: number, apiKey: string, mapId?: string | null): string {
 	const params = [
 		`center=${lat},${lng}`,
 		'zoom=15',
@@ -44,31 +31,17 @@ function staticMapUrl(lat: number, lng: number, apiKey: string): string {
 		`markers=size:small|color:0x1a1a1a|${lat},${lng}`,
 		`key=${apiKey}`,
 	];
-	STATIC_STYLES.forEach(s => params.push(`style=${encodeURIComponent(s)}`));
+	if (mapId) params.push(`map_id=${encodeURIComponent(mapId)}`);
 	return `https://maps.googleapis.com/maps/api/staticmap?${params.join('&')}`;
+}
+
+export function mapLookOptions(mapId?: string | null): Record<string, any> {
+	return mapId ? { mapId } : {};
 }
 
 const DEFAULT_CENTER = { lat: 20.5937, lng: 78.9629 }; // India
 const DEFAULT_ZOOM = 5;
 const PIN_ZOOM = 15;
-
-// Clean light-theme map styles — hide POIs, transit, fine-grained admin labels,
-// dim road/water colors. Matches the feel of the reference image but light.
-const MAP_STYLES = [
-	{ featureType: 'poi', stylers: [{ visibility: 'off' }] },
-	{ featureType: 'transit', stylers: [{ visibility: 'off' }] },
-	{ featureType: 'administrative.land_parcel', stylers: [{ visibility: 'off' }] },
-	{ featureType: 'administrative.neighborhood', stylers: [{ visibility: 'off' }] },
-	{ featureType: 'road', elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
-	{ featureType: 'road.local', elementType: 'labels', stylers: [{ visibility: 'off' }] },
-	{ elementType: 'labels.text.stroke', stylers: [{ color: '#ffffff' }] },
-	{ elementType: 'labels.text.fill', stylers: [{ color: '#616161' }] },
-	{ featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#f5f5f5' }] },
-	{ featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
-	{ featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#e8e8e8' }] },
-	{ featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#dadada' }] },
-	{ featureType: 'water', elementType: 'geometry', stylers: [{ color: '#cfe2f3' }] },
-];
 
 async function geocodeQuery(
 	google: any,
@@ -127,6 +100,7 @@ export function LocationMap({
 	disabled,
 }: Readonly<LocationMapProps>) {
 	const apiKey = location.api_key || '';
+	const mapId = location.map_id || '';
 	const query = location.query || location.product_location || location.location || '';
 	const display =
 		location.product_location ||
@@ -171,7 +145,7 @@ export function LocationMap({
 						fullscreenControl: false,
 						gestureHandling: 'cooperative',
 						clickableIcons: false,
-						styles: MAP_STYLES,
+						...mapLookOptions(mapId),
 					});
 				} catch (e) {
 					if (!cancelled) setStatus('error');
@@ -238,14 +212,14 @@ export function LocationMap({
 		// We intentionally DO NOT depend on `coords` — the effect should run once
 		// per (apiKey, container). Marker updates are driven imperatively.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [apiKey, container, confirmed, query]);
+	}, [apiKey, mapId, container, confirmed, query]);
 
 	if (confirmed) {
 		const addr = confirmedMeta?.address || display;
 		const lat = confirmedMeta?.lat;
 		const lng = confirmedMeta?.lng;
 		const snapshot =
-			apiKey && lat != null && lng != null ? staticMapUrl(lat, lng, apiKey) : null;
+			apiKey && lat != null && lng != null ? staticMapUrl(lat, lng, apiKey, mapId) : null;
 		return (
 			<div className="_pLocationConfirmedCard" role="status">
 				{snapshot && (
