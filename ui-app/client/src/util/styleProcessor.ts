@@ -350,6 +350,10 @@ function processCDN(style: any) {
 
 			if (!globalThis.cdnPrefix) continue;
 
+			// A style value that an expression evaluated to a number (opacity 0.55,
+			// zIndex 2) is not text: skip it instead of failing the whole component.
+			if (typeof v !== 'string') continue;
+
 			const index = v.indexOf(STATIC_FILE_API_PREFIX);
 			if (index == -1) continue;
 
