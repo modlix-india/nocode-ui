@@ -67,3 +67,18 @@ describe('component background images through the CDN', () => {
 		expect(backgroundOf(`url('${F}/bgsec.jpg')`)).toBe(`url('${F}/bgsec.jpg')`);
 	});
 });
+
+describe('style values that are not text', () => {
+	// An expression such as `x ? 0.55 : 1` gives a number. It used to throw
+	// `v.indexOf is not a function` and blank the whole component (LZT-2748).
+	it('lets a numeric value through and still rewrites a file url beside it', () => {
+		const out = processComponentStylePseudoClasses(
+			pdef,
+			{},
+			{ '': { comp: { opacity: 0.55, zIndex: 2, backgroundImage: `url('${F}/a.png')` } } } as any,
+		).comp as any;
+		expect(out.opacity).toBe(0.55);
+		expect(out.zIndex).toBe(2);
+		expect(out.backgroundImage).toContain(CDN);
+	});
+});

@@ -356,7 +356,7 @@ describe('LZT-2164: the editor canvas never signs a phone in', () => {
 		(globalThis as any).isDesignMode = true;
 		const r = await connectFetched();
 		expect(r.event).toBe('output');
-		expect(r.result.state).toEqual({ status: 'idle', muted: false });
+		expect(r.result.state).toEqual({ status: 'idle', muted: false, exactLog: true });
 		expect(adapters).toHaveLength(0);
 		expect(fetches).toHaveLength(0);
 		expect(writes).toEqual([]);
