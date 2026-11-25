@@ -78,7 +78,7 @@ const CONNECT = signature(
 	],
 	"Signs the agent in to a calling provider's web SDK so this browser can take and place calls",
 ).setDocumentation(
-	"# UIEngine.Call.Connect\n\nLoads the provider's web SDK (only now, from its CDN), signs the agent in with the credentials and keeps the call state at `statePath`. One connection per browser tab: a second Connect replaces the first, and is refused while a call is in progress. The connection survives navigation between pages.\n\nTabs: the provider keeps one sign in per agent, so only one tab of the site signs in and holds the audio. Every other tab that runs Connect mirrors that tab's call state (with `otherTab: true`) and sends Answer, Mute and Hangup to it; when that tab closes, another one signs in. While a call is up, the tab holding it asks before the page is left or reloaded, ends the call if it is, and after the reload the state shows that call as `ended` with `endReason: pageClosed`. Without Web Locks or BroadcastChannel in the browser every tab signs in on its own.\n\n## Parameters\n\n- **provider** (String, required): `exotel` or `telecmi`\n- **credentialsFunction** (String, recommended): `Namespace.name` of the server function that issues the agent's credential, for example `LeadZumpV2.callAgentCredential`. The engine calls it itself, as the signed in user, only in the tab that signs in and again when another tab takes over, so the credential never passes through the page, a step output or the store. It answers `{ enabled, credential, providerUserId, provider, region, expiresIn }` (or `{ enabled, agentId, password, region }`); `enabled` false fails Connect with `Browser calling is not turned on for this user.` A network failure is asked again up to 3 times, 5 seconds apart\n- **credentialsArgs** (Any, optional): the arguments for `credentialsFunction`\n- **credentials** (Any, required without `credentialsFunction`): the agent's SDK credentials. With `credentialsFunction` only extra settings that are not secret (for example `ringTime`), and the function's answer wins. They are handed to the SDK and never written to the store or to browser storage. Prefer `credentialsFunction`: credentials passed here travel through the page's expressions.\n  - Exotel: `userName`, `secret` (SIP password), `sipdomain`, `domain` (host:port of the WebSocket server), optional `authUser` (defaults to userName), `port` (default 443), `displayName`, `security` (default `wss`)\n  - TeleCMI: `userId`, `password`, optional `region` (the SBC host, for example `sbcind.telecmi.com`; the SDK defaults to `sbcsg.telecmi.com`), `name`, `ringTime` (seconds)\n- **statePath** (String, required): where the call state lives, for example `Store.call`\n- **displayPath** (String, optional, for example `Store.callDisplay`): where the engine writes the call bar's display values, computed once for every tab: `phase` (`off`, `ready`, `away`, `dialling`, `ringing`, `talking`, `held`, `ended`, `error`), `outbound`, `number`, `callId`, `callLogId`, `dealId`, `provider`, `ringStartedAt`, `ringSec`, `ringText`, `talkStartedAt`, `talkSec`, `talkText` (empty until the far end answers), `endedAt`, `final` (the call ended; the clocks are frozen), `endReason`, `connectionName`, `callerId`, `recordingFile`, `muted`, `held`, `otherTab`, `error`. Every field is always present (empty text, 0 or false, never null) and the clocks tick once a second while a call is up. Bind the call bar's labels to it instead of computing them from `statePath` and `UIEngine.Call.Live`'s report. Empty: nothing is written\n- **sdkFirst** (Boolean, optional, default: false): true when the browser phone's own events end an incoming call. The server's report that an incoming call is over then no longer hangs up the browser's leg two seconds later: the phone's end is the end, and the server's report ends the call only when the phone has still not said so 30 seconds after it (a lost hang up). An outgoing call, and the leg of a call the user placed, are unchanged. False or absent: the server's report ends any call a couple of seconds after it, as before\n\nSign out: the engine signs the phone out by itself when the user signs out in this tab or in another tab of the site, or a different user signs in, even while the phone is still signing in. In the AppBuilder editor nothing signs in and the call controls do nothing.\n\n" +
+	"# UIEngine.Call.Connect\n\nLoads the provider's web SDK (only now, from its CDN), signs the agent in with the credentials and keeps the call state at `statePath`. One connection per browser tab: a second Connect replaces the first, and is refused while a call is in progress. The connection survives navigation between pages.\n\nTabs: the provider keeps one sign in per agent, so only one tab of the site signs in and holds the audio. Every other tab that runs Connect mirrors that tab's call state (with `otherTab: true`) and sends Answer, Mute and Hangup to it; when that tab closes, another one signs in. While a call is up, the tab holding it asks before the page is left or reloaded, ends the call if it is, and after the reload the state shows that call as `ended` with `endReason: pageClosed`. Without Web Locks or BroadcastChannel in the browser every tab signs in on its own.\n\n## Parameters\n\n- **provider** (String, required): `exotel` or `telecmi`\n- **credentialsFunction** (String, recommended): `Namespace.name` of the server function that issues the agent's credential, for example `LeadZumpV2.callAgentCredential`. The engine calls it itself, as the signed in user, only in the tab that signs in and again when another tab takes over, so the credential never passes through the page, a step output or the store. It answers `{ enabled, credential, providerUserId, provider, region, expiresIn }` (or `{ enabled, agentId, password, region }`); `enabled` false fails Connect with `Browser calling is not turned on for this user.` A network failure is asked again up to 3 times, 5 seconds apart\n- **credentialsArgs** (Any, optional): the arguments for `credentialsFunction`\n- **credentials** (Any, required without `credentialsFunction`): the agent's SDK credentials. With `credentialsFunction` only extra settings that are not secret (for example `ringTime`), and the function's answer wins. They are handed to the SDK and never written to the store or to browser storage. Prefer `credentialsFunction`: credentials passed here travel through the page's expressions.\n  - Exotel: `userName`, `secret` (SIP password), `sipdomain`, `domain` (host:port of the WebSocket server), optional `authUser` (defaults to userName), `port` (default 443), `displayName`, `security` (default `wss`)\n  - TeleCMI: `userId`, `password`, optional `region` (the SBC host, for example `sbcind.telecmi.com`; the SDK defaults to `sbcsg.telecmi.com`), `name`, `ringTime` (seconds)\n- **statePath** (String, required): where the call state lives, for example `Store.call`\n- **displayPath** (String, optional, for example `Store.callDisplay`): where the engine writes the call bar's display values, computed once for every tab: `phase` (`off`, `ready`, `away`, `dialling`, `ringing`, `talking`, `held`, `ended`, `error`), `outbound`, `number`, `callId`, `callLogId`, `dealId`, `provider`, `ringStartedAt`, `ringSec`, `ringText`, `talkStartedAt`, `talkSec`, `talkText` (empty until the far end answers), `endedAt`, `final` (the call ended; the clocks are frozen), `endReason`, `connectionName`, `callerId`, `recordingFile`, `muted`, `held`, `otherTab`, `error`. Every field is always present (empty text, 0 or false, never null) and the clocks tick once a second while a call is up. Bind the call bar's labels to it instead of computing them from `statePath` and `UIEngine.Call.Live`'s report. Empty: nothing is written\n- **sdkFirst** (Boolean, optional, default: false): true when the browser phone's own events end an incoming call. The server's report that an incoming call is over then no longer hangs up the browser's leg two seconds later: the phone's end is the end, and the server's report ends the call only when the phone has still not said so 30 seconds after it (a lost hang up). An outgoing call, and the leg of a call the user placed, are unchanged. False or absent: the server's report ends any call a couple of seconds after it, as before\n\nThe answer of Connect (the `state` of its output event, not the stored state) also carries `exactLog: true`, which says this bundle's `UIEngine.Call.Expect` takes `callLogId`; a page keeps it (for example in `Store.callVoip.exactLog`) and passes an id only when it is true.\n\nSign out: the engine signs the phone out by itself when the user signs out in this tab or in another tab of the site, or a different user signs in, even while the phone is still signing in. In the AppBuilder editor nothing signs in and the call controls do nothing.\n\n" +
 		EVENTS_DOC +
 		STATE_DOC +
 		"## Notes\n\n- The SDK and media domains must be allowed in the app's Content Security Policy when the app sets one.\n- Microphone access needs HTTPS and is asked for on the first call.",
@@ -89,21 +89,26 @@ export class Connect extends CallFunction {
 		const args = context.getArguments();
 		const tve = context.getValuesMap?.()?.get('Page.') as PageStoreExtractor | undefined;
 		const credentialsArgs = args?.get('credentialsArgs');
-		return session.connect(
-			args?.get('provider'),
-			args?.get('credentials') ?? undefined,
-			args?.get('statePath'),
-			tve?.getPageName?.() ?? GLOBAL_CONTEXT_NAME,
-			{
-				credentialsFunction: args?.get('credentialsFunction') || undefined,
-				credentialsArgs:
-					credentialsArgs && typeof credentialsArgs === 'object'
-						? credentialsArgs
-						: undefined,
-				displayPath: args?.get('displayPath') || undefined,
-				sdkFirst: args?.get('sdkFirst') === true || args?.get('sdkFirst') === 'true',
-			},
-		);
+		// `exactLog` marks a bundle whose Expect takes `callLogId` (LZT-2731). It is in this answer
+		// only, never in the stored state; an older bundle's answer has none, so a page tells the
+		// two apart before it passes an id.
+		return session
+			.connect(
+				args?.get('provider'),
+				args?.get('credentials') ?? undefined,
+				args?.get('statePath'),
+				tve?.getPageName?.() ?? GLOBAL_CONTEXT_NAME,
+				{
+					credentialsFunction: args?.get('credentialsFunction') || undefined,
+					credentialsArgs:
+						credentialsArgs && typeof credentialsArgs === 'object'
+							? credentialsArgs
+							: undefined,
+					displayPath: args?.get('displayPath') || undefined,
+					sdkFirst: args?.get('sdkFirst') === true || args?.get('sdkFirst') === 'true',
+				},
+			)
+			.then(state => ({ ...state, exactLog: true }));
 	}
 
 	getSignature(): FunctionSignature {
@@ -197,16 +202,22 @@ export class Hold extends CallFunction {
 
 const EXPECT = signature(
 	'Expect',
-	[Parameter.ofEntry('on', Schema.ofBoolean('on').setDefaultValue(true))],
+	[
+		Parameter.ofEntry('on', Schema.ofBoolean('on').setDefaultValue(true)),
+		Parameter.ofEntry('callLogId', Schema.ofString('callLogId').setDefaultValue('')),
+	],
 	'Tells the call engine the page is placing a call, so the agent leg it rings is not an incoming call',
 ).setDocumentation(
-	"# UIEngine.Call.Expect\n\nClick to call rings the agent's own browser first, and the provider's SDK reports that leg as an incoming call. Run Expect with `on` true just before asking the server to place the call: the next call that rings in this browser within 20 seconds is then taken as the agent's own leg. It is marked `direction` outbound with `ringBack` true (a ring back plays, never the incoming ring, and no incoming call card or alert shows), and the tab holding the phone answers it at once, so no other tab has to. Run it with `on` false when placing the call failed. In a tab that does not hold the call it is sent to the tab that does.\n\n## Parameters\n\n- **on** (Boolean, optional, default: true)\n\n" +
+	"# UIEngine.Call.Expect\n\nClick to call rings the agent's own browser first, and the provider's SDK reports that leg as an incoming call. Run Expect with `on` true just before asking the server to place the call: the next call that rings in this browser within 20 seconds is then taken as the agent's own leg. It is marked `direction` outbound with `ringBack` true (a ring back plays, never the incoming ring, and no incoming call card or alert shows), and the tab holding the phone answers it at once, so no other tab has to. Run it with `on` false when placing the call failed. In a tab that does not hold the call it is sent to the tab that does.\n\n## Parameters\n\n- **on** (Boolean, optional, default: true)\n- **callLogId** (String, optional): the server's id of the call this browser call is: the id the click to call server function returned (run Expect again with it once it answers; the first run, before asking the server, stays as it is), or the id in the incoming call's push. The engine then binds the server's reports to exactly that call instead of guessing from the time they arrived, which a missed call left on the page or two calls close together fooled. It only tells the id: the 20 second claim above is not touched. An id waits 30 seconds for its call to ring here; an id told after the call rang binds it when it rang within the last 20 seconds (5 seconds and still ringing for an incoming call). An id that is never reported by the server within 15 seconds of the call coming up is dropped and the engine goes back to the time rule. With `on` false and a `callLogId`, that id is forgotten. Without `callLogId` nothing changes\n\n" +
 		EVENTS_DOC,
 );
 
 export class Expect extends CallFunction {
 	protected run(context: FunctionExecutionParameters): Promise<CallState> {
-		return session.expectOutbound(context.getArguments()?.get('on') !== false);
+		return session.expectOutbound(
+			context.getArguments()?.get('on') !== false,
+			context.getArguments()?.get('callLogId') || undefined,
+		);
 	}
 
 	getSignature(): FunctionSignature {
