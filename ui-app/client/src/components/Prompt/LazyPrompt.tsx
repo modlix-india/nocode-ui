@@ -59,6 +59,7 @@ import { personalizationEvent } from '../util/personalization';
 import { getHref } from '../util/getHref';
 import { PagePreview, type PreviewSurface } from './PagePreview';
 import { serialiseActiveData } from './editorContext';
+import { readPendingPrompt } from './pendingPrompt';
 import {
 	DraftDescriptor,
 	applyDraftPatch,
@@ -3527,17 +3528,19 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		// Read here rather than on mount, and cleared in the same tick as the
 		// send: a handed-over prompt is the only copy there is, so it is spent
 		// only when there is actually a send to spend it on.
-		const pending = pendingPromptPath
-			? getDataFromPath(pendingPromptPath, props.locationHistory, pageExtractor)
+		// A handed-over `{ text, display }` sends text and shows display (pendingPrompt.ts).
+		const handedOver = pendingPromptPath
+			? readPendingPrompt(
+					getDataFromPath(pendingPromptPath, props.locationHistory, pageExtractor),
+				)
 			: undefined;
-		const handedOver = typeof pending === 'string' ? pending : pending?.text;
-		const text = handedOver?.trim() ? handedOver : initialPrompt;
-		if (!text) return;
+		const text = handedOver ? handedOver.text : initialPrompt;
+		if (!text || typeof text !== 'string') return;
 
 		initialSentRef.current = true;
 		if (pendingPromptPath && handedOver)
 			setData(pendingPromptPath, undefined, props.context.pageName);
-		handleSend(text);
+		handleSend(text, undefined, handedOver?.display);
 	}, [
 		restoreSettled,
 		urlSessionSettled,
@@ -3568,12 +3571,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!pendingPromptPath || (!initialSentRef.current && messages.length === 0)) return;
 		if (!restoreSettled || !urlSessionSettled || isStreaming || readOnly) return;
-		const pending = getDataFromPath(pendingPromptPath, props.locationHistory, pageExtractor);
-		const text = typeof pending === 'string' ? pending : pending?.text;
-		if (!text?.trim()) return;
+		const pending = readPendingPrompt(
+			getDataFromPath(pendingPromptPath, props.locationHistory, pageExtractor),
+		);
+		if (!pending) return;
 		initialSentRef.current = true;
 		setData(pendingPromptPath, undefined, props.context.pageName);
-		handleSend(text);
+		handleSend(pending.text, undefined, pending.display);
 	}, [pendingTick, isStreaming, restoreSettled, urlSessionSettled]);
 
 	const handleStop = useCallback(() => {
