@@ -62,15 +62,31 @@ export function optionsFromResponse(data: any): PickOption[] {
 
 const optionsCache = new Map<string, Promise<PickOption[]>>();
 
-/** Options for a picker, fetched once per function per page load. Never rejects: no options is an empty list. */
-export function loadOptions(ref: OptionsRef | undefined, appCode?: string): Promise<PickOption[]> {
+/** A stable text for an args object: keys sorted, so the same args always give the same cache key. */
+export function stableArgs(args?: Record<string, any>): string {
+	if (!args) return '';
+	const keys = Object.keys(args).sort();
+	return keys.length ? JSON.stringify(keys.map(k => [k, args[k]])) : '';
+}
+
+/**
+ * Options for a picker, fetched once per function (and per args) per page load.
+ * `args` is the request body (a dependent field sends its sibling's value);
+ * none means `{}`. Never rejects: no options is an empty list.
+ */
+export function loadOptions(
+	ref: OptionsRef | undefined,
+	appCode?: string,
+	args?: Record<string, any>,
+): Promise<PickOption[]> {
 	if (!ref?.namespace || !ref?.name) return Promise.resolve([]);
-	const key = `${appCode ?? ''}:${ref.namespace}.${ref.name}`;
+	const argKey = stableArgs(args);
+	const key = `${appCode ?? ''}:${ref.namespace}.${ref.name}${argKey ? `|${argKey}` : ''}`;
 	if (!optionsCache.has(key)) {
 		const p = axios
 			.post(
 				`api/core/function/execute/${encodeURIComponent(ref.namespace)}/${encodeURIComponent(ref.name)}`,
-				{},
+				args ?? {},
 				{ headers: headers(appCode) },
 			)
 			.then(r => optionsFromResponse(r.data))
@@ -118,7 +134,10 @@ export function loadCatalog(appCode: string, clientCode?: string): Promise<Catal
 		if (clientCode) params.clientCode = clientCode;
 		const p = (async () => {
 			try {
-				const r = await axios.get('api/core/automations/catalog', { params, headers: headers() });
+				const r = await axios.get('api/core/automations/catalog', {
+					params,
+					headers: headers(),
+				});
 				if (!r?.data) catalogCache.delete(key);
 				return r?.data as Catalog | undefined;
 			} catch {

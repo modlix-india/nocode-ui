@@ -95,7 +95,13 @@ export function variablesFor(
 	const out: Variable[] = [];
 	const trig = findTrigger(catalog, doc.trigger?.key);
 	for (const f of trig?.fields ?? [])
-		out.push({ path: `trigger.${f.name}`, label: f.label, type: f.type, options: f.options });
+		out.push({
+			path: `trigger.${f.name}`,
+			label: f.label,
+			type: f.type,
+			options: f.options,
+			...(f.dependsOn ? { dependsOn: `trigger.${f.dependsOn}` } : {}),
+		});
 	if (!nodeKey || nodeKey === TRIGGER_KEY) return out;
 	const before = ancestorsOf(doc, nodeKey);
 	for (const [key, node] of Object.entries(doc.nodes ?? {})) {
@@ -133,6 +139,7 @@ export function allVariables(doc: AutomationDoc, catalog: Catalog | undefined): 
 					label: f.label,
 					type: f.type,
 					options: f.options,
+					...(f.dependsOn ? { dependsOn: `event.${f.dependsOn}` } : {}),
 				});
 	}
 	return out;
