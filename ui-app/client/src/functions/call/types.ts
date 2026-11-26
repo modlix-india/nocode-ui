@@ -73,6 +73,22 @@ export interface CallState {
 	 * agent's phone instead. Remembered per user in this browser and the same in every tab.
 	 */
 	away?: boolean;
+	/**
+	 * LZT-2762, only with `tabHealth`: where the phone is as this tab sees it. `here` this tab holds
+	 * it, `other` another tab holds it and answers, `stale` another tab holds it and does not answer
+	 * or is not signed in (it cannot be released from here while it is frozen).
+	 */
+	phoneTab?: 'here' | 'other' | 'stale';
+	/** LZT-2762: the tab holding the phone as a follower sees it, and since when (epoch ms). */
+	ownerHealth?: 'ok' | 'checking' | 'stale' | 'notSignedIn';
+	ownerSince?: number;
+	/**
+	 * LZT-2762: `browserNotConnected` when the agent leg of a call the page placed did not ring the
+	 * browser phone in time (the phone is being signed in again); `retryOffer` once it is ready
+	 * again and the page may offer "Call again". Both go with the next call or the next Expect.
+	 */
+	placeFailed?: 'browserNotConnected';
+	retryOffer?: boolean;
 	error?: string;
 }
 
