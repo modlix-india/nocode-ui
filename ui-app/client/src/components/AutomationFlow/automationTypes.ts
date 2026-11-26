@@ -80,6 +80,8 @@ export interface CatalogField {
 	label: string;
 	type?: string;
 	options?: OptionsRef;
+	/** The key of a sibling field whose chosen value narrows this field's options. */
+	dependsOn?: string;
 }
 
 export interface CatalogTrigger {
@@ -183,6 +185,8 @@ export interface Variable {
 	group?: string;
 	type?: string;
 	options?: OptionsRef;
+	/** The path of the sibling variable whose chosen value narrows these options. */
+	dependsOn?: string;
 }
 
 /** The key the WHEN card is selected under. Never a node key: node keys are `stepN`-like. */

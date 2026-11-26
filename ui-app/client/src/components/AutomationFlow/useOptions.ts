@@ -1,26 +1,44 @@
 import { useEffect, useMemo, useState } from 'react';
-import { loadOptions } from './automationApi';
+import { loadOptions, stableArgs } from './automationApi';
 import { AutomationDoc, Catalog, OptionsRef, PickOption } from './automationTypes';
 import { findAction, findTrigger, OptionLabeller } from './sentences';
 
 const refKey = (r: OptionsRef) => `${r.namespace}.${r.name}`;
 
-/** The options one picker offers; empty until (and unless) the function answers. */
-export function useOptions(ref: OptionsRef | undefined, appCode?: string): PickOption[] {
-	const [opts, setOpts] = useState<PickOption[]>([]);
-	const key = ref ? refKey(ref) : '';
+/**
+ * The options one picker offers and whether the list for the current args has
+ * arrived. Re-fetches when the args change; until a list arrives for them the
+ * answer is empty (a field without args behaves as it always did).
+ */
+export function useOptionsState(
+	ref: OptionsRef | undefined,
+	appCode?: string,
+	args?: Record<string, any>,
+): { opts: PickOption[]; loaded: boolean } {
+	const key = `${ref ? refKey(ref) : ''}|${stableArgs(args)}`;
+	const [state, setState] = useState<{ key: string; opts: PickOption[] }>({ key, opts: [] });
 	useEffect(() => {
 		if (!ref) {
-			setOpts([]);
+			setState({ key, opts: [] });
 			return;
 		}
 		let live = true;
-		loadOptions(ref, appCode).then(o => live && setOpts(o));
+		loadOptions(ref, appCode, args).then(o => live && setState({ key, opts: o }));
 		return () => {
 			live = false;
 		};
 	}, [key, appCode]);
-	return opts;
+	const loaded = !!ref && state.key === key;
+	return { opts: state.key === key ? state.opts : [], loaded };
+}
+
+/** The options one picker offers; empty until (and unless) the function answers. */
+export function useOptions(
+	ref: OptionsRef | undefined,
+	appCode?: string,
+	args?: Record<string, any>,
+): PickOption[] {
+	return useOptionsState(ref, appCode, args).opts;
 }
 
 /**
