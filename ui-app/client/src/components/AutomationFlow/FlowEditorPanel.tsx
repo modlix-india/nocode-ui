@@ -1,4 +1,4 @@
-import React, { CSSProperties, useId, useRef, useState } from 'react';
+import React, { CSSProperties, useEffect, useId, useRef, useState } from 'react';
 import {
 	AutomationDoc,
 	AutomationNode,
@@ -24,7 +24,8 @@ import {
 	pickLabel,
 	variablesFor,
 } from './sentences';
-import { useOptions } from './useOptions';
+import { stableArgs } from './automationApi';
+import { useOptionsState } from './useOptions';
 
 /**
  * The side panel for the selected card: one form per card type, each writing
@@ -89,6 +90,8 @@ function OptionsInput({
 	onChange,
 	id,
 	placeholder,
+	args,
+	clearWhenGone,
 }: {
 	options: OptionsRef;
 	appCode?: string;
@@ -96,8 +99,25 @@ function OptionsInput({
 	onChange: (v: any) => void;
 	id?: string;
 	placeholder?: string;
+	/** The request body for a dependent field (its sibling's value); the list is re-fetched when it changes. */
+	args?: Record<string, any>;
+	/** Clear the chosen value when `args` changed and the new list no longer holds it. */
+	clearWhenGone?: boolean;
 }) {
-	const opts = useOptions(ref, appCode);
+	const { opts, loaded } = useOptionsState(ref, appCode, args);
+	const argKey = stableArgs(args);
+	const lastArgs = useRef(argKey);
+	const pending = useRef(false);
+	if (clearWhenGone && lastArgs.current !== argKey) {
+		lastArgs.current = argKey;
+		pending.current = true;
+	}
+	useEffect(() => {
+		if (!clearWhenGone || !loaded || !pending.current) return;
+		pending.current = false;
+		const has = value !== undefined && value !== null && value !== '';
+		if (has && opts.length && !opts.some(o => String(o.value) === String(value))) onChange('');
+	}, [loaded, opts, argKey]);
 	if (!opts.length)
 		return (
 			<input
@@ -232,7 +252,11 @@ function JsonInput({
 							return;
 						}
 					saved.current =
-						next === undefined ? '' : typeof next === 'string' ? next : JSON.stringify(next);
+						next === undefined
+							? ''
+							: typeof next === 'string'
+								? next
+								: JSON.stringify(next);
 					onChange(next);
 				}}
 			/>
@@ -280,6 +304,7 @@ function PeriodInput({
 
 function ConditionRow({
 	leaf,
+	leaves,
 	vars,
 	appCode,
 	onChange,
@@ -287,6 +312,8 @@ function ConditionRow({
 	index,
 }: {
 	leaf: ConditionLeaf;
+	/** The other leaves of the group: a dependent field reads its sibling's value from them. */
+	leaves?: ConditionLeaf[];
 	vars: Variable[];
 	appCode?: string;
 	onChange: (l: ConditionLeaf) => void;
@@ -296,9 +323,28 @@ function ConditionRow({
 	const v = vars.find(x => x.path === leaf.field);
 	const op = OPERATORS.find(o => o.value === leaf.operator);
 	const n = index + 1;
+	const dep = v?.dependsOn;
+	const depLeaf = dep
+		? (leaves ?? []).find(
+				l =>
+					l !== leaf &&
+					l.field === dep &&
+					(l.operator ?? 'EQUALS') === 'EQUALS' &&
+					l.value !== undefined &&
+					l.value !== null &&
+					l.value !== '',
+			)
+		: undefined;
+	const args = dep
+		? depLeaf
+			? { [dep.replace(/^(trigger|event)\./, '')]: depLeaf.value }
+			: {}
+		: undefined;
 	const valueInput = (val: any, set: (x: any) => void, which: string) =>
 		v?.options ? (
 			<OptionsInput
+				args={args}
+				clearWhenGone={!!dep}
 				options={v.options}
 				appCode={appCode}
 				value={val}
@@ -414,6 +460,7 @@ export function ConditionBuilder({
 						key={i}
 						index={i}
 						leaf={c}
+						leaves={group.conditions.filter((x): x is ConditionLeaf => !isGroup(x))}
 						vars={vars}
 						appCode={appCode}
 						onChange={l => set(group.conditions.map((x, j) => (j === i ? l : x)))}
@@ -577,7 +624,9 @@ function ParamInput({
  * The step picker's groups: the built-in actions, the actions the app offers, then (in a
  * builder's catalog only) every other function of the app by namespace.
  */
-export function actionGroups(actions: CatalogAction[]): { label: string; actions: CatalogAction[] }[] {
+export function actionGroups(
+	actions: CatalogAction[],
+): { label: string; actions: CatalogAction[] }[] {
 	const built = actions.filter(a => a.builtIn);
 	const offered = actions.filter(a => !a.builtIn && a.offered !== false);
 	const byNs = new Map<string, CatalogAction[]>();
