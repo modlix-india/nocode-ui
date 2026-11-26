@@ -2,7 +2,7 @@ import { duplicate } from '@fincity/kirun-js';
 import { setData } from '../../context/StoreContext';
 import { AlertPermission, CallAlerts } from './alerts';
 import { getAuthWatch, inDesigner } from './auth';
-import { CredentialError, fetchCredentials } from './credentials';
+import { CredentialError, callServerFunction, fetchCredentials } from './credentials';
 import { CallDisplay, computeDisplay, DisplayTicker, sameDisplay } from './display';
 import { getCallProvider } from './registry';
 import { CallSounds, localStore, Tone, userKey } from './sounds';
@@ -78,6 +78,54 @@ export const LEAVE_WARNING = 'Leaving or reloading this page ends the call.';
 export const LOST_CALL_KEY = 'modlix.call.lost';
 const LOST_CALL_MAX_AGE_MS = 15 * 60 * 1000;
 
+/** LZT-2762 tab health: the owner announces itself, a follower that hears nothing asks. */
+export const OWNER_BEAT_MS = 5000;
+export const OWNER_QUIET_MS = 12000;
+export const OWNER_PONG_MS = 3000;
+export const OWNER_CHECK_MS = 2000;
+export const RELAY_TIMEOUT_MS = 5000;
+export const RELAY_TIMEOUT_EXPECT_MS = 2000;
+export const CLICK_PROBE_MS = 1500;
+export const OWNER_UNSIGNED_MS = 10000;
+/** A phone `registering` this long after a drop is stuck: Retry signs it in again. */
+export const REG_STUCK_MS = 20000;
+/** After Expect, how long the agent's own leg has to ring the browser phone. */
+export const PLACE_WATCH_MS = 10000;
+export const TAB_HERE_MS = 30000;
+/** localStorage flag for support: 'off' turns tab health off in this browser. */
+export const TAB_HEALTH_KEY = 'modlix.call.tabHealth';
+
+export const OWNER_DEAD_MESSAGE =
+	'Your browser phone is in another tab that is not responding, and it cannot be released from here. Close that tab or restart the browser, then reload this tab and call again.';
+export const OWNER_NOT_SIGNED_MESSAGE =
+	'Your browser phone is not ready in another tab. Use that tab or reload this one.';
+
+type OwnerHealth = 'ok' | 'checking' | 'stale' | 'notSignedIn';
+
+interface Health {
+	// owner side
+	unsignedSince: number;
+	regSince: number;
+	lastStatus?: string;
+	drops: Array<{ at: number; what: string }>;
+	followers: Map<string, number>;
+	beatTimer?: ReturnType<typeof setInterval>;
+	placeTimer?: ReturnType<typeof setTimeout>;
+	repairing?: boolean;
+	// follower side
+	lastAt: number;
+	lastBeat?: any;
+	beatSeen: boolean;
+	checking: boolean;
+	stale: boolean;
+	state: OwnerHealth;
+	since: number;
+	checkTimer?: ReturnType<typeof setInterval>;
+	hereTimer?: ReturnType<typeof setInterval>;
+	pongTimer?: ReturnType<typeof setTimeout>;
+	probes: Map<string, (m: any) => void>;
+}
+
 type Role = 'solo' | 'owner' | 'follower';
 
 interface Session {
@@ -111,6 +159,11 @@ interface Session {
 	 * unless the page asked for it in Connect.
 	 */
 	sdkFirst?: boolean;
+	/** LZT-2762: tab health is on for this session (see applyTabHealth). */
+	tabHealth?: boolean;
+	health?: Health;
+	/** `Namespace.name` of the server function that stores a diagnostics note on a call row. */
+	noteFunction?: string;
 	pending: Map<string, { resolve: () => void; reject: (e: Error) => void; timer: any }>;
 	gotOwnerState?: () => void;
 	/** A follower while it waits for the owner's first state (a new tab or a reload). */
@@ -205,7 +258,13 @@ function guard(f: () => void) {
 }
 
 function write(session: Session) {
-	if (session.role !== 'follower') session.state = withSound(session.state);
+	if (session.role !== 'follower') {
+		session.state = withSound(session.state);
+		if (session.tabHealth) {
+			trackStatus(session);
+			session.state = { ...session.state, ...healthFields(session) };
+		}
+	}
 	const state = session.state;
 	guard(() => setData(session.statePath, duplicate(state), session.pageName));
 	if (session.role === 'owner')
@@ -217,7 +276,7 @@ function write(session: Session) {
 
 /** A follower shows the state it mirrors; nothing goes to the other tabs. */
 function show(session: Session) {
-	const state = session.state;
+	const state = shown(session);
 	guard(() => setData(session.statePath, duplicate(state), session.pageName));
 	guard(() => sounds.update(state, soundHere(session)));
 	guard(() => alerts.update(state, false));
@@ -273,7 +332,7 @@ function stampCall(session: Session, d: CallDisplay): boolean {
 /** Writes the display values when they changed, and keeps the 1 s clock running only while needed. */
 function writeDisplay(session: Session) {
 	if (!session.displayPath) return;
-	const d = computeDisplay(session.state, live, liveBelongs(session.state), Date.now());
+	const d = computeDisplay(shown(session), live, liveBelongs(session.state), Date.now());
 	// The stamp wrote the state, and that write wrote the display.
 	if (stampCall(session, d)) return;
 	if (!sameDisplay(session.display, d)) {
@@ -511,6 +570,11 @@ function apply(session: Session, reported: CallStatePatch) {
 	}
 	// The own leg rings back (never in) until the far end answers, and is answered here at once.
 	if (own) next.ringBack = true;
+	if (IN_CALL.has(next.status)) {
+		delete next.placeFailed;
+		delete next.retryOffer;
+		clearPlaceWatch(session);
+	}
 
 	session.state = next;
 	write(session);
@@ -544,7 +608,8 @@ export async function expectOutbound(on = true, callLogId?: string): Promise<Cal
 	if (id) {
 		// LZT-2731: only tells which server call the call here is; the claim window is not touched.
 		if (session.role === 'follower') {
-			await toOwner(session, 'expect', { on, callLogId: id });
+			await toOwner(session, 'expect', { on, callLogId: id }, expectTimeout(session));
+			if (on && session.tabHealth) void sendNote(session, id, 'placedFromFollower');
 			return session.state;
 		}
 		if (on) setExpectedLog(session, id);
@@ -558,10 +623,12 @@ export async function expectOutbound(on = true, callLogId?: string): Promise<Cal
 	// the call is placed meanwhile; a refused microphone still fails the answer as before.
 	if (on) ensureMicrophone().catch(() => undefined);
 	if (session.role === 'follower') {
-		await toOwner(session, 'expect', { on });
+		if (on && session.tabHealth) await ensureOwnerReady(session);
+		await toOwner(session, 'expect', { on }, expectTimeout(session));
 		return session.state;
 	}
 	expectUntil = on ? Date.now() + OUTBOUND_CLAIM_MS : 0;
+	if (session.tabHealth) armPlaceWatch(session, on);
 	return session.state;
 }
 
@@ -695,6 +762,17 @@ function onTabMessage(session: Session, m: any) {
 		if (m.live) applyLive(m.live, false);
 		return;
 	}
+	if (session.tabHealth && session.role === 'follower') ownerMessage(session, m);
+	if (session.tabHealth && session.role === 'owner') {
+		if (m.t === 'ping') {
+			session.channel?.post({ t: 'pong', id: m.id, ...beatFields(session) });
+			return;
+		}
+		if (m.t === 'here' && m.tab && session.health) {
+			session.health.followers.set(String(m.tab), Date.now());
+			return;
+		}
+	}
 	if (session.role === 'owner') {
 		if (m.t === 'hello') {
 			session.channel?.post({ t: 'state', state: duplicate(session.state) });
@@ -746,6 +824,7 @@ async function runForTab(session: Session, m: any) {
 		else if (m.op === 'hold') await hold(!!m.on);
 		else if (m.op === 'expect') await expectOutbound(m.on !== false, m.callLogId || undefined);
 		else if (m.op === 'dtmf') await sendDtmf(String(m.digit ?? ''));
+			else if (m.op === 'repair') void repairSignIn(session);
 		else if (m.op === 'available') await setAvailability(m.on !== false);
 		else if (m.op === 'view') {
 			if (typeof m.collapsed === 'boolean') setView(session, m.collapsed);
@@ -775,23 +854,30 @@ async function runForTab(session: Session, m: any) {
 	session.channel?.post({ t: 'reply', id: m.id, ok: !error, error });
 }
 
-function toOwner(session: Session, op: string, args: Record<string, any>): Promise<void> {
+function toOwner(
+	session: Session,
+	op: string,
+	args: Record<string, any>,
+	timeoutMs?: number,
+): Promise<void> {
 	const id = `${Date.now()}-${++commandSeq}-${Math.random().toString(36).slice(2, 8)}`;
 	return new Promise<void>((resolve, reject) => {
 		const timer = setTimeout(() => {
 			session.pending.delete(id);
+			if (session.tabHealth) markChecking(session);
 			reject(
 				new CallError(
 					'The tab with the call did not respond. Open the tab with the call to control it.',
 				),
 			);
-		}, TAB_COMMAND_TIMEOUT_MS);
+		}, timeoutMs ?? (session.tabHealth ? RELAY_TIMEOUT_MS : TAB_COMMAND_TIMEOUT_MS));
 		session.pending.set(id, { resolve, reject, timer });
 		session.channel?.post({ t: 'cmd', id, op, ...args });
 	});
 }
 
 function closeTabs(session: Session) {
+	stopHealth(session);
 	session.cancelWait?.();
 	session.cancelWait = undefined;
 	for (const p of Array.from(session.pending.values())) {
@@ -865,6 +951,7 @@ async function takeOver(session: Session) {
 	else if (rest.status === 'ended') ended = rest;
 	session.role = 'owner';
 	session.state = ended ?? { status: 'registering', muted: false };
+	if (session.tabHealth) startOwnerHealth(session);
 	write(session);
 	try {
 		await signIn(session);
@@ -1044,6 +1131,15 @@ export interface ConnectOptions {
 	 * SERVER_END_FLOOR_MS as a floor). Absent or false: unchanged.
 	 */
 	sdkFirst?: boolean;
+	/**
+	 * LZT-2762: the tabs check each other (owner beat, follower ping), a click to call from a
+	 * follower is refused when the phone's tab is dead or not signed in, a placed call whose
+	 * browser leg never rings signs the phone in again, and Retry re-signs a stuck phone. Absent or
+	 * false: unchanged. `localStorage['modlix.call.tabHealth'] = 'off'` turns it off here.
+	 */
+	tabHealth?: boolean;
+	/** `Namespace.name` of the function that stores a diagnostics note on a call row. */
+	noteFunction?: string;
 }
 
 let authStop: (() => void) | undefined;
@@ -1098,6 +1194,8 @@ export async function connect(
 	if (active && sameSession(active, identity)) {
 		const session = active;
 		session.sdkFirst = options.sdkFirst === true;
+		applyTabHealth(session, options);
+		if (session.tabHealth) retryIfStuck(session);
 		const displayPath = options.displayPath?.trim() ?? '';
 		if (
 			session.statePath !== statePath ||
@@ -1145,6 +1243,7 @@ export async function connect(
 
 	hookUnload();
 	const tabs = getTabSync();
+	if (!tabs) applyTabHealth(session, options);
 	if (tabs) {
 		const lockName = `modlix.call.${session.provider}`;
 		const lead = await tabs.tryLead(lockName);
@@ -1155,6 +1254,7 @@ export async function connect(
 		session.lockName = lockName;
 		session.role = lead ? 'owner' : 'follower';
 		session.channel = tabs.open(lockName, m => guard(() => onTabMessage(session, m)));
+		applyTabHealth(session, options);
 		if (!lead) {
 			session.state = { status: 'ready', muted: false, otherTab: true };
 			await new Promise<void>(resolve => {

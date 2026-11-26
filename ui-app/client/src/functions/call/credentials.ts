@@ -81,6 +81,17 @@ export function setCredentialFetcher(f: CredentialFetcher | undefined) {
 	fetcher = f ?? serverFetch;
 }
 
+/**
+ * Runs a server function (`Namespace.name`) as the signed in user and answers its output, for the
+ * engine's own calls that are not credentials (the call diagnostics note, LZT-2762).
+ */
+export function callServerFunction(
+	fn: string,
+	args: Record<string, any>,
+): Promise<Record<string, any>> {
+	return fetcher(fn, args ?? {});
+}
+
 const text = (v: any) => (v === undefined || v === null || v === '' ? undefined : String(v));
 
 /**
