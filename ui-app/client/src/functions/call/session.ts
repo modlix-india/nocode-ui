@@ -162,6 +162,7 @@ interface Session {
 	/** LZT-2762: tab health is on for this session (see applyTabHealth). */
 	tabHealth?: boolean;
 	health?: Health;
+	signingIn?: boolean;
 	/** `Namespace.name` of the server function that stores a diagnostics note on a call row. */
 	noteFunction?: string;
 	pending: Map<string, { resolve: () => void; reject: (e: Error) => void; timer: any }>;
@@ -824,7 +825,7 @@ async function runForTab(session: Session, m: any) {
 		else if (m.op === 'hold') await hold(!!m.on);
 		else if (m.op === 'expect') await expectOutbound(m.on !== false, m.callLogId || undefined);
 		else if (m.op === 'dtmf') await sendDtmf(String(m.digit ?? ''));
-			else if (m.op === 'repair') void repairSignIn(session);
+		else if (m.op === 'repair') void repairSignIn(session);
 		else if (m.op === 'available') await setAvailability(m.on !== false);
 		else if (m.op === 'view') {
 			if (typeof m.collapsed === 'boolean') setView(session, m.collapsed);
@@ -862,15 +863,18 @@ function toOwner(
 ): Promise<void> {
 	const id = `${Date.now()}-${++commandSeq}-${Math.random().toString(36).slice(2, 8)}`;
 	return new Promise<void>((resolve, reject) => {
-		const timer = setTimeout(() => {
-			session.pending.delete(id);
-			if (session.tabHealth) markChecking(session);
-			reject(
-				new CallError(
-					'The tab with the call did not respond. Open the tab with the call to control it.',
-				),
-			);
-		}, timeoutMs ?? (session.tabHealth ? RELAY_TIMEOUT_MS : TAB_COMMAND_TIMEOUT_MS));
+		const timer = setTimeout(
+			() => {
+				session.pending.delete(id);
+				if (session.tabHealth) markChecking(session);
+				reject(
+					new CallError(
+						'The tab with the call did not respond. Open the tab with the call to control it.',
+					),
+				);
+			},
+			timeoutMs ?? (session.tabHealth ? RELAY_TIMEOUT_MS : TAB_COMMAND_TIMEOUT_MS),
+		);
 		session.pending.set(id, { resolve, reject, timer });
 		session.channel?.post({ t: 'cmd', id, op, ...args });
 	});
@@ -888,6 +892,425 @@ function closeTabs(session: Session) {
 	session.channel?.close();
 	session.channel = undefined;
 	if (session.lockName) getTabSync()?.release(session.lockName);
+}
+
+// ---------------------------------------------------------------- tab health (LZT-2762)
+
+/**
+ * Tab health. The tab holding the phone (owner) announces itself every OWNER_BEAT_MS over the tab
+ * channel and answers a `ping` from its message handler (message handlers are not throttled in a
+ * hidden tab, timers are). A follower that hears nothing for OWNER_QUIET_MS pings; no pong in
+ * OWNER_PONG_MS means the owner is stale. A click to call from a follower probes first and never
+ * places a call against a stale or signed out owner. Nothing here takes the lock from an owner.
+ * Off unless Connect gets `tabHealth` true, and off in a browser with the TAB_HEALTH_KEY flag.
+ */
+
+const SIGNED = new Set(['ready', 'ringing', 'connected', 'ended']);
+let hiddenSince = 0;
+let visHooked = false;
+let probeSeq = 0;
+
+function tabHealthOff(): boolean {
+	try {
+		return localStore()?.getItem(TAB_HEALTH_KEY) === 'off';
+	} catch {
+		return false;
+	}
+}
+
+function isHidden(): boolean {
+	return typeof document !== 'undefined' && !!document.hidden;
+}
+
+function hookVisibility() {
+	if (visHooked || typeof document === 'undefined' || !document.addEventListener) return;
+	visHooked = true;
+	hiddenSince = isHidden() ? Date.now() : 0;
+	document.addEventListener('visibilitychange', () => {
+		hiddenSince = isHidden() ? Date.now() : 0;
+		const s = active;
+		if (s?.tabHealth && s.role === 'follower' && !isHidden()) guard(() => checkOwner(s));
+	});
+}
+
+function newHealth(): Health {
+	return {
+		unsignedSince: 0,
+		regSince: 0,
+		drops: [],
+		followers: new Map(),
+		lastAt: Date.now(),
+		beatSeen: false,
+		checking: false,
+		stale: false,
+		state: 'ok',
+		since: Date.now(),
+		probes: new Map(),
+	};
+}
+
+function stopTimers(h: Health) {
+	if (h.beatTimer) clearInterval(h.beatTimer);
+	if (h.checkTimer) clearInterval(h.checkTimer);
+	if (h.hereTimer) clearInterval(h.hereTimer);
+	if (h.pongTimer) clearTimeout(h.pongTimer);
+	if (h.placeTimer) clearTimeout(h.placeTimer);
+	h.beatTimer = h.checkTimer = h.hereTimer = h.pongTimer = h.placeTimer = undefined;
+}
+
+function stopHealth(session: Session) {
+	if (session.health) stopTimers(session.health);
+	session.health?.probes.clear();
+}
+
+/** Switches tab health on or off for this session as the page asked (and the kill switch allows). */
+function applyTabHealth(session: Session, options: ConnectOptions) {
+	if (options.noteFunction !== undefined)
+		session.noteFunction = options.noteFunction.trim() || undefined;
+	const on = options.tabHealth === true && !tabHealthOff();
+	if (on === !!session.tabHealth) return;
+	if (!on) {
+		stopHealth(session);
+		session.tabHealth = false;
+		session.health = undefined;
+		return;
+	}
+	session.tabHealth = true;
+	session.health = newHealth();
+	hookVisibility();
+	if (session.role === 'owner') startOwnerHealth(session);
+	else if (session.role === 'follower') startFollowerHealth(session);
+}
+
+// owner side
+
+function startOwnerHealth(session: Session) {
+	const h = session.health!;
+	stopTimers(h);
+	h.followers.clear();
+	h.lastStatus = undefined;
+	if (!session.channel) return;
+	const beat = () => guard(() => session.channel?.post({ t: 'beat', ...beatFields(session) }));
+	beat();
+	h.beatTimer = setInterval(beat, OWNER_BEAT_MS);
+}
+
+/** Keeps when the phone last left the signed in states, and the drops, from the status it shows. */
+function trackStatus(session: Session) {
+	const h = session.health;
+	if (!h) return;
+	const st = session.state.status;
+	const now = Date.now();
+	if (st !== h.lastStatus) {
+		if (h.lastStatus && (st === 'registering' || st === 'error')) {
+			h.drops.push({ at: now, what: st });
+			if (h.drops.length > 8) h.drops.shift();
+		}
+		h.regSince = st === 'registering' ? now : 0;
+		h.lastStatus = st;
+	}
+	if (SIGNED.has(st) || session.state.away) h.unsignedSince = 0;
+	else if (!h.unsignedSince) h.unsignedSince = now;
+}
+
+function beatFields(session: Session) {
+	const h = session.health!;
+	trackStatus(session);
+	const now = Date.now();
+	for (const [tab, at] of Array.from(h.followers.entries()))
+		if (now - at > 2 * TAB_HERE_MS + 10000) h.followers.delete(tab);
+	const signedIn = SIGNED.has(session.state.status);
+	const away = !!session.state.away;
+	return {
+		at: now,
+		tab: TAB_ID,
+		status: session.state.status,
+		signedIn,
+		away,
+		unsignedSince: signedIn || away ? 0 : h.unsignedSince,
+		regSince: h.regSince,
+		drops: h.drops.slice(-8),
+		hidden: isHidden(),
+		hiddenSince,
+		tabs: h.followers.size + 1,
+	};
+}
+
+function healthFields(session: Session): Partial<CallState> {
+	const h = session.health;
+	if (session.role !== 'follower' || !h) return { phoneTab: 'here', ownerHealth: 'ok' };
+	return {
+		phoneTab: h.state === 'stale' || h.state === 'notSignedIn' ? 'stale' : 'other',
+		ownerHealth: h.state,
+		ownerSince: h.since,
+	};
+}
+
+/** The state this tab shows: a follower adds what it knows of the tab holding the phone. */
+function shown(session: Session): CallState {
+	return session.tabHealth && session.role === 'follower'
+		? { ...session.state, ...healthFields(session) }
+		: session.state;
+}
+
+// follower side
+
+function startFollowerHealth(session: Session) {
+	const h = session.health!;
+	stopTimers(h);
+	h.lastAt = Date.now();
+	h.stale = false;
+	h.checking = false;
+	h.state = 'ok';
+	h.since = Date.now();
+	if (!session.channel) return;
+	h.checkTimer = setInterval(() => guard(() => checkOwner(session)), OWNER_CHECK_MS);
+	const here = () => guard(() => session.channel?.post({ t: 'here', tab: TAB_ID }));
+	here();
+	h.hereTimer = setInterval(here, TAB_HERE_MS);
+}
+
+function recompute(session: Session) {
+	const h = session.health;
+	if (!h) return;
+	const now = Date.now();
+	const b = h.lastBeat;
+	let next: OwnerHealth;
+	if (h.stale) next = 'stale';
+	else if (
+		b &&
+		!b.signedIn &&
+		!b.away &&
+		b.unsignedSince > 0 &&
+		now - b.unsignedSince >= OWNER_UNSIGNED_MS
+	)
+		next = 'notSignedIn';
+	else if (h.checking) next = 'checking';
+	else next = 'ok';
+	if (next === h.state) return;
+	h.state = next;
+	h.since = now;
+	if (active === session && session.role === 'follower') show(session);
+}
+
+/** Anything the tab holding the phone posted: proof it is alive. */
+function ownerMessage(session: Session, m: any) {
+	if (m.t !== 'state' && m.t !== 'beat' && m.t !== 'pong' && m.t !== 'reply') return;
+	const h = session.health;
+	if (!h) return;
+	h.lastAt = Date.now();
+	h.stale = false;
+	h.checking = false;
+	if (h.pongTimer) clearTimeout(h.pongTimer);
+	h.pongTimer = undefined;
+	if (m.t === 'beat' || m.t === 'pong') {
+		h.lastBeat = m;
+		h.beatSeen = true;
+	}
+	for (const f of Array.from(h.probes.values())) f(m);
+	recompute(session);
+}
+
+function checkOwner(session: Session) {
+	const h = session.health;
+	if (!h || active !== session || session.role !== 'follower' || h.checking) return;
+	recompute(session);
+	if (Date.now() - h.lastAt >= OWNER_QUIET_MS) ping(session);
+}
+
+function ping(session: Session, id = `${TAB_ID}-${++probeSeq}`) {
+	const h = session.health!;
+	h.checking = true;
+	recompute(session);
+	session.channel?.post({ t: 'ping', id });
+	// An owner of an older bundle never answers a ping but does answer hello with its state.
+	if (!h.beatSeen) session.channel?.post({ t: 'hello' });
+	if (h.pongTimer) clearTimeout(h.pongTimer);
+	h.pongTimer = setTimeout(() => {
+		h.pongTimer = undefined;
+		h.checking = false;
+		h.stale = true;
+		recompute(session);
+	}, OWNER_PONG_MS);
+}
+
+/** A relay to the owner timed out: ask it directly whether it is there. */
+function markChecking(session: Session) {
+	if (session.role === 'follower' && session.health && !session.health.checking) ping(session);
+}
+
+/** Asks the owner now; answers what it said within `ms` (nothing in time is `stale`). */
+function probeOwner(
+	session: Session,
+	ms = CLICK_PROBE_MS,
+): Promise<'ok' | 'stale' | 'notSignedIn'> {
+	const h = session.health!;
+	const id = `${TAB_ID}-p${++probeSeq}`;
+	return new Promise(resolve => {
+		const done = (r: 'ok' | 'stale' | 'notSignedIn') => {
+			clearTimeout(timer);
+			h.probes.delete(id);
+			resolve(r);
+		};
+		const timer = setTimeout(() => {
+			h.stale = true;
+			h.checking = false;
+			recompute(session);
+			done('stale');
+		}, ms);
+		h.probes.set(id, m => {
+			if (m.t === 'pong' && m.id === id) done(m.signedIn || m.away ? 'ok' : 'notSignedIn');
+			else if (m.t === 'state' && !h.beatSeen) done('ok');
+		});
+		session.channel?.post({ t: 'ping', id });
+		if (!h.beatSeen) session.channel?.post({ t: 'hello' });
+	});
+}
+
+function expectTimeout(session: Session): number | undefined {
+	return session.tabHealth ? RELAY_TIMEOUT_EXPECT_MS : undefined;
+}
+
+/** Before a click to call from a follower: no call is placed against a dead or signed out owner. */
+async function ensureOwnerReady(session: Session) {
+	const r = await probeOwner(session);
+	if (r === 'ok') return;
+	bufferNote(describe(session, `probeFailed:${r}`));
+	if (r === 'notSignedIn')
+		toOwner(session, 'repair', {}, RELAY_TIMEOUT_EXPECT_MS).catch(() => undefined);
+	throw new CallError(r === 'stale' ? OWNER_DEAD_MESSAGE : OWNER_NOT_SIGNED_MESSAGE);
+}
+
+// repair, Retry and the placing watchdog
+
+/** Signs this tab's phone out and in again, in place (the lock stays). Never during a call. */
+async function repairSignIn(session: Session) {
+	const h = session.health;
+	if (!h || active !== session || session.role === 'follower' || h.repairing) return;
+	if (session.signingIn || IN_CALL.has(session.state.status) || session.state.away) return;
+	h.repairing = true;
+	try {
+		const adapter = session.adapter;
+		session.adapter = undefined;
+		session.state = {
+			...withoutCall(session.state),
+			status: 'registering',
+			...(session.state.placeFailed ? { placeFailed: session.state.placeFailed } : {}),
+		};
+		write(session);
+		await release(adapter);
+		if (active !== session) return;
+		await signIn(session);
+	} catch {
+		// signIn wrote the error state.
+	} finally {
+		h.repairing = false;
+	}
+}
+
+/** A Connect for the phone this tab already has: a stuck phone is signed in again (Retry). */
+function retryIfStuck(session: Session) {
+	const h = session.health;
+	if (!h) return;
+	if (session.role === 'follower') {
+		if (h.state === 'notSignedIn')
+			toOwner(session, 'repair', {}, RELAY_TIMEOUT_EXPECT_MS).catch(() => undefined);
+		return;
+	}
+	const stuck =
+		session.state.status === 'registering' &&
+		h.regSince > 0 &&
+		Date.now() - h.regSince >= REG_STUCK_MS;
+	if (stuck || session.state.placeFailed) void repairSignIn(session);
+}
+
+function clearPlaceWatch(session: Session) {
+	const h = session.health;
+	if (h?.placeTimer) clearTimeout(h.placeTimer);
+	if (h) h.placeTimer = undefined;
+}
+
+function armPlaceWatch(session: Session, on: boolean) {
+	const h = session.health;
+	if (!h) return;
+	clearPlaceWatch(session);
+	if (!on) return;
+	if (session.state.placeFailed || session.state.retryOffer) {
+		const { placeFailed, retryOffer, ...rest } = session.state;
+		session.state = rest;
+		write(session);
+	}
+	h.placeTimer = setTimeout(() => {
+		h.placeTimer = undefined;
+		placeTripped(session);
+	}, PLACE_WATCH_MS);
+}
+
+/** The agent's own leg did not ring the browser phone in time: say so, sign in again, offer a retry. */
+function placeTripped(session: Session) {
+	if (active !== session || session.role === 'follower') return;
+	if (IN_CALL.has(session.state.status) || expectUntil === 0) return;
+	session.state = { ...session.state, placeFailed: 'browserNotConnected', retryOffer: false };
+	write(session);
+	void sendNote(session, expectedLog?.id, 'placeWatchdog');
+	void repairSignIn(session).then(() => {
+		if (active === session && session.state.placeFailed && !IN_CALL.has(session.state.status)) {
+			session.state = { ...session.state, retryOffer: true };
+			write(session);
+		}
+	});
+}
+
+// diagnostics
+
+const pendingNotes: string[] = [];
+
+function bufferNote(text: string) {
+	pendingNotes.push(text);
+	if (pendingNotes.length > 5) pendingNotes.shift();
+}
+
+function describe(session: Session, ev: string): string {
+	const h = session.health;
+	const now = Date.now();
+	const clock = (ms: number) => new Date(ms).toTimeString().slice(0, 8);
+	const follower = session.role === 'follower';
+	const b = h?.lastBeat;
+	const drops: Array<{ at: number; what: string }> = (follower ? b?.drops : h?.drops) ?? [];
+	const signed = follower
+		? b
+			? b.signedIn
+				? 1
+				: 0
+			: '?'
+		: SIGNED.has(session.state.status)
+			? 1
+			: 0;
+	const tabs = follower ? (b?.tabs ?? '?') : h ? h.followers.size + 1 : 1;
+	return [
+		`${clock(now)} ${ev}`,
+		`role=${session.role}`,
+		`tab=${TAB_ID.slice(-4)}`,
+		`owner=${follower ? h?.state : 'self'}`,
+		`beatAge=${b ? Math.round((now - b.at) / 1000) + 's' : 'none'}`,
+		`signedIn=${signed}`,
+		`drops=${drops.map(d => `${clock(d.at)} ${d.what}`).join(',') || 'none'}`,
+		`hidden=${isHidden() ? Math.round((now - hiddenSince) / 1000) + 's' : 0}`,
+		`tabs=${tabs}`,
+		`online=${typeof navigator !== 'undefined' && navigator.onLine === false ? 0 : 1}`,
+	].join(' ');
+}
+
+/** Stores a diagnostics note on the call row (no row yet: kept for the next note). Never throws. */
+async function sendNote(session: Session, callLogId: string | undefined, ev: string) {
+	const text = describe(session, ev);
+	if (!session.noteFunction || !callLogId) return bufferNote(text);
+	const note = [...pendingNotes.splice(0), text].join(' | ').slice(-400);
+	try {
+		await callServerFunction(session.noteFunction, { callLogId: String(callLogId), note });
+	} catch {
+		// Diagnostics only.
+	}
 }
 
 /** Whether a tab still answers as the call tab within TAB_HELLO_MS. */
@@ -1021,6 +1444,15 @@ function rememberAway(on: boolean) {
  * made after the session ended is signed out at once (LZT-2167, LZT-2163).
  */
 async function signIn(session: Session): Promise<void> {
+	session.signingIn = true;
+	try {
+		return await signInInner(session);
+	} finally {
+		session.signingIn = false;
+	}
+}
+
+async function signInInner(session: Session): Promise<void> {
 	if (awayRemembered()) {
 		const base =
 			session.state.status === 'registering' ? withoutCall(session.state) : session.state;
