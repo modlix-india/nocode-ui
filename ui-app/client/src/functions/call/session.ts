@@ -604,6 +604,9 @@ async function answerOwnLeg(session: Session) {
  */
 export async function expectOutbound(on = true, callLogId?: string): Promise<CallState> {
 	if (inDesigner()) return designerState();
+	// Placing is over (or never began) and there is no phone: nothing to undo (a page runs Expect off
+	// for every call it places, also with browser calling off).
+	if (!on && !active) return idleState();
 	const session = current();
 	const id = callLogId ? String(callLogId).trim() : '';
 	if (id) {
