@@ -419,6 +419,14 @@ describe('the placing watchdog and Retry', () => {
 	});
 });
 
+describe('Expect with no connection', () => {
+	test('Expect off with no phone is a no-op (a page runs it for every call, also with calling off)', async () => {
+		await a.session.disconnect();
+		await expect(a.session.expectOutbound(false)).resolves.toMatchObject({ status: 'idle' });
+		await expect(a.session.expectOutbound(true)).rejects.toThrow(/No call connection/);
+	});
+});
+
 describe('kill switch', () => {
 	test('without tabHealth nothing new runs and the state is as before', async () => {
 		tabs = new FakeTabs();
