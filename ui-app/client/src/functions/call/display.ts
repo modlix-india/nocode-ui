@@ -85,6 +85,16 @@ export interface CallDisplay {
 	otherTab: boolean;
 	/** The text to show for the last failure, or ''. */
 	error: string;
+	/**
+	 * LZT-2762, only present when the page asked for `tabHealth`: where the phone is (`here`,
+	 * `other`, `stale`), what the tab holding it answers (`ok`, `checking`, `stale`, `notSignedIn`),
+	 * `browserNotConnected` while a placed call's browser leg never rang, and whether to offer "Call
+	 * again". Absent without `tabHealth`, so a page that does not use it sees no change.
+	 */
+	phoneTab?: string;
+	ownerHealth?: string;
+	placeFailed?: string;
+	retryOffer?: boolean;
 }
 
 const CLOCK_PHASES = new Set<CallPhase>(['dialling', 'ringing', 'talking', 'held']);
@@ -266,6 +276,14 @@ export function computeDisplay(
 		held: inCall && !!s.held,
 		otherTab: !!s.otherTab,
 		error: str(s.error),
+		...(s.phoneTab !== undefined
+			? {
+					phoneTab: str(s.phoneTab),
+					ownerHealth: str(s.ownerHealth),
+					placeFailed: str(s.placeFailed),
+					retryOffer: !!s.retryOffer,
+				}
+			: {}),
 	};
 }
 
