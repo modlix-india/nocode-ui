@@ -94,6 +94,21 @@ export const PLACE_WATCH_MS = 10000;
 export const TAB_HERE_MS = 30000;
 /** localStorage flag for support: 'off' turns tab health off in this browser. */
 export const TAB_HEALTH_KEY = 'modlix.call.tabHealth';
+/**
+ * LZT-2762 step 2 (resign and take over), behind tab health and its own flag: 'on' in this
+ * browser's localStorage turns it on while it is being tested; 'off' always turns it off.
+ */
+export const TAKEOVER_KEY = 'modlix.call.takeover';
+/** The phone tab gives the phone up when it has been signed out, dropped or stuck connecting this long. */
+export const RESIGN_AFTER_MS = 10000;
+/** How long a tab that gave the phone up waits before it queues for the lock again, by try. */
+export const RESIGN_REQUEUE_MS = [20000, 60000, 180000];
+/** After this many resigns without the phone staying up, a tab stops giving it up. */
+export const RESIGN_MAX = 3;
+/** The longest a tab waits for its phone to sign out before it lets the lock go. */
+export const RESIGN_SIGNOUT_MS = 3000;
+/** "Use this tab": how long the tab holding the phone has to answer before it counts as frozen. */
+export const USE_THIS_TAB_WAIT_MS = 5000;
 
 export const OWNER_DEAD_MESSAGE =
 	'Your browser phone is in another tab that is not responding, and it cannot be released from here. Close that tab or restart the browser, then reload this tab and call again.';
@@ -112,7 +127,9 @@ interface Health {
 	beatTimer?: ReturnType<typeof setInterval>;
 	placeTimer?: ReturnType<typeof setTimeout>;
 	repairing?: boolean;
+	resigning?: boolean;
 	// follower side
+	askTimer?: ReturnType<typeof setTimeout>;
 	lastAt: number;
 	lastBeat?: any;
 	beatSeen: boolean;
@@ -162,6 +179,9 @@ interface Session {
 	/** LZT-2762: tab health is on for this session (see applyTabHealth). */
 	tabHealth?: boolean;
 	health?: Health;
+	/** How many times this tab gave the phone up without it staying up since (RESIGN_MAX). */
+	resigns?: number;
+	resignAt?: number;
 	signingIn?: boolean;
 	/** `Namespace.name` of the server function that stores a diagnostics note on a call row. */
 	noteFunction?: string;
@@ -766,7 +786,11 @@ function onTabMessage(session: Session, m: any) {
 		if (m.live) applyLive(m.live, false);
 		return;
 	}
-	if (session.tabHealth && session.role === 'follower') ownerMessage(session, m);
+	if (session.tabHealth && session.role === 'follower') {
+		ownerMessage(session, m);
+		if (m.t === 'resignDenied' && m.tab === TAB_ID) askAnswered(session);
+		if (m.t === 'resigned') askAnswered(session);
+	}
 	if (session.tabHealth && session.role === 'owner') {
 		if (m.t === 'ping') {
 			session.channel?.post({ t: 'pong', id: m.id, ...beatFields(session) });
@@ -774,6 +798,13 @@ function onTabMessage(session: Session, m: any) {
 		}
 		if (m.t === 'here' && m.tab && session.health) {
 			session.health.followers.set(String(m.tab), Date.now());
+			return;
+		}
+		if (m.t === 'resign' && takeoverOn()) {
+			// Another tab asked for the phone ("Use this tab"): given up unless a call is up.
+			if (IN_CALL.has(session.state.status))
+				session.channel?.post({ t: 'resignDenied', reason: 'inCall', tab: m.tab });
+			else void resign(session, 'asked');
 			return;
 		}
 	}
@@ -958,7 +989,8 @@ function stopTimers(h: Health) {
 	if (h.hereTimer) clearInterval(h.hereTimer);
 	if (h.pongTimer) clearTimeout(h.pongTimer);
 	if (h.placeTimer) clearTimeout(h.placeTimer);
-	h.beatTimer = h.checkTimer = h.hereTimer = h.pongTimer = h.placeTimer = undefined;
+	if (h.askTimer) clearTimeout(h.askTimer);
+	h.beatTimer = h.checkTimer = h.hereTimer = h.pongTimer = h.placeTimer = h.askTimer = undefined;
 }
 
 function stopHealth(session: Session) {
@@ -993,7 +1025,11 @@ function startOwnerHealth(session: Session) {
 	h.followers.clear();
 	h.lastStatus = undefined;
 	if (!session.channel) return;
-	const beat = () => guard(() => session.channel?.post({ t: 'beat', ...beatFields(session) }));
+	const beat = () =>
+		guard(() => {
+			session.channel?.post({ t: 'beat', ...beatFields(session) });
+			maybeResign(session);
+		});
 	beat();
 	h.beatTimer = setInterval(beat, OWNER_BEAT_MS);
 }
@@ -1184,6 +1220,119 @@ async function ensureOwnerReady(session: Session) {
 	throw new CallError(r === 'stale' ? OWNER_DEAD_MESSAGE : OWNER_NOT_SIGNED_MESSAGE);
 }
 
+// resign and take over (LZT-2762 step 2)
+
+function takeoverOn(): boolean {
+	try {
+		const v = localStore()?.getItem(TAKEOVER_KEY);
+		return v === 'on';
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * The tab holding the phone gives it up when it cannot keep it up: signed out, dropped or stuck
+ * connecting for RESIGN_AFTER_MS after it had been signed in, and another tab is there to take
+ * it. A phoneless owner breaks every tab at once (a follower only waits for the lock). Never
+ * during a call, and never more than RESIGN_MAX times in a row.
+ */
+function maybeResign(session: Session) {
+	const h = session.health;
+	if (!h || !takeoverOn() || active !== session || session.role !== 'owner') return;
+	if (h.resigning || h.repairing || session.signingIn) return;
+	// A phone that stayed signed in for 10 minutes since the last resign starts the count again.
+	if (
+		session.resigns &&
+		SIGNED.has(session.state.status) &&
+		Date.now() - (session.resignAt ?? 0) > 600000
+	)
+		session.resigns = 0;
+	if (IN_CALL.has(session.state.status) || session.state.away) return;
+	if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+	if ((session.resigns ?? 0) >= RESIGN_MAX) return;
+	trackStatus(session);
+	// Only a phone that was signed in and then dropped: a first sign in is waited for.
+	if (!h.drops.length || h.followers.size === 0) return;
+	const down =
+		!SIGNED.has(session.state.status) &&
+		h.unsignedSince > 0 &&
+		Date.now() - h.unsignedSince >= RESIGN_AFTER_MS;
+	if (down) void resign(session, 'unsigned');
+}
+
+/**
+ * Signs the phone out (bounded), stops announcing, lets the lock go and queues for it again after
+ * a wait that grows with every try. The next tab in the queue gets the lock and signs the phone in
+ * through the same path as when a tab closes. The phone is signed out BEFORE the lock goes, so two
+ * tabs are never signed in at once.
+ */
+async function resign(session: Session, why: string) {
+	const h = session.health;
+	const tabs = getTabSync();
+	if (!h || !tabs || !session.lockName || active !== session || session.role !== 'owner') return;
+	if (h.resigning || IN_CALL.has(session.state.status)) return;
+	h.resigning = true;
+	const lockName = session.lockName;
+	const tries = session.resigns ?? 0;
+	session.resigns = tries + 1;
+	session.resignAt = Date.now();
+	bufferNote(describe(session, `resign:${why}`));
+	const adapter = session.adapter;
+	session.adapter = undefined;
+	stopTimers(h);
+	await Promise.race([release(adapter), new Promise(r => setTimeout(r, RESIGN_SIGNOUT_MS))]);
+	if (active !== session) return;
+	session.role = 'follower';
+	session.state = { status: 'registering', muted: false, otherTab: true };
+	session.channel?.post({ t: 'resigned', tab: TAB_ID });
+	tabs.release(lockName);
+	startFollowerHealth(session);
+	h.resigning = false;
+	session.joining = true;
+	show(session);
+	const wait = RESIGN_REQUEUE_MS[Math.min(tries, RESIGN_REQUEUE_MS.length - 1)];
+	const timer = setTimeout(() => {
+		if (active === session && session.role === 'follower')
+			session.cancelWait = tabs.waitLead(lockName, () => takeOver(session));
+		session.channel?.post({ t: 'hello' });
+	}, wait);
+	session.cancelWait = () => clearTimeout(timer);
+	session.channel?.post({ t: 'hello' });
+}
+
+/** "Use this tab": asks the tab holding the phone to give it up; no answer in time = it is frozen. */
+function useThisTab(session: Session) {
+	const h = session.health;
+	if (!h || h.askTimer) return;
+	session.channel?.post({ t: 'resign', tab: TAB_ID });
+	h.askTimer = setTimeout(() => {
+		h.askTimer = undefined;
+		if (active !== session || session.role !== 'follower') return;
+		// The tab did not answer: it is frozen, and its lock cannot be taken without a second phone.
+		bufferNote(describe(session, 'useThisTab:noAnswer'));
+		session.state = { ...session.state, error: OWNER_DEAD_MESSAGE };
+		show(session);
+	}, USE_THIS_TAB_WAIT_MS);
+}
+
+/**
+ * For a button that says "Use this tab": asks the tab holding the phone to give it up. Nothing
+ * happens in the tab that holds the phone, when the flag is off or tab health is off.
+ */
+export function useThisPhone(): boolean {
+	const session = active;
+	if (!session?.tabHealth || session.role !== 'follower' || !takeoverOn()) return false;
+	useThisTab(session);
+	return true;
+}
+
+function askAnswered(session: Session) {
+	const h = session.health;
+	if (h?.askTimer) clearTimeout(h.askTimer);
+	if (h) h.askTimer = undefined;
+}
+
 // repair, Retry and the placing watchdog
 
 /** Signs this tab's phone out and in again, in place (the lock stays). Never during a call. */
@@ -1216,6 +1365,11 @@ function retryIfStuck(session: Session) {
 	const h = session.health;
 	if (!h) return;
 	if (session.role === 'follower') {
+		if (takeoverOn() && (h.state === 'stale' || h.state === 'notSignedIn')) {
+			// "Use this tab": ask the tab holding the phone to give it up.
+			useThisTab(session);
+			return;
+		}
 		if (h.state === 'notSignedIn')
 			toOwner(session, 'repair', {}, RELAY_TIMEOUT_EXPECT_MS).catch(() => undefined);
 		return;
@@ -2169,16 +2323,32 @@ function sameLive(a: LiveReport | undefined, b: LiveReport): boolean {
 	);
 }
 
+/** What was last written to the live path (and where), so an unchanged report is not written again. */
+let liveWritten: { key: string; report: LiveReport } | undefined;
+
+/**
+ * LZT-2762 step 1 (behind tabHealth): the tabs stop echoing the server's call reports.
+ * - Only the tab holding the phone (owner) posts a report to the other tabs; a follower only
+ *   applies what it hears or gets from its own stream and never posts it on (a follower that
+ *   posted made every tab re-post, one hang-up became a storm of writes and renders).
+ * - The report is written to the store only when it changed (`sameLive`), not on every message.
+ */
 function applyLive(report: LiveReport, own: boolean) {
 	const merged = mergeLive(live, report);
 	hear(report);
 	const changed = !sameLive(live, merged);
 	live = merged;
-	// Written again even when nothing changed: the page may have written its own view meanwhile.
-	setData(livePath, duplicate(merged), livePage);
-	if (changed) active?.channel?.post({ t: 'live', live: duplicate(merged) });
-	serverEnd(report, merged);
 	const session = active;
+	const quiet = session?.tabHealth === true;
+	const key = `${livePath}|${livePage}`;
+	if (!quiet || changed || liveWritten?.key !== key || !sameLive(liveWritten.report, merged)) {
+		// With tab health off it is written again even when nothing changed (the old behaviour).
+		setData(livePath, duplicate(merged), livePage);
+		liveWritten = { key, report: duplicate(merged) };
+	}
+	if (changed && (!quiet || session?.role !== 'follower'))
+		session?.channel?.post({ t: 'live', live: duplicate(merged) });
+	serverEnd(report, merged);
 	if (session) guard(() => writeDisplay(session));
 	return own ? merged : undefined;
 }

@@ -21,6 +21,8 @@ export interface ChartTheme {
 	font?: string;
 	/** The theme's chart look (`Theme.reportChartLook`); empty or `default`: drawn as before. */
 	look?: string;
+	/** `Theme.reportPaletteSpread`: false takes the palette in order instead of spreading it. */
+	spread?: boolean;
 }
 
 export interface ReportChartConfig {
@@ -89,7 +91,8 @@ export function colorFor(
 	const pick = key !== undefined ? style?.seriesColors?.[key] : undefined;
 	let idx = i;
 	if (Number.isFinite(pick)) idx = Number(pick);
-	else if (count && count > 1 && count <= p.length) idx = Math.floor((i * p.length) / count);
+	else if (theme.spread !== false && count && count > 1 && count <= p.length)
+		idx = Math.floor((i * p.length) / count);
 	return p[((idx % p.length) + p.length) % p.length];
 }
 
