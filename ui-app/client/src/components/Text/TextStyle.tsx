@@ -126,6 +126,12 @@ export default function LabelStyle({
 	 * grid parent cannot be pushed wider), and a table wider than the box scrolls sideways
 	 * inside it instead of running over what sits beside it.
 	 */
+	/* WhatsApp text: a line break is a line break, not a paragraph gap. */
+	${PREFIX} ._textWhatsApp ._markdown ._p,
+	${PREFIX}._textWhatsApp ._markdown ._p {
+		margin: 0 0 4px 0;
+	}
+
 	${PREFIX} ._markdown {
 		overflow-wrap: anywhere;
 		min-width: 0;
