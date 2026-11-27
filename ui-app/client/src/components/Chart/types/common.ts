@@ -195,6 +195,17 @@ export interface ChartProperties {
 	lineAreaFill?: boolean;
 	numberLocale?: string;
 	secondaryAxisDataSets?: string;
+	// Opt-in looks (chartjs/chartLook.ts). Unset: the chart draws as before.
+	chartLook?: 'default' | 'dotMatrix' | 'isometric' | 'wave';
+	projectedFrom?: number | string;
+	projectedDataSets?: string;
+	nowMarker?: { value: number | string; label?: string };
+	callouts?: Array<{
+		x: number | string;
+		label: string;
+		dataSet?: number;
+		paletteIndex?: number;
+	}>;
 }
 
 export interface MakeChartProps {
