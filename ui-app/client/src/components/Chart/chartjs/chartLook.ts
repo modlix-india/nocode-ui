@@ -346,6 +346,7 @@ export function applyLookToOptions(
 		scales.y = quiet(scales.y);
 		if (scales.y1) scales.y1 = quiet(scales.y1);
 		next.scales = scales;
+		next.plugins.legend = lookLegend(options?.plugins?.legend, textColor);
 	} else if (look === 'wave') {
 		scales.x = quiet(scales.x);
 		scales.y = {
@@ -388,6 +389,35 @@ export function applyLookToOptions(
 	if (look === 'isometric') pad.right += 12;
 	next.layout = { ...(options?.layout ?? {}), padding: pad };
 	return next;
+}
+
+/**
+ * The legend under a dot or prism look. The look hides the bars (their colours move to
+ * `lookColor`), so Chart.js would draw every legend swatch transparent and the series could not
+ * be told apart. Each item takes its data set's real colour, as a round swatch like the dots.
+ */
+export function lookLegend(legend: any, fallback: string): any {
+	const labels = legend?.labels ?? {};
+	const own = labels.generateLabels;
+	return {
+		...(legend ?? {}),
+		labels: {
+			...labels,
+			usePointStyle: true,
+			generateLabels: (chart: any) => {
+				const base =
+					own ??
+					(chart?.constructor as any)?.defaults?.plugins?.legend?.labels?.generateLabels;
+				const items: any[] = typeof base === 'function' ? base(chart) : [];
+				return items.map(it => {
+					const ds = chart?.data?.datasets?.[it.datasetIndex];
+					if (!ds) return it;
+					const c = colorAt(ds, 0, fallback);
+					return { ...it, fillStyle: c, strokeStyle: c, pointStyle: 'circle' };
+				});
+			},
+		},
+	};
 }
 
 function padOf(p: any): { top: number; right: number; bottom: number; left: number } {

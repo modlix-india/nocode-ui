@@ -274,3 +274,45 @@ function fakeBarChart(ctx: any, look: any) {
 		getDatasetMeta: () => ({ hidden: false, type: 'bar', data: bars.map(el) }),
 	} as any;
 }
+
+describe('lookLegend', () => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const { lookLegend } = require('../chartLook');
+	const chart = {
+		data: {
+			datasets: [
+				{ label: 'Bookings', lookColor: ['#111111'], backgroundColor: 'rgba(0, 0, 0, 0)' },
+				{ label: 'Value', lookColor: ['#C9E83C'], backgroundColor: 'rgba(0, 0, 0, 0)' },
+			],
+		},
+	};
+	const base = () => [
+		{ text: 'Bookings', datasetIndex: 0, fillStyle: 'rgba(0, 0, 0, 0)' },
+		{ text: 'Value', datasetIndex: 1, fillStyle: 'rgba(0, 0, 0, 0)' },
+	];
+
+	it('gives each legend item its data set colour, not the hidden bar colour', () => {
+		const legend = lookLegend(
+			{ position: 'bottom', labels: { generateLabels: base } },
+			'#888888',
+		);
+		const items = legend.labels.generateLabels(chart);
+		expect(items.map((i: any) => i.fillStyle)).toEqual(['#111111', '#C9E83C']);
+		expect(items.every((i: any) => i.pointStyle === 'circle')).toBe(true);
+		expect(legend.position).toBe('bottom');
+		expect(legend.labels.usePointStyle).toBe(true);
+	});
+
+	it('falls back to the Chart.js default generator from the chart class', () => {
+		const withDefaults = Object.assign(
+			Object.create({
+				constructor: {
+					defaults: { plugins: { legend: { labels: { generateLabels: base } } } },
+				},
+			}),
+			chart,
+		);
+		const items = lookLegend(undefined, '#888888').labels.generateLabels(withDefaults);
+		expect(items.map((i: any) => i.fillStyle)).toEqual(['#111111', '#C9E83C']);
+	});
+});
