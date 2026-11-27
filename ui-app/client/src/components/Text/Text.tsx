@@ -21,6 +21,7 @@ import TextStyle from './TextStyle';
 import { styleProperties, styleDefaults, stylePropertiesForTheme } from './TextStyleProperties';
 import { propertiesDefinition, stylePropertiesDefinition } from './textProperties';
 import { MarkdownParser } from '../../commonComponents/Markdown/MarkdownParser';
+import { whatsAppToMarkdown } from './whatsAppFormat';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function Text(props: Readonly<ComponentProps>) {
@@ -115,16 +116,20 @@ function Text(props: Readonly<ComponentProps>) {
 	let translatedText = getTranslations(text, translations);
 	let originalText = translatedText;
 
-	if (textType === 'MD') {
+	if (textType === 'MD' || textType === 'WA') {
 		return (
 			<div
-				className={`comp compText _textMarkdown  ${textColor}`}
+				className={`comp compText _textMarkdown ${textType === 'WA' ? '_textWhatsApp' : ''} ${textColor}`}
 				style={styleProperties.comp ?? {}}
 			>
 				<HelperComponent context={props.context} definition={definition} />
 				<MarkdownParser
 					componentKey={definition.key}
-					text={translatedText ?? ''}
+					text={
+						textType === 'WA'
+							? whatsAppToMarkdown(String(translatedText ?? ''))
+							: (translatedText ?? '')
+					}
 					styles={styleProperties}
 					imageLightbox={!!imageLightbox}
 				/>

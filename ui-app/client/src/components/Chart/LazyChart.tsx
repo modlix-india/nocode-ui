@@ -49,6 +49,13 @@ import { getDataFromPath } from '../../context/StoreContext';
 import type { CountryFeature, GeoBuild } from './chartjs/geo';
 import { useChartPlugins } from './chartjs/lazyPlugins';
 import { applyChartOptIns, clickPayload, wantedPlugins } from './chartjs/chartOptIn';
+import {
+	applyLookToData,
+	applyLookToOptions,
+	chartLookPlugin,
+	lookWanted,
+	type LookTheme,
+} from './chartjs/chartLook';
 import { runEvent } from '../util/runEvent';
 
 // Register Chart.js components, controllers and plugins
@@ -79,6 +86,8 @@ ChartJS.register(
 	Legend,
 	Filler,
 	gradientPlugin,
+	// Draws nothing unless a chart's options carry `plugins.chartLook` (an opt-in look).
+	chartLookPlugin,
 );
 
 /** `buildGeoOptions` lives in the lazily-loaded module, so it is reached through it. */
@@ -320,6 +329,44 @@ export default function LazyChart(props: Readonly<ComponentProps>) {
 		resolvedStyles,
 	]);
 
+	// Opt-in looks (chartLook, nowMarker, callouts). None set: the data and options above,
+	// untouched, so every existing chart draws exactly as before.
+	const wantsLook = lookWanted(properties);
+	const lookTheme: LookTheme | undefined = useMemo(() => {
+		if (!wantsLook) return undefined;
+		const scheme = String(properties.colorScheme ?? '_primary');
+		const name = scheme.length > 1 ? scheme[1].toUpperCase() + scheme.slice(2) : 'Primary';
+		const palette: string[] = [];
+		for (let i = 1; i <= 12; i++)
+			palette.push(getDataFromPath(`Theme.chart${name}DataColor${i}`, []));
+		return {
+			palette,
+			textColor: resolvedStyles?.comp?.color || getDataFromPath('Theme.chartFontColor', []),
+			gridColor: getDataFromPath(`Theme.chart${name}BackgroundHorizontalLinesColor`, []),
+			axisColor: getDataFromPath(`Theme.chart${name}XAxisColor`, []),
+		};
+	}, [wantsLook, properties.colorScheme, resolvedStyles]);
+	const lookData = useMemo(
+		() =>
+			lookTheme
+				? applyLookToData(chartJsData, properties, lookTheme, chartJsType)
+				: chartJsData,
+		[chartJsData, properties, lookTheme, chartJsType],
+	);
+	const lookOptions = useMemo(
+		() =>
+			lookTheme
+				? applyLookToOptions(
+						finalOptions,
+						properties,
+						lookTheme,
+						(chartJsData as any)?.labels,
+						chartJsType,
+					)
+				: finalOptions,
+		[finalOptions, properties, lookTheme, chartJsData, chartJsType],
+	);
+
 	return (
 		<div
 			className="comp compChart"
@@ -333,8 +380,8 @@ export default function LazyChart(props: Readonly<ComponentProps>) {
 				<Chart
 					ref={chartRef}
 					type={chartJsType}
-					data={chartJsData}
-					options={finalOptions}
+					data={lookData}
+					options={lookOptions}
 					plugins={extraPlugins}
 				/>
 			)}
