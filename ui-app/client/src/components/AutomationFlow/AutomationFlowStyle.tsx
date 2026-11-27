@@ -335,6 +335,12 @@ ${PREFIX} ._afCond { display: flex; flex-direction: column; gap: 6px; }
 ${PREFIX} ._afCondRow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 ${PREFIX} ._afCondRow > ._afSelect, ${PREFIX} ._afCondRow > ._afInput { flex: 1 1 90px; }
 ${PREFIX} ._afJoiner { align-self: flex-start; }
+${PREFIX} ._afMulti { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex: 1 1 100%; }
+${PREFIX} ._afMulti ._afInput, ${PREFIX} ._afMulti ._afSelect { flex: 1 1 120px; }
+${PREFIX} ._afMulti ._afChip { display: inline-flex; align-items: center; gap: 4px; }
+${PREFIX} ._afChipX { border: 0; background: none; color: inherit; padding: 0 2px; cursor: pointer; font-size: 11px; line-height: 1; }
+${PREFIX} ._afInput[aria-invalid='true'] { border-color: #B91C1C; }
+${PREFIX} ._afCondProblem { flex: 1 1 100%; color: #B91C1C; font-size: 12px; }
 ${PREFIX} ._afLinkButton {
 	align-self: flex-start;
 	border: 0;

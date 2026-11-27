@@ -25,6 +25,15 @@ import {
 	variablesFor,
 } from './sentences';
 import { stableArgs } from './automationApi';
+import {
+	carryValue,
+	conditionProblem,
+	listOf,
+	numberTyping,
+	operatorKind,
+	patternProblem,
+	valueKindOf,
+} from './conditionValues';
 import { useOptionsState } from './useOptions';
 
 /**
@@ -146,6 +155,95 @@ function OptionsInput({
 				</option>
 			))}
 		</select>
+	);
+}
+
+/** Several values for "is one of": chosen from the field's list, or typed one by one for a free field. */
+function MultiValueInput({
+	options: ref,
+	appCode,
+	value,
+	onChange,
+	label,
+	args,
+}: {
+	options?: OptionsRef;
+	appCode?: string;
+	value: any;
+	onChange: (v: any[]) => void;
+	label: string;
+	args?: Record<string, any>;
+}) {
+	const { opts } = useOptionsState(ref, appCode, args);
+	const [draft, setDraft] = useState('');
+	const list = listOf(value);
+	const labelOf = (x: any) => opts.find(o => String(o.value) === String(x))?.label ?? String(x);
+	const has = (x: any) => list.some(m => String(m) === String(x));
+	const add = (x: any) => {
+		if (x === '' || x === undefined || x === null || has(x)) return;
+		onChange([...list, x]);
+	};
+	// Commas in the box add several at once; every new value goes in one change, so none is lost.
+	const addDraft = () => {
+		const parts = draft
+			.split(',')
+			.map(x => x.trim())
+			.filter(Boolean);
+		setDraft('');
+		const fresh = parts.filter((x, i) => !has(x) && parts.indexOf(x) === i);
+		if (fresh.length) onChange([...list, ...fresh]);
+	};
+	return (
+		<div className="_afMulti" role="group" aria-label={label}>
+			{list.map(x => (
+				<span key={String(x)} className="_afChip">
+					{labelOf(x)}
+					<button
+						type="button"
+						className="_afChipX"
+						aria-label={`Remove ${labelOf(x)}`}
+						onClick={() => onChange(list.filter(m => String(m) !== String(x)))}
+					>
+						<i className="fa fa-solid fa-xmark" aria-hidden="true" />
+					</button>
+				</span>
+			))}
+			{opts.length ? (
+				<select
+					className="_afSelect"
+					aria-label={`${label}: add`}
+					value=""
+					onChange={e => {
+						const o = opts.find(x => String(x.value) === e.target.value);
+						if (o) add(o.value);
+					}}
+				>
+					<option value="">{list.length ? 'Add another…' : 'Choose…'}</option>
+					{opts
+						.filter(o => !has(o.value))
+						.map(o => (
+							<option key={String(o.value)} value={String(o.value)}>
+								{o.label}
+							</option>
+						))}
+				</select>
+			) : (
+				<input
+					className="_afInput"
+					aria-label={`${label}: add`}
+					value={draft}
+					placeholder={list.length ? 'Add another…' : 'Type a value, press Enter'}
+					onChange={e => setDraft(e.target.value)}
+					onKeyDown={e => {
+						if (e.key === 'Enter' || e.key === ',') {
+							e.preventDefault();
+							addDraft();
+						}
+					}}
+					onBlur={addDraft}
+				/>
+			)}
+		</div>
 	);
 }
 
@@ -340,8 +438,32 @@ function ConditionRow({
 			? { [dep.replace(/^(trigger|event)\./, '')]: depLeaf.value }
 			: {}
 		: undefined;
+	const kind = operatorKind(leaf.operator);
+	const vkind = valueKindOf(v?.type);
+	const problem =
+		kind === 'text'
+			? patternProblem(leaf.value)
+			: conditionProblem(leaf.operator, leaf.value, leaf.toValue, vkind);
+	const bad = !!problem;
+	// A box that reads what the field holds: a number for the number comparisons, a date, a date and time, or text.
+	const plainInput = (val: any, set: (x: any) => void, which: string) => {
+		const numeric = kind === 'numeric' || (kind === 'range' && vkind === 'number');
+		const type = kind === 'range' && !numeric ? (vkind === 'date' ? 'date' : vkind === 'datetime' ? 'datetime-local' : 'text') : 'text';
+		return (
+			<input
+				className="_afInput"
+				type={type}
+				inputMode={numeric ? 'decimal' : undefined}
+				aria-label={`Condition ${n}: ${which}`}
+				aria-invalid={bad || undefined}
+				placeholder={numeric ? 'A number' : kind === 'text' ? 'Text, % for any text' : undefined}
+				value={val ?? ''}
+				onChange={e => set(numeric ? numberTyping(e.target.value) : e.target.value)}
+			/>
+		);
+	};
 	const valueInput = (val: any, set: (x: any) => void, which: string) =>
-		v?.options ? (
+		v?.options && kind !== 'numeric' && kind !== 'text' ? (
 			<OptionsInput
 				args={args}
 				clearWhenGone={!!dep}
@@ -352,12 +474,7 @@ function ConditionRow({
 				placeholder={which}
 			/>
 		) : (
-			<input
-				className="_afInput"
-				aria-label={`Condition ${n}: ${which}`}
-				value={val ?? ''}
-				onChange={e => set(e.target.value)}
-			/>
+			plainInput(val, set, which)
 		);
 	return (
 		<div className="_afCondRow" role="group" aria-label={`Condition ${n}`}>
@@ -384,6 +501,9 @@ function ConditionRow({
 					if (!operatorNeedsValue(e.target.value)) {
 						delete next.value;
 						delete next.toValue;
+					} else {
+						// The value follows the new comparison: a list for "is one of", one value back from it.
+						next.value = carryValue(leaf.operator, e.target.value, leaf.value);
 					}
 					if (e.target.value !== 'BETWEEN') delete next.toValue;
 					onChange(next);
@@ -395,10 +515,26 @@ function ConditionRow({
 					</option>
 				))}
 			</select>
-			{(op?.needsValue ?? true) &&
-				valueInput(leaf.value, x => onChange({ ...leaf, value: x }), 'value')}
+			{kind === 'multi' ? (
+				<MultiValueInput
+					label={`Condition ${n}: values`}
+					options={v?.options}
+					appCode={appCode}
+					args={args}
+					value={leaf.value}
+					onChange={x => onChange({ ...leaf, value: x })}
+				/>
+			) : (
+				(op?.needsValue ?? true) &&
+				valueInput(leaf.value, x => onChange({ ...leaf, value: x }), kind === 'range' ? 'from' : 'value')
+			)}
 			{op?.needsTo &&
 				valueInput(leaf.toValue, x => onChange({ ...leaf, toValue: x }), 'up to')}
+			{problem && (
+				<span className="_afCondProblem" role="alert">
+					{problem}
+				</span>
+			)}
 			<button
 				type="button"
 				className="_afTool _remove"
