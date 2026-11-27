@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
-import { getDataFromPath } from '../../context/StoreContext';
+import { STORE_PATH_THEME_PATH } from '../../constants';
+import { addListener, getDataFromPath } from '../../context/StoreContext';
+import { lookOf, type ChartLook } from '../Chart/chartjs/chartLook';
 import { styleDefaults as chartStyleDefaults } from '../Chart/chartStyleProperties';
 import type { ChartTheme } from './reportChartConfig';
+import { REPORT_CHART_LOOK_VAR } from './reportStyle';
 
 /**
  * Runtime theme reading for the report canvas (the lazy parts only: ReportWidgetView,
@@ -38,7 +41,18 @@ export function themePalette(scheme: string | undefined): string[] {
 	return out;
 }
 
-/** Canvas colours from the widget's own theme variables, re-read when the palette changes. */
+/**
+ * The theme's chart look for report widgets (`Theme.reportChartLook`). Anything other than
+ * dotMatrix, isometric or wave, and a theme without the variable, is `default`.
+ */
+export function themeChartLook(): ChartLook {
+	return lookOf({ chartLook: getDataFromPath(`Theme.${REPORT_CHART_LOOK_VAR}`, []) });
+}
+
+/**
+ * Canvas colours and the chart look from the widget's own theme variables, re-read when the
+ * palette scheme changes and when the theme is switched (`Store.theme`).
+ */
 export function useChartTheme(
 	ref: React.RefObject<HTMLElement | null>,
 	scheme: string | undefined,
@@ -49,7 +63,33 @@ export function useChartTheme(
 		muted: '',
 		grid: '',
 		surface: '',
+		look: themeChartLook(),
 	}));
+	// A theme switch repaints the style sheet with the new custom properties; read them on the
+	// next frame, once it is in.
+	const [switches, setSwitches] = useState(0);
+	useEffect(() => {
+		let frame: number | undefined;
+		const later =
+			typeof requestAnimationFrame === 'function'
+				? (f: () => void) => (frame = requestAnimationFrame(f))
+				: (f: () => void) => (frame = setTimeout(f, 0) as unknown as number);
+		// Guarded: a store stand-in (tests) may not offer listeners.
+		const off =
+			typeof addListener === 'function'
+				? addListener(
+						undefined,
+						() => later(() => setSwitches(n => n + 1)),
+						STORE_PATH_THEME_PATH,
+					)
+				: undefined;
+		return () => {
+			off?.();
+			if (frame === undefined) return;
+			if (typeof cancelAnimationFrame === 'function') cancelAnimationFrame(frame);
+			else clearTimeout(frame);
+		};
+	}, []);
 	useEffect(() => {
 		const el = ref.current;
 		const color =
@@ -64,7 +104,8 @@ export function useChartTheme(
 				el && typeof getComputedStyle === 'function'
 					? getComputedStyle(el).fontFamily
 					: undefined,
+			look: themeChartLook(),
 		});
-	}, [ref, scheme]);
+	}, [ref, scheme, switches]);
 	return theme;
 }

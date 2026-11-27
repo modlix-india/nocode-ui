@@ -19,6 +19,7 @@ import {
 } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 import { useChartPlugins } from '../../Chart/chartjs/lazyPlugins';
+import { chartLookPlugin } from '../../Chart/chartjs/chartLook';
 import { ReportChartConfig } from '../reportChartConfig';
 
 /**
@@ -43,6 +44,8 @@ ChartJS.register(
 	Tooltip,
 	Legend,
 	Filler,
+	// Draws nothing unless the config carries `plugins.chartLook` (the theme's report chart look).
+	chartLookPlugin,
 );
 
 export interface MarkClick {
@@ -156,7 +159,7 @@ function ReportChart(
 		<Chart
 			// A new chart when the kind or the axes change: chart.js updates options in place
 			// and would keep scales of the previous view (a switch to Bar showed two label axes).
-			key={`${config.type}|${config.options?.indexAxis ?? 'x'}|${Object.keys(config.options?.scales ?? {}).join(',')}`}
+			key={`${config.type}|${config.options?.indexAxis ?? 'x'}|${Object.keys(config.options?.scales ?? {}).join(',')}|${config.options?.plugins?.chartLook?.look ?? ''}`}
 			ref={chartRef}
 			type={config.type as any}
 			data={config.data as any}

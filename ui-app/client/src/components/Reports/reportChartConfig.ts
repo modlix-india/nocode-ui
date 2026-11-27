@@ -19,6 +19,8 @@ export interface ChartTheme {
 	/** The card background, for labels drawn inside coloured marks. */
 	surface: string;
 	font?: string;
+	/** The theme's chart look (`Theme.reportChartLook`); empty or `default`: drawn as before. */
+	look?: string;
 }
 
 export interface ReportChartConfig {
