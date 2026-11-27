@@ -4,7 +4,7 @@ import { addListener, getDataFromPath } from '../../context/StoreContext';
 import { lookOf, type ChartLook } from '../Chart/chartjs/chartLook';
 import { styleDefaults as chartStyleDefaults } from '../Chart/chartStyleProperties';
 import type { ChartTheme } from './reportChartConfig';
-import { REPORT_CHART_LOOK_VAR } from './reportStyle';
+import { REPORT_CHART_LOOK_VAR, REPORT_PALETTE_SPREAD_VAR } from './reportStyle';
 
 /**
  * Runtime theme reading for the report canvas (the lazy parts only: ReportWidgetView,
@@ -49,6 +49,12 @@ export function themeChartLook(): ChartLook {
 	return lookOf({ chartLook: getDataFromPath(`Theme.${REPORT_CHART_LOOK_VAR}`, []) });
 }
 
+/** `Theme.reportPaletteSpread`: only an explicit false (or 'false') turns the spread off. */
+export function themePaletteSpread(): boolean {
+	const v = getDataFromPath(`Theme.${REPORT_PALETTE_SPREAD_VAR}`, []);
+	return !(v === false || String(v).trim().toLowerCase() === 'false');
+}
+
 /**
  * Canvas colours and the chart look from the widget's own theme variables, re-read when the
  * palette scheme changes and when the theme is switched (`Store.theme`).
@@ -64,6 +70,7 @@ export function useChartTheme(
 		grid: '',
 		surface: '',
 		look: themeChartLook(),
+		spread: themePaletteSpread(),
 	}));
 	// A theme switch repaints the style sheet with the new custom properties; read them on the
 	// next frame, once it is in.
@@ -105,6 +112,7 @@ export function useChartTheme(
 					? getComputedStyle(el).fontFamily
 					: undefined,
 			look: themeChartLook(),
+			spread: themePaletteSpread(),
 		});
 	}, [ref, scheme, switches]);
 	return theme;
