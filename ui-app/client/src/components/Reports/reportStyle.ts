@@ -68,6 +68,14 @@ export const REPORT_VARS: Array<{ n: string; dn: string; dv: string; cp: string 
  */
 export const REPORT_CHART_LOOK_VAR = 'reportChartLook';
 
+/**
+ * Whether report charts spread their series across the palette (`true`, the default: palettes that
+ * run in families of one hue, so neighbours look alike) or take it in order (`false`: a palette
+ * already ordered by priority, where the second colour is the one meant for the second series).
+ * Read by the chart code, never written to the CSS.
+ */
+export const REPORT_PALETTE_SPREAD_VAR = 'reportPaletteSpread';
+
 /** The theme variables for one report component (all share the same names and defaults). */
 export function reportStyleProperties(prefix: string): StylePropertyDefinition[] {
 	return [
@@ -90,6 +98,16 @@ export function reportStyleProperties(prefix: string): StylePropertyDefinition[]
 				'bar or line charts take wave; every other chart draws as before.',
 			n: REPORT_CHART_LOOK_VAR,
 			dv: 'default',
+			np: true,
+		},
+		{
+			gn: 'Reports',
+			dn: 'Spread Palette',
+			de:
+				'true: series take colours spread across the chart palette (palettes in families of ' +
+				'one hue). false: series take the palette in order (a palette ordered by priority).',
+			n: REPORT_PALETTE_SPREAD_VAR,
+			dv: 'true',
 			np: true,
 		},
 	];
