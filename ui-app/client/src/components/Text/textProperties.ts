@@ -41,6 +41,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'Markdown',
 				description: 'Markdown Format',
 			},
+			{
+				name: 'WA',
+				displayName: 'WhatsApp',
+				description:
+					'WhatsApp formatting: *bold*, _italic_, ~strikethrough~ and ```monospace``` are shown formatted',
+			},
 		],
 	},
 

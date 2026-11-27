@@ -61,17 +61,38 @@ export const REPORT_VARS: Array<{ n: string; dn: string; dv: string; cp: string 
 	{ n: 'reportRadius', dn: 'Card Corner Radius', dv: '8px', cp: '--rp-radius' },
 ];
 
+/**
+ * The theme variable that draws report widget charts in a chart look (Chart/chartjs/chartLook.ts):
+ * `default` (as before), `dotMatrix`, `isometric` or `wave`. It is read from the theme by the
+ * chart code (reportTheme.ts), never written to the CSS, so it has no custom property.
+ */
+export const REPORT_CHART_LOOK_VAR = 'reportChartLook';
+
 /** The theme variables for one report component (all share the same names and defaults). */
 export function reportStyleProperties(prefix: string): StylePropertyDefinition[] {
-	return REPORT_VARS.map(v => ({
-		gn: 'Reports',
-		dn: v.dn,
-		n: v.n,
-		dv: v.dv,
-		cp: v.cp,
-		sel: prefix,
-		np: true,
-	}));
+	return [
+		...REPORT_VARS.map(v => ({
+			gn: 'Reports',
+			dn: v.dn,
+			n: v.n,
+			dv: v.dv,
+			cp: v.cp,
+			sel: prefix,
+			np: true,
+		})),
+		// No selector and no CSS property: the style sheet skips it, the chart code reads it.
+		{
+			gn: 'Reports',
+			dn: 'Chart Look',
+			de:
+				'How report charts are drawn: default, dotMatrix (dots), isometric (3D bars) or ' +
+				'wave (ridges). Only vertical bar charts take dotMatrix and isometric, and vertical ' +
+				'bar or line charts take wave; every other chart draws as before.',
+			n: REPORT_CHART_LOOK_VAR,
+			dv: 'default',
+			np: true,
+		},
+	];
 }
 
 /** Base CSS for every report piece, under one component's prefix. */

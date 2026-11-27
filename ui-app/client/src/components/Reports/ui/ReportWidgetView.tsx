@@ -51,6 +51,7 @@ import {
 	specKey,
 } from '../reportSpecUtil';
 import { useChartTheme } from '../reportTheme';
+import { applyReportChartLook } from '../reportChartLook';
 import {
 	applyStyleTransforms,
 	chartAxes,
@@ -376,13 +377,17 @@ export function ReportWidgetView(props: Readonly<ReportWidgetViewProps>) {
 	const zoomable = ZOOM_VIEWS.has(view.type) && shape.firstIsDate === true;
 	const config = useMemo(() => {
 		if (!shown || !isCanvas) return undefined;
-		return buildChartConfig(shown, view, theme, {
-			locale: catalog?.locale,
-			currency: catalog?.currency,
-			compact,
-			zoom: zoomable,
-			compareLabel: hasCompare ? compareLabel : undefined,
-		});
+		// The theme's chart look (Theme.reportChartLook); none: the config as built.
+		return applyReportChartLook(
+			buildChartConfig(shown, view, theme, {
+				locale: catalog?.locale,
+				currency: catalog?.currency,
+				compact,
+				zoom: zoomable,
+				compareLabel: hasCompare ? compareLabel : undefined,
+			}),
+			theme,
+		);
 	}, [
 		shown,
 		view,

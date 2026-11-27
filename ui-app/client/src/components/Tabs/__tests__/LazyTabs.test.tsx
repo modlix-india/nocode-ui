@@ -160,3 +160,61 @@ describe('LazyTabs accessibility', () => {
 		expect(tabs()[1].getAttribute('aria-selected')).toBe('true');
 	});
 });
+
+describe('LazyTabs highlighter on a wrapped row', () => {
+	let container: HTMLElement;
+	let root: Root | undefined;
+	const geometry = { offsetHeight: 32, offsetTop: 40, offsetLeft: 12, offsetWidth: 90 };
+	const saved: Record<string, PropertyDescriptor | undefined> = {};
+
+	beforeAll(() => {
+		for (const [k, v] of Object.entries(geometry)) {
+			saved[k] = Object.getOwnPropertyDescriptor(HTMLElement.prototype, k);
+			Object.defineProperty(HTMLElement.prototype, k, { configurable: true, get: () => v });
+		}
+	});
+	afterAll(() => {
+		for (const k of Object.keys(geometry))
+			if (saved[k]) Object.defineProperty(HTMLElement.prototype, k, saved[k]!);
+	});
+	beforeEach(() => {
+		container = document.createElement('div');
+		document.body.appendChild(container);
+	});
+	afterEach(() => {
+		if (root) act(() => root!.unmount());
+		root = undefined;
+		container.remove();
+		jest.restoreAllMocks();
+	});
+
+	function highlighterHeight(flexWrap: string) {
+		const real = window.getComputedStyle;
+		jest.spyOn(window, 'getComputedStyle').mockImplementation((el: Element) =>
+			(el as HTMLElement).classList?.contains('tabsContainer')
+				? ({ flexWrap } as CSSStyleDeclaration)
+				: real(el),
+		);
+		mockProps = {
+			tabs: ['Chat', 'Product', 'Ads'],
+			icon: [],
+			image: [],
+			showLabel: true,
+			tabsOrientation: '_horizontal',
+			defaultActive: 'Ads',
+		};
+		root = createRoot(container);
+		act(() => {
+			root!.render(<LazyTabs {...baseProps} />);
+		});
+		return (container.querySelector('.tabHighlighter') as HTMLElement).style.height;
+	}
+
+	it('takes the tab height when the row wraps', () => {
+		expect(highlighterHeight('wrap')).toBe('32px');
+	});
+
+	it('keeps the full row height when the row does not wrap', () => {
+		expect(highlighterHeight('nowrap')).toBe('100%');
+	});
+});

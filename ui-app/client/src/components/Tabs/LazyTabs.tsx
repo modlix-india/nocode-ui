@@ -40,7 +40,14 @@ function setHighlighter(
 	hp['left'] = currentTab.offsetLeft;
 	hp['top'] = currentTab.offsetTop;
 	hp['width'] = currentTab.offsetWidth;
-	hp['height'] = tabsOrientation === '_vertical' ? currentTab.offsetHeight : '100%';
+	// A horizontal row that wraps onto more lines (tabsContainer flex-wrap) needs the tab's own
+	// height: '100%' of the container would cover every line from this tab's top down.
+	const wraps =
+		tabsOrientation !== '_vertical' &&
+		!!currentTab.parentElement &&
+		typeof getComputedStyle === 'function' &&
+		getComputedStyle(currentTab.parentElement).flexWrap === 'wrap';
+	hp['height'] = tabsOrientation === '_vertical' || wraps ? currentTab.offsetHeight : '100%';
 
 	setHighlighterPosition(hp);
 }

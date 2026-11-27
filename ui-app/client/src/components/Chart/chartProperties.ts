@@ -793,6 +793,65 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'chartLook',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Chart Look',
+		description:
+			'How bars and lines are drawn. Default draws the chart as before. Dot Grid draws each ' +
+			'bar as a column of dots on a faint dot grid; Prisms draws each bar as a 3D block; ' +
+			'Ridges draws each data set as its own smooth ridge, one row each, labelled with its ' +
+			'name and total. Colours come from the theme chart colours. Dot Grid and Prisms need ' +
+			'bars and Ridges needs bars or lines on a vertical chart; anything else keeps Default.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'default',
+		enumValues: [
+			{ name: 'default', displayName: 'Default' },
+			{ name: 'dotMatrix', displayName: 'Dot Grid' },
+			{ name: 'isometric', displayName: 'Prisms (3D bars)' },
+			{ name: 'wave', displayName: 'Ridges' },
+		],
+	},
+	{
+		name: 'projectedFrom',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Projected From',
+		description:
+			'The x label (or position, 0 for the first) from which values are projected rather ' +
+			'than real: hollow dots, hatched prisms or dotted ridges. Empty with a Now Marker set: ' +
+			'everything after the marker. Only used by a Chart Look other than Default.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'projectedDataSets',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Projected Data Sets',
+		description:
+			'Data set positions (1 for the first, comma separated, e.g. 2 or 2,3) drawn as ' +
+			'projected throughout, such as "scheduled". Only used by a Chart Look other than Default.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'nowMarker',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Now Marker',
+		description:
+			'A dotted vertical line at one x with a small tag at the top, e.g. ' +
+			'{"value": "11:00", "label": "NOW 11:02"}; value is an x label or a position ' +
+			'(0 for the first). Empty: none.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'callouts',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Callouts',
+		description:
+			'Small tags pointing at values, e.g. [{"x": "09:00", "label": "09:40 · 3.1× slower", ' +
+			'"dataSet": 2, "paletteIndex": 3}]; x is a label or a position, dataSet (1 for the ' +
+			'first) picks the value pointed at (empty: the top of the stack), paletteIndex the ' +
+			'theme chart colour of its dot (empty: the data set colour). Empty: none.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'onDataClick',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Data Click',
