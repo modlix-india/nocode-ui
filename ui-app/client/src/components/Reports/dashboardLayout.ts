@@ -155,6 +155,21 @@ export function flowLayout(ordered: LayoutItem[]): LayoutItem[] {
 	return out;
 }
 
+/** A tile this wide or narrower takes half the width on a tablet; wider ones take all of it. */
+export const TABLET_HALF_MAX_W = 4;
+
+/**
+ * Tablet: the saved layout squeezed to a tablet's width made small tiles unreadable (a KPI
+ * sized 2 or 3 of 12 cut its number to "₹162…" and its label off). So the tiles stack in
+ * reading order in two columns: small ones side by side at half the width, the rest full
+ * width. Only the view changes; the saved layout stays the desktop one.
+ */
+export function tabletLayout(ordered: LayoutItem[]): LayoutItem[] {
+	return flowLayout(
+		ordered.map(it => ({ ...it, w: it.w <= TABLET_HALF_MAX_W ? COLS / 2 : COLS })),
+	);
+}
+
 /**
  * Puts new tiles at the top (a default shipped later, CONTRACT section 5): they flow into
  * rows from the top left, and every existing tile moves down by the height they take.
