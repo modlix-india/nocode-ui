@@ -159,7 +159,7 @@ export function reportCss(prefix: string): string {
 	${P} ._rpKpi, ${P} ._rpBullet, ${P} ._rpGauge, ${P} ._rpState { overflow: hidden; }
 	${P} ._rpCanvas canvas { position: absolute; inset: 0; }
 	${P} ._rpKpi { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 4px; min-width: 0; }
-	${P} ._rpKpiValue { font: var(--rp-kpi-font); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	${P} ._rpKpiValue { font: var(--rp-kpi-font); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-shrink: 0; }
 	${P} ._rpKpiMore { display: flex; flex-wrap: wrap; gap: 4px 16px; }
 	${P} ._rpGauge { position: relative; flex: 1; min-height: 80px; display: flex; flex-direction: column; }
 	${P} ._rpGaugeValue { position: absolute; left: 0; right: 0; bottom: 8%; text-align: center; font: var(--rp-title-font); font-weight: 700; pointer-events: none; }
