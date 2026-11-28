@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { startPointerDrag } from '../../../functions/usePointerDrag';
-import { moveInOrder, moveItem, resizeItem, sortLayout } from '../dashboardLayout';
+import { moveInOrder, moveItem, resizeItem, sortLayout, tabletLayout } from '../dashboardLayout';
 import {
 	addDefault,
 	addToDashboard,
@@ -76,7 +76,8 @@ import { aiUrl } from '../reportAi';
 
 /**
  * A per-user dashboard: a 12 column tile grid (drag to move, snap resize, both on the shared
- * pointer drag of functions/usePointerDrag.ts), one column with move up / down on a phone, a
+ * pointer drag of functions/usePointerDrag.ts), one column with move up / down on a phone, two
+ * stacked columns with the same buttons on a tablet (tabletLayout), a
  * filter bar (period + the catalog's quick filters, for this session), and the saved widget
  * library. The document lives in personalization (`reports_<name>`, dashboardStore.ts).
  */
@@ -84,6 +85,8 @@ import { aiUrl } from '../reportAi';
 export const ROW_PX = 72;
 export const GAP_PX = 12;
 export const PHONE_MAX_PX = 640;
+/** Below this dashboard width the tiles stack in two columns (dashboardLayout.tabletLayout). */
+export const TABLET_MAX_PX = 900;
 
 export interface DashboardViewProps {
 	transport?: ReportTransport;
@@ -193,6 +196,7 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 	}, []);
 	const width = useWidth(rootRef);
 	const phone = width > 0 && width < PHONE_MAX_PX;
+	const tablet = !phone && width > 0 && width < TABLET_MAX_PX;
 
 	const apply = useCallback(
 		(fn: (d: DashboardDoc) => DocResult | DashboardDoc) => {
@@ -331,7 +335,7 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 		el: HTMLElement,
 		e: React.PointerEvent,
 	) => {
-		if (!editable || phone || e.button !== 0) return;
+		if (!editable || phone || tablet || e.button !== 0) return;
 		const item = doc.layout.find(l => l.id === id);
 		if (!item) return;
 		const rect = el.getBoundingClientRect();
@@ -429,7 +433,7 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 						: undefined
 				}
 				onHeadPointerDown={
-					editable && !phone
+					editable && !phone && !tablet
 						? e =>
 								beginDrag(
 									item.id,
@@ -469,6 +473,31 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 	};
 
 	const ordered = sortLayout(layout);
+	const moveButtons = (item: { id: string }, i: number) =>
+		editable ? (
+			<div className="_rpMove">
+				<button
+					type="button"
+					className="_rpIconBtn"
+					aria-label="Move up"
+					title="Move up"
+					disabled={i === 0}
+					onClick={() => apply(d => withLayout(d, moveInOrder(d.layout, item.id, -1)))}
+				>
+					<Icon name="fa-arrow-up" />
+				</button>
+				<button
+					type="button"
+					className="_rpIconBtn"
+					aria-label="Move down"
+					title="Move down"
+					disabled={i === ordered.length - 1}
+					onClick={() => apply(d => withLayout(d, moveInOrder(d.layout, item.id, 1)))}
+				>
+					<Icon name="fa-arrow-down" />
+				</button>
+			</div>
+		) : undefined;
 
 	const runTransfer = async () => {
 		const t = transfer;
@@ -911,47 +940,7 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 								['--rp-tile-h' as any]: `${Math.max(item.h * ROW_PX, 180)}px`,
 							}}
 						>
-							{widgetFor(
-								item,
-								editable ? (
-									<div className="_rpMove">
-										<button
-											type="button"
-											className="_rpIconBtn"
-											aria-label="Move up"
-											title="Move up"
-											disabled={i === 0}
-											onClick={() =>
-												apply(d =>
-													withLayout(
-														d,
-														moveInOrder(d.layout, item.id, -1),
-													),
-												)
-											}
-										>
-											<Icon name="fa-arrow-up" />
-										</button>
-										<button
-											type="button"
-											className="_rpIconBtn"
-											aria-label="Move down"
-											title="Move down"
-											disabled={i === ordered.length - 1}
-											onClick={() =>
-												apply(d =>
-													withLayout(
-														d,
-														moveInOrder(d.layout, item.id, 1),
-													),
-												)
-											}
-										>
-											<Icon name="fa-arrow-down" />
-										</button>
-									</div>
-								) : undefined,
-							)}
+							{widgetFor(item, moveButtons(item, i))}
 						</div>
 					))}
 					{!ordered.length ? (
@@ -970,7 +959,7 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 						['--rp-gap' as any]: `${GAP_PX}px`,
 					}}
 				>
-					{ordered.map(item => {
+					{(tablet ? tabletLayout(ordered) : ordered).map((item, i) => {
 						const dragging = drag?.id === item.id;
 						const original = doc.layout.find(l => l.id === item.id) ?? item;
 						const at = dragging && drag!.kind === 'move' ? original : item;
@@ -996,8 +985,8 @@ export function DashboardView(props: Readonly<DashboardViewProps>) {
 												: undefined,
 									}}
 								>
-									{widgetFor(item)}
-									{editable ? (
+									{widgetFor(item, tablet ? moveButtons(item, i) : undefined)}
+									{editable && !tablet ? (
 										<div
 											className="_rpResize"
 											role="separator"
